@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package proto;
+
+import "any.proto";
+
+message ClientFunc {
+    enum f {
+        shoot = 0;
+        behit = 1;
+        die = 2;
+        kick = 3;
+        creatEntity = 4;
+        destoryEntity = 5;
+    } 
+}
+
+message ServerFunc {
+    enum f {
+        shoot = 0 ;
+    }
+}
+
+message Vector3 {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message Rotation {
+    float yaw = 1;
+    float pitch = 2;
+    float row = 3 ;
+}
+
+message Pos {
+	string id = 1;
+	Rotation rotation = 2;
+    Vector3 vector3 =3;
+}
+message PosReply {
+    bool ok = 1;
+    string error = 2;
+}
+message Callin {
+    string id = 1;
+	ServerFunc.f method = 2;
+    int64 stamp = 4;
+    map<string,google.protobuf.Any> param = 3;
+}
+
+message Reply {
+    string error = 1;
+    ClientFunc.f cb = 2;
+    map<string, google.protobuf.Any> param = 3;
+    string To = 5;
+    int64 stamp = 4;
+    //repeated google.protobuf.Any param = 3;
+}
+
+message ClientStart {
+    string id = 1;
+    int64 stamp = 2;
+}
+service packet{
+    rpc syncPostion(Pos) returns (PosReply){}
+    rpc callServer(Callin) returns (Reply){} 
+    rpc callClient(ClientStart ) returns (stream Reply){}
+}
+
+message User {
+    string Name = 1;
+    string pswd = 2;
+}
