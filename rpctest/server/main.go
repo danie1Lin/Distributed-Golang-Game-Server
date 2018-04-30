@@ -28,7 +28,7 @@ func init() {
 
 const (
 	// Address gRPC服务地址
-	Address = "127.0.0.1:50052"
+	Address = ":8080"
 )
 
 type rpcService struct{}
@@ -36,6 +36,7 @@ type rpcService struct{}
 var rpc *rpcService = &rpcService{}
 
 func (r *rpcService) SyncPostion(ctx context.Context, in *pb.Pos) (*pb.PosReply, error) {
+	log.Debug(ctx)
 	log.Debug(in)
 	return new(pb.PosReply), nil
 }

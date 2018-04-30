@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package proto;
+package msg;
 
 import "any.proto";
 
@@ -62,13 +62,60 @@ message ClientStart {
     string id = 1;
     int64 stamp = 2;
 }
-service packet{
+service Rpc{
     rpc syncPostion(Pos) returns (PosReply){}
     rpc callServer(Callin) returns (Reply){} 
     rpc callClient(ClientStart ) returns (stream Reply){}
+    rpc login(User) returns(UserInfo){}
+    rpc createAccount(UserRegister) returns(UserRegisterInfo){}
 }
 
 message User {
     string Name = 1;
-    string pswd = 2;
+    string Pswd = 2;
+}
+
+message UserRegister {
+    string Name = 1;
+    string Pswd = 2;
+    string Email = 3;
+}
+
+message UserRegisterInfo{
+    string Error =1;
+}
+
+message UserInfo {
+    string Id = 1;
+    string Error = 2;
+    Color Color =3;
+    int32 Level = 4;
+    int32 Exp = 5;
+    Ability Ability = 6;
+    map<string,Equipment> EquipmentMap = 7;
+}
+
+message Color {
+    int32 R = 1;
+    int32 G = 2;
+    int32 B = 3;
+}
+
+message Equipment{
+    string Name = 1;
+    string Type =2 ;
+    string Id = 3 ;
+    Color Color = 4;
+    Ability Ability =5;
+    int32 CD =6;//Cool down time tick
+    int32 Usable =7;
+    int32 Inventory =8;
+}
+
+message Ability{
+    int32 ATK = 1;
+    int32 DEF = 2;
+    float SPD = 3;
+    int32 MP = 4;
+    int32 MAKT = 5;
 }

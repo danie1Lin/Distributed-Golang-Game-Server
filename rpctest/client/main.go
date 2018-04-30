@@ -24,7 +24,7 @@ func init() {
 
 const (
 	// Address gRPC服务地址
-	Address = "127.0.0.1:50052"
+	Address = "35.185.75.79:8080"
 )
 
 func main() {
@@ -36,15 +36,15 @@ func main() {
 	}
 
 	defer conn.Close()
+
+	// 初始化客户端
 	c := pb.NewPacketClient(conn)
-	reqBody := &pb.Pos{
-		Id:       "test",
-		Vector3:  &pb.Vector3{1.3, 1.2, 1.3},
-		Rotation: &pb.Rotation{1.2, 1.3, 1.4},
-	}
+
+	// 调用方法
+	reqBody := &pb.Pos{Id: "test", Vector3: &pb.Vector3{1.2, 1.3, 1.4}, Rotation: &pb.Rotation{}}
 	r, err := c.SyncPostion(context.Background(), reqBody)
 	if err != nil {
 		fmt.Println(err)
 	}
-	log.Debug("client: ", r)
+	log.Debug(r)
 }
