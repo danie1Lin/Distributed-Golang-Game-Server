@@ -4,95 +4,78 @@ package msg;
 
 import "any.proto";
 
-message ClientFunc {
-    enum f {
-        shoot = 0;
-        behit = 1;
-        die = 2;
-        kick = 3;
-        creatEntity = 4;
-        destoryEntity = 5;
-    } 
+
+message TransForm {
+    float X = 1;
+    float Y = 2;
+    float Z = 3;
+    float Yaw = 4;
+    float Pitch = 5;
+    float Row = 6;
 }
 
-message ServerFunc {
-    enum f {
-        shoot = 0 ;
-    }
+message  Position{
+    map<string,TransForm> PosMap = 1; 
 }
 
-message Vector3 {
-    float x = 1;
-    float y = 2;
-    float z = 3;
-}
-
-message Rotation {
-    float yaw = 1;
-    float pitch = 2;
-    float row = 3 ;
-}
-
-message Pos {
-	string id = 1;
-	Rotation rotation = 2;
-    Vector3 vector3 =3;
-}
-message PosReply {
-    bool ok = 1;
-    string error = 2;
-}
-message Callin {
-    string id = 1;
-	ServerFunc.f method = 2;
-    int64 stamp = 4;
-    map<string,google.protobuf.Any> param = 3;
-}
-
-message Reply {
-    string error = 1;
-    ClientFunc.f cb = 2;
-    map<string, google.protobuf.Any> param = 3;
-    string To = 5;
-    int64 stamp = 4;
+message CallFuncInfo {
+    string RunnigNo = 1;
+    string TargetId = 2;
+    bytes TragetType = 3; 
+    string Cb = 4;
+    repeated google.protobuf.Any Param = 5;
+    int64 TimeStamp = 6;
     //repeated google.protobuf.Any param = 3;
 }
 
-message ClientStart {
-    string id = 1;
-    int64 stamp = 2;
-}
-service Rpc{
-    rpc syncPostion(Pos) returns (PosReply){}
-    rpc callServer(Callin) returns (Reply){} 
-    rpc callClient(ClientStart ) returns (stream Reply){}
-    rpc login(User) returns(UserInfo){}
-    rpc createAccount(UserRegister) returns(UserRegisterInfo){}
+message Error{
+    string ErrType = 1; 
+    string ErrMsg = 2;
 }
 
-message User {
-    string Name = 1;
+service Rpc{
+    rpc SyncPos(stream Position) returns (stream Position){}
+    rpc CallMethod(stream CallFuncInfo) returns (stream CallFuncInfo){}
+    rpc ErrorPipLine(stream Error) returns (stream Error){}
+    rpc Login(LoginInput) returns(UserInfo){}
+    rpc CreateAccount(RegistInput) returns(Error){}
+}
+
+message LoginInput {
+    string UserName = 1;
     string Pswd = 2;
 }
 
-message UserRegister {
-    string Name = 1;
+message RegistInput {
+    string UserName = 1;
     string Pswd = 2;
     string Email = 3;
 }
 
-message UserRegisterInfo{
-    string Error =1;
+message UserInfo{
+    string UserName = 1;
+    string Uuid = 2;
+    map<string, Character> OwnCharacter = 3;
 }
 
-message UserInfo {
-    string Id = 1;
-    string Error = 2;
-    Color Color =3;
-    int32 Level = 4;
-    int32 Exp = 5;
-    Ability Ability = 6;
-    map<string,Equipment> EquipmentMap = 7;
+message RoomInfo{
+    string Uuid = 1;
+    string Name = 2;
+    string GameType = 3;
+    string OwnerUuid = 4;
+    map<string, UserInfo> UserInRoom = 5;
+}
+//character 即是沒有實體之腳色
+//entity 則藉由character來初始化
+message Character {
+    string Uuid = 1;
+    string CharacterType = 2;
+ string Name = 3;
+    Color Color =4;
+    int32 Level = 5;
+    int32 Exp = 6;
+    Ability Ability = 7;
+    map<string,Equipment> EquipmentMap = 8;
 }
 
 message Color {
@@ -104,7 +87,7 @@ message Color {
 message Equipment{
     string Name = 1;
     string Type =2 ;
-    string Id = 3 ;
+    string Uuid = 3 ;
     Color Color = 4;
     Ability Ability =5;
     int32 CD =6;//Cool down time tick
