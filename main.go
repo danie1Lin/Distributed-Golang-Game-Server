@@ -3,12 +3,13 @@ package main
 import (
 	"net"
 
-	"github.com/daniel840829/gameServer/msg" // 引入编译生成的包
-
+	"github.com/daniel840829/gameServer/entity"
+	"github.com/daniel840829/gameServer/msg"
+	"github.com/daniel840829/gameServer/service"
+	"github.com/daniel840829/gameServer/storage"
 	"google.golang.org/grpc"
 	//"google.golang.org/grpc/grpclog"
 	"fmt"
-
 	log "github.com/sirupsen/logrus"
 	"os"
 )
@@ -30,17 +31,29 @@ const (
 	Address = ":8080"
 )
 
+var MgoDb *storage.MongoDb = &storage.MongoDb{}
+
+func init() {
+	MgoDb.Init(storage.MGO_DB_NAME, storage.UserInfo_COLLECTION, storage.RegistInput_COLLECTION)
+}
+
 func main() {
 	listen, err := net.Listen("tcp", Address)
 	if err != nil {
 		fmt.Println("failed to listen: %v", err)
 	}
-
-	// 实例化grpc Server
-	s := grpc.NewServer()
-
+	//初始化gameManager
+	gm := &entity.GameManager{}
+	//Regist Room
+	//Regist entity
+	//run gamemanager
+	//Rpc handler
+	rpc := service.NewRpc()
+	gm.Init(rpc)
+	go gm.Run()
 	// 注册HelloService
-	msg.RegisterRpcServer(s, &msg.Rpc{UserNameMapUserInfo: make(map[string]*msg.UserInfo), Send: make(map[string](chan []byte))})
+	s := grpc.NewServer()
+	msg.RegisterRpcServer(s, rpc)
 
 	fmt.Println("Listen on " + Address)
 

@@ -2,7 +2,7 @@ package entity
 
 import (
 	"fmt"
-	"github.com/daniel840829/gameServer/msg"
+	. "github.com/daniel840829/gameServer/msg"
 	//p "github.com/golang/protobuf/proto"
 	"github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
@@ -23,21 +23,16 @@ func init() {
 }
 
 type Entity struct {
+	Character
 	TypeName string
-	Id       uuid.UUID
+	UUID     uuid.UUID
 	I        IEntity
 }
 
-func (e *Entity) Say(s string) {
-	fmt.Println(e.Id, "[", e.TypeName, "]:", s)
-}
-
 type IEntity interface {
-	Init()
-	Tick()
-	Say(s string)
+	IGameBehavier
+	Hit()
 }
-
 type Player struct {
 	Entity
 }
@@ -48,8 +43,6 @@ func (e *Player) Hit(damage int32) {
 
 func (e *Player) Init() {
 	//call All client create enitity at some point
-	msg.CallAllClient(e.TypeName, e.Id, "CreateEnitity", &msg.Pos{Id: e.Id.String()})
-	//
 }
 
 func (e *Player) Tick() {
