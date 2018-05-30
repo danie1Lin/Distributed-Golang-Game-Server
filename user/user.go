@@ -12,7 +12,6 @@ import (
 )
 
 func NewUserManager(db storage.Db) *UserManager {
-
 	return &UserManager{
 		UserOnline: make(map[int64]*User),
 		Db:         db,
@@ -46,6 +45,14 @@ func (um *UserManager) Login(in *LoginInput) (*UserInfo, error) {
 	return userInfo, nil
 }
 
+func (um *UserManager) Logout(userId int64) {
+	um.Lock()
+	user := um.UserOnline[userId]
+	_ = user
+	delete(um.UserOnline, userId)
+	user = nil
+	um.Unlock()
+}
 func (um *UserManager) Regist(in *RegistInput) (*Error, error) {
 	if iter := um.Db.Find(storage.RegistInput_COLLECTION, bson.M{"username": in.UserName}); iter.Next(&RegistInput{}) {
 		return &Error{ErrMsg: "Username exists"}, nil
@@ -87,6 +94,9 @@ func NewCharacter() (c *Character) {
 	uuid, _ := Uid.NewId(CHA_ID)
 	c.Uuid = uuid
 	c.Color = &Color{int32(rand.Intn(256)), int32(rand.Intn(256)), int32(rand.Intn(256))}
+	c.Ability = &Ability{}
+	c.Ability.SPD = 1.0
+	c.Ability.TSPD = 1.0
 	return
 }
 

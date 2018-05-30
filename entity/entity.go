@@ -3,11 +3,17 @@ package entity
 import (
 	"fmt"
 	. "github.com/daniel840829/gameServer/msg"
+	//"github.com/daniel840829/gameServer/physic"
 	//p "github.com/golang/protobuf/proto"
+	//"github.com/gazed/vu/math/lin"
+	"github.com/golang/protobuf/proto"
+	//"github.com/ianremmler/ode"
 	"github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"reflect"
+	"sync"
+	//"time"
 )
 
 func init() {
@@ -23,29 +29,63 @@ func init() {
 }
 
 type Entity struct {
-	Character
-	TypeName string
-	UUID     uuid.UUID
-	I        IEntity
+	sync.RWMutex
+	EntityInfo *Character
+	TypeName   string
+	UUID       uuid.UUID
+	I          IEntity
+	GM         *GameManager
+	Room       *Room
 }
-
 type IEntity interface {
 	IGameBehavier
-	Hit()
+	Hit(int32)
+	GetInfo() *Character
+	Init(*GameManager, *Room, *Character)
+	Move(in *Input)
+	GetTransform() *TransForm
 }
+
 type Player struct {
 	Entity
 }
 
+func (e *Player) GetInfo() *Character {
+	e.RLock()
+	entityInfo := proto.Clone(e.EntityInfo).(*Character)
+	e.RUnlock()
+	return entityInfo
+}
 func (e *Player) Hit(damage int32) {
 	fmt.Println("-", damage)
 }
 
-func (e *Player) Init() {
+func (e *Player) Init(gm *GameManager, room *Room, entityInfo *Character) {
+	e.GM = gm
+	e.EntityInfo = entityInfo
+	e.Room = room
 	//call All client create enitity at some point
 }
 
 func (e *Player) Tick() {
+}
+func (e *Player) Destroy() {
+}
+
+func (e *Player) Run() {
+}
+func (e *Player) PhysicUpdate() {
+}
+
+func (e *Player) GetTransform() *TransForm {
+	return &TransForm{}
+}
+func (e *Entity) Move(in *Input) {
+	turnSpeed := e.EntityInfo.Ability.TSPD
+	moveSpeed := e.EntityInfo.Ability.SPD
+	moveValue := in.V_Movement
+	turnValue := in.H_Movement
+	e.Room.World.Move(e.EntityInfo.Uuid, float64(moveValue*moveSpeed), float64(turnValue*turnSpeed))
 }
 
 type EntityInfo struct {

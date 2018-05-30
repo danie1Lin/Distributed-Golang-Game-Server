@@ -1,0 +1,16 @@
+{
+    "Tank":{
+        "Name":"Tank",
+        "Type":"Player",
+        "Shape":"Box",
+        "Lens":[20, 20, 20],
+        "Mass":300
+    },
+    "Shell":{
+        "Name":"Shell",
+        "Type":"Skill",
+        "Shape":"Capsule",
+        "Lens":[1,1],
+        "Mass":10
+    }
+}

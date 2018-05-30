@@ -4,20 +4,36 @@ package msg;
 
 import "any.proto";
 
-
-message TransForm {
-    float X = 1;
-    float Y = 2;
-    float Z = 3;
-    float Yaw = 4;
-    float Pitch = 5;
-    float Row = 6;
+message Input{
+    int64 UserId = 1;
+    float H_Movement = 2;
+    float V_Movement = 3;
+    string SkillName = 5;
+    float SkillForce = 4;
+    int64 TimeStamp = 6;
+    int64 RunnigNo = 7;
 }
 
+message TransForm {
+    Vector3 Position= 1;
+    Quaternion Rotation = 2; 
+}
+
+message Vector3{
+    double X = 1;
+    double Y = 2;
+    double Z = 3;
+}
+
+message Quaternion{
+    double X = 1;
+    double Y= 2;
+    double Z = 3;
+    double W = 4;
+}
 message  Position{
     map<int64,TransForm> PosMap = 1;
-    int64 FromId = 2;
-    int64 RoomId = 3;
+    int64 TimeStamp = 2;
 }
 
 message CallFuncInfo {
@@ -34,7 +50,7 @@ message CallFuncInfo {
     //repeated google.protobuf.Any param = 3;
 }
 message BasicType {
-    oneof type{
+    oneof Data{
         string S = 1;
         int64 L = 2;
         float F = 3;
@@ -52,7 +68,7 @@ message Error{
 }
 
 service Rpc{
-    rpc SyncPos(stream Position) returns (stream Position){}
+    rpc SyncPos(stream Input) returns (stream Position){}
     rpc CallMethod(stream CallFuncInfo) returns (stream CallFuncInfo){}
     rpc ErrorPipLine(stream Error) returns (stream Error){}
     rpc Login(LoginInput) returns(UserInfo){}
@@ -74,6 +90,7 @@ message UserInfo{
     string UserName = 1;
     int64 Uuid = 2;
     map<int64, Character> OwnCharacter = 3;
+    int64 UsedCharacter = 4;
 }
 
 message UserState{
@@ -139,6 +156,8 @@ message Ability{
     int32 ATK = 1;
     int32 DEF = 2;
     float SPD = 3;
+	float TSPD = 6;
     int32 MP = 4;
     int32 MAKT = 5;
 }
+

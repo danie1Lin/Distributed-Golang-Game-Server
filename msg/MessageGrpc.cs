@@ -12,6 +12,7 @@ namespace Msg {
   {
     static readonly string __ServiceName = "msg.Rpc";
 
+    static readonly grpc::Marshaller<global::Msg.Input> __Marshaller_Input = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Input.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.Position> __Marshaller_Position = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Position.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.CallFuncInfo> __Marshaller_CallFuncInfo = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.CallFuncInfo.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.Error> __Marshaller_Error = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Error.Parser.ParseFrom);
@@ -19,11 +20,11 @@ namespace Msg {
     static readonly grpc::Marshaller<global::Msg.UserInfo> __Marshaller_UserInfo = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.UserInfo.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.RegistInput> __Marshaller_RegistInput = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.RegistInput.Parser.ParseFrom);
 
-    static readonly grpc::Method<global::Msg.Position, global::Msg.Position> __Method_SyncPos = new grpc::Method<global::Msg.Position, global::Msg.Position>(
+    static readonly grpc::Method<global::Msg.Input, global::Msg.Position> __Method_SyncPos = new grpc::Method<global::Msg.Input, global::Msg.Position>(
         grpc::MethodType.DuplexStreaming,
         __ServiceName,
         "SyncPos",
-        __Marshaller_Position,
+        __Marshaller_Input,
         __Marshaller_Position);
 
     static readonly grpc::Method<global::Msg.CallFuncInfo, global::Msg.CallFuncInfo> __Method_CallMethod = new grpc::Method<global::Msg.CallFuncInfo, global::Msg.CallFuncInfo>(
@@ -63,7 +64,7 @@ namespace Msg {
     /// <summary>Base class for server-side implementations of Rpc</summary>
     public abstract partial class RpcBase
     {
-      public virtual global::System.Threading.Tasks.Task SyncPos(grpc::IAsyncStreamReader<global::Msg.Position> requestStream, grpc::IServerStreamWriter<global::Msg.Position> responseStream, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task SyncPos(grpc::IAsyncStreamReader<global::Msg.Input> requestStream, grpc::IServerStreamWriter<global::Msg.Position> responseStream, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -113,11 +114,11 @@ namespace Msg {
       {
       }
 
-      public virtual grpc::AsyncDuplexStreamingCall<global::Msg.Position, global::Msg.Position> SyncPos(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      public virtual grpc::AsyncDuplexStreamingCall<global::Msg.Input, global::Msg.Position> SyncPos(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
         return SyncPos(new grpc::CallOptions(headers, deadline, cancellationToken));
       }
-      public virtual grpc::AsyncDuplexStreamingCall<global::Msg.Position, global::Msg.Position> SyncPos(grpc::CallOptions options)
+      public virtual grpc::AsyncDuplexStreamingCall<global::Msg.Input, global::Msg.Position> SyncPos(grpc::CallOptions options)
       {
         return CallInvoker.AsyncDuplexStreamingCall(__Method_SyncPos, null, options);
       }

@@ -22,84 +22,378 @@ namespace Msg {
     static MessageReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg1tZXNzYWdlLnByb3RvEgNtc2caCWFueS5wcm90byJVCglUcmFuc0Zvcm0S",
-            "CQoBWBgBIAEoAhIJCgFZGAIgASgCEgkKAVoYAyABKAISCwoDWWF3GAQgASgC",
-            "Eg0KBVBpdGNoGAUgASgCEgsKA1JvdxgGIAEoAiKUAQoIUG9zaXRpb24SKQoG",
-            "UG9zTWFwGAEgAygLMhkubXNnLlBvc2l0aW9uLlBvc01hcEVudHJ5Eg4KBkZy",
-            "b21JZBgCIAEoAxIOCgZSb29tSWQYAyABKAMaPQoLUG9zTWFwRW50cnkSCwoD",
-            "a2V5GAEgASgDEh0KBXZhbHVlGAIgASgLMg4ubXNnLlRyYW5zRm9ybToCOAEi",
-            "9wEKDENhbGxGdW5jSW5mbxIQCghSdW5uaWdObxgBIAEoCRIQCghUYXJnZXRJ",
-            "ZBgCIAEoAxIOCgZGcm9tSWQYBCABKAMSEQoJVGltZVN0YW1wGAUgASgDEgwK",
-            "BEZ1bmMYBiABKAkSHwoHRnJvbVBvcxgHIAEoCzIOLm1zZy5UcmFuc0Zvcm0S",
-            "HQoFVG9Qb3MYCCABKAsyDi5tc2cuVHJhbnNGb3JtEg0KBVZhbHVlGAkgASgC",
-            "EiMKBVBhcmFtGAogAygLMhQuZ29vZ2xlLnByb3RvYnVmLkFueRIeCgZQYXJh",
-            "bXMYCyADKAsyDi5tc2cuQmFzaWNUeXBlIoQBCglCYXNpY1R5cGUSCwoBUxgB",
-            "IAEoCUgAEgsKAUwYAiABKANIABILCgFGGAMgASgCSAASCwoBSRgEIAEoBUgA",
-            "EgsKAUIYBSABKAhIABILCgFEGAYgASgBSAASIQoBQRgHIAEoCzIULmdvb2ds",
-            "ZS5wcm90b2J1Zi5BbnlIAEIGCgR0eXBlIkoKBUVycm9yEg8KB0VyclR5cGUY",
-            "ASABKAkSDgoGRXJyTXNnGAIgASgJEhAKCFJ1bm5pZ05vGAMgASgJEg4KBkZy",
-            "b21JZBgEIAEoAyIsCgpMb2dpbklucHV0EhAKCFVzZXJOYW1lGAEgASgJEgwK",
-            "BFBzd2QYAiABKAkiPAoLUmVnaXN0SW5wdXQSEAoIVXNlck5hbWUYASABKAkS",
-            "DAoEUHN3ZBgCIAEoCRINCgVFbWFpbBgDIAEoCSKmAQoIVXNlckluZm8SEAoI",
-            "VXNlck5hbWUYASABKAkSDAoEVXVpZBgCIAEoAxI1CgxPd25DaGFyYWN0ZXIY",
-            "AyADKAsyHy5tc2cuVXNlckluZm8uT3duQ2hhcmFjdGVyRW50cnkaQwoRT3du",
-            "Q2hhcmFjdGVyRW50cnkSCwoDa2V5GAEgASgDEh0KBXZhbHVlGAIgASgLMg4u",
-            "bXNnLkNoYXJhY3RlcjoCOAEiegoJVXNlclN0YXRlEigKBVN0YXRlGAEgASgO",
-            "MhkubXNnLlVzZXJTdGF0ZS5Vc2VyU3RhdHVzIkMKClVzZXJTdGF0dXMSDgoK",
-            "T25DcmVhdGluZxAAEgkKBUxvZ2luEAESCwoHT2ZmbGluZRACEg0KCU9uUGxh",
-            "eWluZxADIp4DCghSb29tSW5mbxIMCgRVdWlkGAEgASgDEgwKBE5hbWUYAiAB",
-            "KAkSEAoIR2FtZVR5cGUYAyABKAkSEQoJT3duZXJVdWlkGAQgASgDEjEKClVz",
-            "ZXJJblJvb20YBSADKAsyHS5tc2cuUm9vbUluZm8uVXNlckluUm9vbUVudHJ5",
-            "Ei8KCVJlYWR5VXNlchgGIAMoCzIcLm1zZy5Sb29tSW5mby5SZWFkeVVzZXJF",
-            "bnRyeRIoCgZTdGF0dXMYByABKA4yGC5tc2cuUm9vbUluZm8uUm9vbVN0YXR1",
-            "cxIXCg9MZWZ0TWlsbGlTZWNvbmQYCCABKAMaQAoPVXNlckluUm9vbUVudHJ5",
-            "EgsKA2tleRgBIAEoAxIcCgV2YWx1ZRgCIAEoCzINLm1zZy5Vc2VySW5mbzoC",
-            "OAEaMAoOUmVhZHlVc2VyRW50cnkSCwoDa2V5GAEgASgDEg0KBXZhbHVlGAIg",
-            "ASgIOgI4ASI2CgpSb29tU3RhdHVzEg0KCVByZXBhcmluZxAAEg0KCU9uUGxh",
-            "eWluZxABEgoKBkVuZGluZxACIuYCCglDaGFyYWN0ZXISDAoEVXVpZBgBIAEo",
-            "AxIVCg1DaGFyYWN0ZXJUeXBlGAIgASgJEgwKBE5hbWUYAyABKAkSGQoFQ29s",
-            "b3IYBCABKAsyCi5tc2cuQ29sb3ISDQoFTGV2ZWwYBSABKAUSCwoDRXhwGAYg",
-            "ASgFEh0KB0FiaWxpdHkYByABKAsyDC5tc2cuQWJpbGl0eRI2CgxFcXVpcG1l",
-            "bnRNYXAYCCADKAsyIC5tc2cuQ2hhcmFjdGVyLkVxdWlwbWVudE1hcEVudHJ5",
-            "EiYKBEF0dHIYCSADKAsyGC5tc2cuQ2hhcmFjdGVyLkF0dHJFbnRyeRpDChFF",
-            "cXVpcG1lbnRNYXBFbnRyeRILCgNrZXkYASABKAMSHQoFdmFsdWUYAiABKAsy",
-            "Di5tc2cuRXF1aXBtZW50OgI4ARorCglBdHRyRW50cnkSCwoDa2V5GAEgASgJ",
-            "Eg0KBXZhbHVlGAIgASgCOgI4ASIoCgVDb2xvchIJCgFSGAEgASgFEgkKAUcY",
-            "AiABKAUSCQoBQhgDIAEoBSKeAQoJRXF1aXBtZW50EgwKBE5hbWUYASABKAkS",
-            "DAoEVHlwZRgCIAEoCRIMCgRVdWlkGAMgASgDEhkKBUNvbG9yGAQgASgLMgou",
-            "bXNnLkNvbG9yEh0KB0FiaWxpdHkYBSABKAsyDC5tc2cuQWJpbGl0eRIKCgJD",
-            "RBgGIAEoBRIOCgZVc2FibGUYByABKAUSEQoJSW52ZW50b3J5GAggASgFIkoK",
-            "B0FiaWxpdHkSCwoDQVRLGAEgASgFEgsKA0RFRhgCIAEoBRILCgNTUEQYAyAB",
-            "KAISCgoCTVAYBCABKAUSDAoETUFLVBgFIAEoBTL4AQoDUnBjEi0KB1N5bmNQ",
-            "b3MSDS5tc2cuUG9zaXRpb24aDS5tc2cuUG9zaXRpb24iACgBMAESOAoKQ2Fs",
-            "bE1ldGhvZBIRLm1zZy5DYWxsRnVuY0luZm8aES5tc2cuQ2FsbEZ1bmNJbmZv",
-            "IgAoATABEiwKDEVycm9yUGlwTGluZRIKLm1zZy5FcnJvchoKLm1zZy5FcnJv",
-            "ciIAKAEwARIpCgVMb2dpbhIPLm1zZy5Mb2dpbklucHV0Gg0ubXNnLlVzZXJJ",
-            "bmZvIgASLwoNQ3JlYXRlQWNjb3VudBIQLm1zZy5SZWdpc3RJbnB1dBoKLm1z",
-            "Zy5FcnJvciIAYgZwcm90bzM="));
+            "Cg1tZXNzYWdlLnByb3RvEgNtc2caCWFueS5wcm90byKLAQoFSW5wdXQSDgoG",
+            "VXNlcklkGAEgASgDEhIKCkhfTW92ZW1lbnQYAiABKAISEgoKVl9Nb3ZlbWVu",
+            "dBgDIAEoAhIRCglTa2lsbE5hbWUYBSABKAkSEgoKU2tpbGxGb3JjZRgEIAEo",
+            "AhIRCglUaW1lU3RhbXAYBiABKAMSEAoIUnVubmlnTm8YByABKAMiTgoJVHJh",
+            "bnNGb3JtEh4KCFBvc2l0aW9uGAEgASgLMgwubXNnLlZlY3RvcjMSIQoIUm90",
+            "YXRpb24YAiABKAsyDy5tc2cuUXVhdGVybmlvbiIqCgdWZWN0b3IzEgkKAVgY",
+            "ASABKAESCQoBWRgCIAEoARIJCgFaGAMgASgBIjgKClF1YXRlcm5pb24SCQoB",
+            "WBgBIAEoARIJCgFZGAIgASgBEgkKAVoYAyABKAESCQoBVxgEIAEoASKHAQoI",
+            "UG9zaXRpb24SKQoGUG9zTWFwGAEgAygLMhkubXNnLlBvc2l0aW9uLlBvc01h",
+            "cEVudHJ5EhEKCVRpbWVTdGFtcBgCIAEoAxo9CgtQb3NNYXBFbnRyeRILCgNr",
+            "ZXkYASABKAMSHQoFdmFsdWUYAiABKAsyDi5tc2cuVHJhbnNGb3JtOgI4ASL3",
+            "AQoMQ2FsbEZ1bmNJbmZvEhAKCFJ1bm5pZ05vGAEgASgJEhAKCFRhcmdldElk",
+            "GAIgASgDEg4KBkZyb21JZBgEIAEoAxIRCglUaW1lU3RhbXAYBSABKAMSDAoE",
+            "RnVuYxgGIAEoCRIfCgdGcm9tUG9zGAcgASgLMg4ubXNnLlRyYW5zRm9ybRId",
+            "CgVUb1BvcxgIIAEoCzIOLm1zZy5UcmFuc0Zvcm0SDQoFVmFsdWUYCSABKAIS",
+            "IwoFUGFyYW0YCiADKAsyFC5nb29nbGUucHJvdG9idWYuQW55Eh4KBlBhcmFt",
+            "cxgLIAMoCzIOLm1zZy5CYXNpY1R5cGUihAEKCUJhc2ljVHlwZRILCgFTGAEg",
+            "ASgJSAASCwoBTBgCIAEoA0gAEgsKAUYYAyABKAJIABILCgFJGAQgASgFSAAS",
+            "CwoBQhgFIAEoCEgAEgsKAUQYBiABKAFIABIhCgFBGAcgASgLMhQuZ29vZ2xl",
+            "LnByb3RvYnVmLkFueUgAQgYKBERhdGEiSgoFRXJyb3ISDwoHRXJyVHlwZRgB",
+            "IAEoCRIOCgZFcnJNc2cYAiABKAkSEAoIUnVubmlnTm8YAyABKAkSDgoGRnJv",
+            "bUlkGAQgASgDIiwKCkxvZ2luSW5wdXQSEAoIVXNlck5hbWUYASABKAkSDAoE",
+            "UHN3ZBgCIAEoCSI8CgtSZWdpc3RJbnB1dBIQCghVc2VyTmFtZRgBIAEoCRIM",
+            "CgRQc3dkGAIgASgJEg0KBUVtYWlsGAMgASgJIr0BCghVc2VySW5mbxIQCghV",
+            "c2VyTmFtZRgBIAEoCRIMCgRVdWlkGAIgASgDEjUKDE93bkNoYXJhY3RlchgD",
+            "IAMoCzIfLm1zZy5Vc2VySW5mby5Pd25DaGFyYWN0ZXJFbnRyeRIVCg1Vc2Vk",
+            "Q2hhcmFjdGVyGAQgASgDGkMKEU93bkNoYXJhY3RlckVudHJ5EgsKA2tleRgB",
+            "IAEoAxIdCgV2YWx1ZRgCIAEoCzIOLm1zZy5DaGFyYWN0ZXI6AjgBInoKCVVz",
+            "ZXJTdGF0ZRIoCgVTdGF0ZRgBIAEoDjIZLm1zZy5Vc2VyU3RhdGUuVXNlclN0",
+            "YXR1cyJDCgpVc2VyU3RhdHVzEg4KCk9uQ3JlYXRpbmcQABIJCgVMb2dpbhAB",
+            "EgsKB09mZmxpbmUQAhINCglPblBsYXlpbmcQAyKeAwoIUm9vbUluZm8SDAoE",
+            "VXVpZBgBIAEoAxIMCgROYW1lGAIgASgJEhAKCEdhbWVUeXBlGAMgASgJEhEK",
+            "CU93bmVyVXVpZBgEIAEoAxIxCgpVc2VySW5Sb29tGAUgAygLMh0ubXNnLlJv",
+            "b21JbmZvLlVzZXJJblJvb21FbnRyeRIvCglSZWFkeVVzZXIYBiADKAsyHC5t",
+            "c2cuUm9vbUluZm8uUmVhZHlVc2VyRW50cnkSKAoGU3RhdHVzGAcgASgOMhgu",
+            "bXNnLlJvb21JbmZvLlJvb21TdGF0dXMSFwoPTGVmdE1pbGxpU2Vjb25kGAgg",
+            "ASgDGkAKD1VzZXJJblJvb21FbnRyeRILCgNrZXkYASABKAMSHAoFdmFsdWUY",
+            "AiABKAsyDS5tc2cuVXNlckluZm86AjgBGjAKDlJlYWR5VXNlckVudHJ5EgsK",
+            "A2tleRgBIAEoAxINCgV2YWx1ZRgCIAEoCDoCOAEiNgoKUm9vbVN0YXR1cxIN",
+            "CglQcmVwYXJpbmcQABINCglPblBsYXlpbmcQARIKCgZFbmRpbmcQAiLmAgoJ",
+            "Q2hhcmFjdGVyEgwKBFV1aWQYASABKAMSFQoNQ2hhcmFjdGVyVHlwZRgCIAEo",
+            "CRIMCgROYW1lGAMgASgJEhkKBUNvbG9yGAQgASgLMgoubXNnLkNvbG9yEg0K",
+            "BUxldmVsGAUgASgFEgsKA0V4cBgGIAEoBRIdCgdBYmlsaXR5GAcgASgLMgwu",
+            "bXNnLkFiaWxpdHkSNgoMRXF1aXBtZW50TWFwGAggAygLMiAubXNnLkNoYXJh",
+            "Y3Rlci5FcXVpcG1lbnRNYXBFbnRyeRImCgRBdHRyGAkgAygLMhgubXNnLkNo",
+            "YXJhY3Rlci5BdHRyRW50cnkaQwoRRXF1aXBtZW50TWFwRW50cnkSCwoDa2V5",
+            "GAEgASgDEh0KBXZhbHVlGAIgASgLMg4ubXNnLkVxdWlwbWVudDoCOAEaKwoJ",
+            "QXR0ckVudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoAjoCOAEiKAoF",
+            "Q29sb3ISCQoBUhgBIAEoBRIJCgFHGAIgASgFEgkKAUIYAyABKAUingEKCUVx",
+            "dWlwbWVudBIMCgROYW1lGAEgASgJEgwKBFR5cGUYAiABKAkSDAoEVXVpZBgD",
+            "IAEoAxIZCgVDb2xvchgEIAEoCzIKLm1zZy5Db2xvchIdCgdBYmlsaXR5GAUg",
+            "ASgLMgwubXNnLkFiaWxpdHkSCgoCQ0QYBiABKAUSDgoGVXNhYmxlGAcgASgF",
+            "EhEKCUludmVudG9yeRgIIAEoBSJYCgdBYmlsaXR5EgsKA0FUSxgBIAEoBRIL",
+            "CgNERUYYAiABKAUSCwoDU1BEGAMgASgCEgwKBFRTUEQYBiABKAISCgoCTVAY",
+            "BCABKAUSDAoETUFLVBgFIAEoBTL1AQoDUnBjEioKB1N5bmNQb3MSCi5tc2cu",
+            "SW5wdXQaDS5tc2cuUG9zaXRpb24iACgBMAESOAoKQ2FsbE1ldGhvZBIRLm1z",
+            "Zy5DYWxsRnVuY0luZm8aES5tc2cuQ2FsbEZ1bmNJbmZvIgAoATABEiwKDEVy",
+            "cm9yUGlwTGluZRIKLm1zZy5FcnJvchoKLm1zZy5FcnJvciIAKAEwARIpCgVM",
+            "b2dpbhIPLm1zZy5Mb2dpbklucHV0Gg0ubXNnLlVzZXJJbmZvIgASLwoNQ3Jl",
+            "YXRlQWNjb3VudBIQLm1zZy5SZWdpc3RJbnB1dBoKLm1zZy5FcnJvciIAYgZw",
+            "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.AnyReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.TransForm), global::Msg.TransForm.Parser, new[]{ "X", "Y", "Z", "Yaw", "Pitch", "Row" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Position), global::Msg.Position.Parser, new[]{ "PosMap", "FromId", "RoomId" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Input), global::Msg.Input.Parser, new[]{ "UserId", "HMovement", "VMovement", "SkillName", "SkillForce", "TimeStamp", "RunnigNo" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.TransForm), global::Msg.TransForm.Parser, new[]{ "Position", "Rotation" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Vector3), global::Msg.Vector3.Parser, new[]{ "X", "Y", "Z" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Quaternion), global::Msg.Quaternion.Parser, new[]{ "X", "Y", "Z", "W" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Position), global::Msg.Position.Parser, new[]{ "PosMap", "TimeStamp" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.CallFuncInfo), global::Msg.CallFuncInfo.Parser, new[]{ "RunnigNo", "TargetId", "FromId", "TimeStamp", "Func", "FromPos", "ToPos", "Value", "Param", "Params" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.BasicType), global::Msg.BasicType.Parser, new[]{ "S", "L", "F", "I", "B", "D", "A" }, new[]{ "Type" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.BasicType), global::Msg.BasicType.Parser, new[]{ "S", "L", "F", "I", "B", "D", "A" }, new[]{ "Data" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Error), global::Msg.Error.Parser, new[]{ "ErrType", "ErrMsg", "RunnigNo", "FromId" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.LoginInput), global::Msg.LoginInput.Parser, new[]{ "UserName", "Pswd" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.RegistInput), global::Msg.RegistInput.Parser, new[]{ "UserName", "Pswd", "Email" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.UserInfo), global::Msg.UserInfo.Parser, new[]{ "UserName", "Uuid", "OwnCharacter" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.UserInfo), global::Msg.UserInfo.Parser, new[]{ "UserName", "Uuid", "OwnCharacter", "UsedCharacter" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.UserState), global::Msg.UserState.Parser, new[]{ "State" }, null, new[]{ typeof(global::Msg.UserState.Types.UserStatus) }, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.RoomInfo), global::Msg.RoomInfo.Parser, new[]{ "Uuid", "Name", "GameType", "OwnerUuid", "UserInRoom", "ReadyUser", "Status", "LeftMilliSecond" }, null, new[]{ typeof(global::Msg.RoomInfo.Types.RoomStatus) }, new pbr::GeneratedClrTypeInfo[] { null, null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Character), global::Msg.Character.Parser, new[]{ "Uuid", "CharacterType", "Name", "Color", "Level", "Exp", "Ability", "EquipmentMap", "Attr" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Color), global::Msg.Color.Parser, new[]{ "R", "G", "B" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Equipment), global::Msg.Equipment.Parser, new[]{ "Name", "Type", "Uuid", "Color", "Ability", "CD", "Usable", "Inventory" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Ability), global::Msg.Ability.Parser, new[]{ "ATK", "DEF", "SPD", "MP", "MAKT" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Ability), global::Msg.Ability.Parser, new[]{ "ATK", "DEF", "SPD", "TSPD", "MP", "MAKT" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
+  public sealed partial class Input : pb::IMessage<Input> {
+    private static readonly pb::MessageParser<Input> _parser = new pb::MessageParser<Input>(() => new Input());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<Input> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[0]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Input() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Input(Input other) : this() {
+      userId_ = other.userId_;
+      hMovement_ = other.hMovement_;
+      vMovement_ = other.vMovement_;
+      skillName_ = other.skillName_;
+      skillForce_ = other.skillForce_;
+      timeStamp_ = other.timeStamp_;
+      runnigNo_ = other.runnigNo_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Input Clone() {
+      return new Input(this);
+    }
+
+    /// <summary>Field number for the "UserId" field.</summary>
+    public const int UserIdFieldNumber = 1;
+    private long userId_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long UserId {
+      get { return userId_; }
+      set {
+        userId_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "H_Movement" field.</summary>
+    public const int HMovementFieldNumber = 2;
+    private float hMovement_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float HMovement {
+      get { return hMovement_; }
+      set {
+        hMovement_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "V_Movement" field.</summary>
+    public const int VMovementFieldNumber = 3;
+    private float vMovement_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float VMovement {
+      get { return vMovement_; }
+      set {
+        vMovement_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "SkillName" field.</summary>
+    public const int SkillNameFieldNumber = 5;
+    private string skillName_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string SkillName {
+      get { return skillName_; }
+      set {
+        skillName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "SkillForce" field.</summary>
+    public const int SkillForceFieldNumber = 4;
+    private float skillForce_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float SkillForce {
+      get { return skillForce_; }
+      set {
+        skillForce_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "TimeStamp" field.</summary>
+    public const int TimeStampFieldNumber = 6;
+    private long timeStamp_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long TimeStamp {
+      get { return timeStamp_; }
+      set {
+        timeStamp_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "RunnigNo" field.</summary>
+    public const int RunnigNoFieldNumber = 7;
+    private long runnigNo_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long RunnigNo {
+      get { return runnigNo_; }
+      set {
+        runnigNo_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as Input);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(Input other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (UserId != other.UserId) return false;
+      if (HMovement != other.HMovement) return false;
+      if (VMovement != other.VMovement) return false;
+      if (SkillName != other.SkillName) return false;
+      if (SkillForce != other.SkillForce) return false;
+      if (TimeStamp != other.TimeStamp) return false;
+      if (RunnigNo != other.RunnigNo) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (UserId != 0L) hash ^= UserId.GetHashCode();
+      if (HMovement != 0F) hash ^= HMovement.GetHashCode();
+      if (VMovement != 0F) hash ^= VMovement.GetHashCode();
+      if (SkillName.Length != 0) hash ^= SkillName.GetHashCode();
+      if (SkillForce != 0F) hash ^= SkillForce.GetHashCode();
+      if (TimeStamp != 0L) hash ^= TimeStamp.GetHashCode();
+      if (RunnigNo != 0L) hash ^= RunnigNo.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (UserId != 0L) {
+        output.WriteRawTag(8);
+        output.WriteInt64(UserId);
+      }
+      if (HMovement != 0F) {
+        output.WriteRawTag(21);
+        output.WriteFloat(HMovement);
+      }
+      if (VMovement != 0F) {
+        output.WriteRawTag(29);
+        output.WriteFloat(VMovement);
+      }
+      if (SkillForce != 0F) {
+        output.WriteRawTag(37);
+        output.WriteFloat(SkillForce);
+      }
+      if (SkillName.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(SkillName);
+      }
+      if (TimeStamp != 0L) {
+        output.WriteRawTag(48);
+        output.WriteInt64(TimeStamp);
+      }
+      if (RunnigNo != 0L) {
+        output.WriteRawTag(56);
+        output.WriteInt64(RunnigNo);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (UserId != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(UserId);
+      }
+      if (HMovement != 0F) {
+        size += 1 + 4;
+      }
+      if (VMovement != 0F) {
+        size += 1 + 4;
+      }
+      if (SkillName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(SkillName);
+      }
+      if (SkillForce != 0F) {
+        size += 1 + 4;
+      }
+      if (TimeStamp != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(TimeStamp);
+      }
+      if (RunnigNo != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(RunnigNo);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(Input other) {
+      if (other == null) {
+        return;
+      }
+      if (other.UserId != 0L) {
+        UserId = other.UserId;
+      }
+      if (other.HMovement != 0F) {
+        HMovement = other.HMovement;
+      }
+      if (other.VMovement != 0F) {
+        VMovement = other.VMovement;
+      }
+      if (other.SkillName.Length != 0) {
+        SkillName = other.SkillName;
+      }
+      if (other.SkillForce != 0F) {
+        SkillForce = other.SkillForce;
+      }
+      if (other.TimeStamp != 0L) {
+        TimeStamp = other.TimeStamp;
+      }
+      if (other.RunnigNo != 0L) {
+        RunnigNo = other.RunnigNo;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 8: {
+            UserId = input.ReadInt64();
+            break;
+          }
+          case 21: {
+            HMovement = input.ReadFloat();
+            break;
+          }
+          case 29: {
+            VMovement = input.ReadFloat();
+            break;
+          }
+          case 37: {
+            SkillForce = input.ReadFloat();
+            break;
+          }
+          case 42: {
+            SkillName = input.ReadString();
+            break;
+          }
+          case 48: {
+            TimeStamp = input.ReadInt64();
+            break;
+          }
+          case 56: {
+            RunnigNo = input.ReadInt64();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
   public sealed partial class TransForm : pb::IMessage<TransForm> {
     private static readonly pb::MessageParser<TransForm> _parser = new pb::MessageParser<TransForm>(() => new TransForm());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -107,7 +401,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -124,12 +418,8 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public TransForm(TransForm other) : this() {
-      x_ = other.x_;
-      y_ = other.y_;
-      z_ = other.z_;
-      yaw_ = other.yaw_;
-      pitch_ = other.pitch_;
-      row_ = other.row_;
+      Position = other.position_ != null ? other.Position.Clone() : null;
+      Rotation = other.rotation_ != null ? other.Rotation.Clone() : null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -137,69 +427,25 @@ namespace Msg {
       return new TransForm(this);
     }
 
-    /// <summary>Field number for the "X" field.</summary>
-    public const int XFieldNumber = 1;
-    private float x_;
+    /// <summary>Field number for the "Position" field.</summary>
+    public const int PositionFieldNumber = 1;
+    private global::Msg.Vector3 position_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public float X {
-      get { return x_; }
+    public global::Msg.Vector3 Position {
+      get { return position_; }
       set {
-        x_ = value;
+        position_ = value;
       }
     }
 
-    /// <summary>Field number for the "Y" field.</summary>
-    public const int YFieldNumber = 2;
-    private float y_;
+    /// <summary>Field number for the "Rotation" field.</summary>
+    public const int RotationFieldNumber = 2;
+    private global::Msg.Quaternion rotation_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public float Y {
-      get { return y_; }
+    public global::Msg.Quaternion Rotation {
+      get { return rotation_; }
       set {
-        y_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "Z" field.</summary>
-    public const int ZFieldNumber = 3;
-    private float z_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public float Z {
-      get { return z_; }
-      set {
-        z_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "Yaw" field.</summary>
-    public const int YawFieldNumber = 4;
-    private float yaw_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public float Yaw {
-      get { return yaw_; }
-      set {
-        yaw_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "Pitch" field.</summary>
-    public const int PitchFieldNumber = 5;
-    private float pitch_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public float Pitch {
-      get { return pitch_; }
-      set {
-        pitch_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "Row" field.</summary>
-    public const int RowFieldNumber = 6;
-    private float row_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public float Row {
-      get { return row_; }
-      set {
-        row_ = value;
+        rotation_ = value;
       }
     }
 
@@ -216,24 +462,16 @@ namespace Msg {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (X != other.X) return false;
-      if (Y != other.Y) return false;
-      if (Z != other.Z) return false;
-      if (Yaw != other.Yaw) return false;
-      if (Pitch != other.Pitch) return false;
-      if (Row != other.Row) return false;
+      if (!object.Equals(Position, other.Position)) return false;
+      if (!object.Equals(Rotation, other.Rotation)) return false;
       return true;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (X != 0F) hash ^= X.GetHashCode();
-      if (Y != 0F) hash ^= Y.GetHashCode();
-      if (Z != 0F) hash ^= Z.GetHashCode();
-      if (Yaw != 0F) hash ^= Yaw.GetHashCode();
-      if (Pitch != 0F) hash ^= Pitch.GetHashCode();
-      if (Row != 0F) hash ^= Row.GetHashCode();
+      if (position_ != null) hash ^= Position.GetHashCode();
+      if (rotation_ != null) hash ^= Rotation.GetHashCode();
       return hash;
     }
 
@@ -244,52 +482,24 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (X != 0F) {
-        output.WriteRawTag(13);
-        output.WriteFloat(X);
+      if (position_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Position);
       }
-      if (Y != 0F) {
-        output.WriteRawTag(21);
-        output.WriteFloat(Y);
-      }
-      if (Z != 0F) {
-        output.WriteRawTag(29);
-        output.WriteFloat(Z);
-      }
-      if (Yaw != 0F) {
-        output.WriteRawTag(37);
-        output.WriteFloat(Yaw);
-      }
-      if (Pitch != 0F) {
-        output.WriteRawTag(45);
-        output.WriteFloat(Pitch);
-      }
-      if (Row != 0F) {
-        output.WriteRawTag(53);
-        output.WriteFloat(Row);
+      if (rotation_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Rotation);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (X != 0F) {
-        size += 1 + 4;
+      if (position_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Position);
       }
-      if (Y != 0F) {
-        size += 1 + 4;
-      }
-      if (Z != 0F) {
-        size += 1 + 4;
-      }
-      if (Yaw != 0F) {
-        size += 1 + 4;
-      }
-      if (Pitch != 0F) {
-        size += 1 + 4;
-      }
-      if (Row != 0F) {
-        size += 1 + 4;
+      if (rotation_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Rotation);
       }
       return size;
     }
@@ -299,23 +509,17 @@ namespace Msg {
       if (other == null) {
         return;
       }
-      if (other.X != 0F) {
-        X = other.X;
+      if (other.position_ != null) {
+        if (position_ == null) {
+          position_ = new global::Msg.Vector3();
+        }
+        Position.MergeFrom(other.Position);
       }
-      if (other.Y != 0F) {
-        Y = other.Y;
-      }
-      if (other.Z != 0F) {
-        Z = other.Z;
-      }
-      if (other.Yaw != 0F) {
-        Yaw = other.Yaw;
-      }
-      if (other.Pitch != 0F) {
-        Pitch = other.Pitch;
-      }
-      if (other.Row != 0F) {
-        Row = other.Row;
+      if (other.rotation_ != null) {
+        if (rotation_ == null) {
+          rotation_ = new global::Msg.Quaternion();
+        }
+        Rotation.MergeFrom(other.Rotation);
       }
     }
 
@@ -327,28 +531,392 @@ namespace Msg {
           default:
             input.SkipLastField();
             break;
-          case 13: {
-            X = input.ReadFloat();
+          case 10: {
+            if (position_ == null) {
+              position_ = new global::Msg.Vector3();
+            }
+            input.ReadMessage(position_);
             break;
           }
-          case 21: {
-            Y = input.ReadFloat();
+          case 18: {
+            if (rotation_ == null) {
+              rotation_ = new global::Msg.Quaternion();
+            }
+            input.ReadMessage(rotation_);
             break;
           }
-          case 29: {
-            Z = input.ReadFloat();
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class Vector3 : pb::IMessage<Vector3> {
+    private static readonly pb::MessageParser<Vector3> _parser = new pb::MessageParser<Vector3>(() => new Vector3());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<Vector3> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[2]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Vector3() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Vector3(Vector3 other) : this() {
+      x_ = other.x_;
+      y_ = other.y_;
+      z_ = other.z_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Vector3 Clone() {
+      return new Vector3(this);
+    }
+
+    /// <summary>Field number for the "X" field.</summary>
+    public const int XFieldNumber = 1;
+    private double x_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public double X {
+      get { return x_; }
+      set {
+        x_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "Y" field.</summary>
+    public const int YFieldNumber = 2;
+    private double y_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public double Y {
+      get { return y_; }
+      set {
+        y_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "Z" field.</summary>
+    public const int ZFieldNumber = 3;
+    private double z_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public double Z {
+      get { return z_; }
+      set {
+        z_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as Vector3);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(Vector3 other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (X != other.X) return false;
+      if (Y != other.Y) return false;
+      if (Z != other.Z) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (X != 0D) hash ^= X.GetHashCode();
+      if (Y != 0D) hash ^= Y.GetHashCode();
+      if (Z != 0D) hash ^= Z.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (X != 0D) {
+        output.WriteRawTag(9);
+        output.WriteDouble(X);
+      }
+      if (Y != 0D) {
+        output.WriteRawTag(17);
+        output.WriteDouble(Y);
+      }
+      if (Z != 0D) {
+        output.WriteRawTag(25);
+        output.WriteDouble(Z);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (X != 0D) {
+        size += 1 + 8;
+      }
+      if (Y != 0D) {
+        size += 1 + 8;
+      }
+      if (Z != 0D) {
+        size += 1 + 8;
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(Vector3 other) {
+      if (other == null) {
+        return;
+      }
+      if (other.X != 0D) {
+        X = other.X;
+      }
+      if (other.Y != 0D) {
+        Y = other.Y;
+      }
+      if (other.Z != 0D) {
+        Z = other.Z;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 9: {
+            X = input.ReadDouble();
             break;
           }
-          case 37: {
-            Yaw = input.ReadFloat();
+          case 17: {
+            Y = input.ReadDouble();
             break;
           }
-          case 45: {
-            Pitch = input.ReadFloat();
+          case 25: {
+            Z = input.ReadDouble();
             break;
           }
-          case 53: {
-            Row = input.ReadFloat();
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class Quaternion : pb::IMessage<Quaternion> {
+    private static readonly pb::MessageParser<Quaternion> _parser = new pb::MessageParser<Quaternion>(() => new Quaternion());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<Quaternion> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[3]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Quaternion() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Quaternion(Quaternion other) : this() {
+      x_ = other.x_;
+      y_ = other.y_;
+      z_ = other.z_;
+      w_ = other.w_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Quaternion Clone() {
+      return new Quaternion(this);
+    }
+
+    /// <summary>Field number for the "X" field.</summary>
+    public const int XFieldNumber = 1;
+    private double x_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public double X {
+      get { return x_; }
+      set {
+        x_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "Y" field.</summary>
+    public const int YFieldNumber = 2;
+    private double y_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public double Y {
+      get { return y_; }
+      set {
+        y_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "Z" field.</summary>
+    public const int ZFieldNumber = 3;
+    private double z_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public double Z {
+      get { return z_; }
+      set {
+        z_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "W" field.</summary>
+    public const int WFieldNumber = 4;
+    private double w_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public double W {
+      get { return w_; }
+      set {
+        w_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as Quaternion);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(Quaternion other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (X != other.X) return false;
+      if (Y != other.Y) return false;
+      if (Z != other.Z) return false;
+      if (W != other.W) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (X != 0D) hash ^= X.GetHashCode();
+      if (Y != 0D) hash ^= Y.GetHashCode();
+      if (Z != 0D) hash ^= Z.GetHashCode();
+      if (W != 0D) hash ^= W.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (X != 0D) {
+        output.WriteRawTag(9);
+        output.WriteDouble(X);
+      }
+      if (Y != 0D) {
+        output.WriteRawTag(17);
+        output.WriteDouble(Y);
+      }
+      if (Z != 0D) {
+        output.WriteRawTag(25);
+        output.WriteDouble(Z);
+      }
+      if (W != 0D) {
+        output.WriteRawTag(33);
+        output.WriteDouble(W);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (X != 0D) {
+        size += 1 + 8;
+      }
+      if (Y != 0D) {
+        size += 1 + 8;
+      }
+      if (Z != 0D) {
+        size += 1 + 8;
+      }
+      if (W != 0D) {
+        size += 1 + 8;
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(Quaternion other) {
+      if (other == null) {
+        return;
+      }
+      if (other.X != 0D) {
+        X = other.X;
+      }
+      if (other.Y != 0D) {
+        Y = other.Y;
+      }
+      if (other.Z != 0D) {
+        Z = other.Z;
+      }
+      if (other.W != 0D) {
+        W = other.W;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 9: {
+            X = input.ReadDouble();
+            break;
+          }
+          case 17: {
+            Y = input.ReadDouble();
+            break;
+          }
+          case 25: {
+            Z = input.ReadDouble();
+            break;
+          }
+          case 33: {
+            W = input.ReadDouble();
             break;
           }
         }
@@ -364,7 +932,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[1]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -382,8 +950,7 @@ namespace Msg {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Position(Position other) : this() {
       posMap_ = other.posMap_.Clone();
-      fromId_ = other.fromId_;
-      roomId_ = other.roomId_;
+      timeStamp_ = other.timeStamp_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -401,25 +968,14 @@ namespace Msg {
       get { return posMap_; }
     }
 
-    /// <summary>Field number for the "FromId" field.</summary>
-    public const int FromIdFieldNumber = 2;
-    private long fromId_;
+    /// <summary>Field number for the "TimeStamp" field.</summary>
+    public const int TimeStampFieldNumber = 2;
+    private long timeStamp_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public long FromId {
-      get { return fromId_; }
+    public long TimeStamp {
+      get { return timeStamp_; }
       set {
-        fromId_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "RoomId" field.</summary>
-    public const int RoomIdFieldNumber = 3;
-    private long roomId_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public long RoomId {
-      get { return roomId_; }
-      set {
-        roomId_ = value;
+        timeStamp_ = value;
       }
     }
 
@@ -437,8 +993,7 @@ namespace Msg {
         return true;
       }
       if (!PosMap.Equals(other.PosMap)) return false;
-      if (FromId != other.FromId) return false;
-      if (RoomId != other.RoomId) return false;
+      if (TimeStamp != other.TimeStamp) return false;
       return true;
     }
 
@@ -446,8 +1001,7 @@ namespace Msg {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= PosMap.GetHashCode();
-      if (FromId != 0L) hash ^= FromId.GetHashCode();
-      if (RoomId != 0L) hash ^= RoomId.GetHashCode();
+      if (TimeStamp != 0L) hash ^= TimeStamp.GetHashCode();
       return hash;
     }
 
@@ -459,13 +1013,9 @@ namespace Msg {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       posMap_.WriteTo(output, _map_posMap_codec);
-      if (FromId != 0L) {
+      if (TimeStamp != 0L) {
         output.WriteRawTag(16);
-        output.WriteInt64(FromId);
-      }
-      if (RoomId != 0L) {
-        output.WriteRawTag(24);
-        output.WriteInt64(RoomId);
+        output.WriteInt64(TimeStamp);
       }
     }
 
@@ -473,11 +1023,8 @@ namespace Msg {
     public int CalculateSize() {
       int size = 0;
       size += posMap_.CalculateSize(_map_posMap_codec);
-      if (FromId != 0L) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(FromId);
-      }
-      if (RoomId != 0L) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(RoomId);
+      if (TimeStamp != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(TimeStamp);
       }
       return size;
     }
@@ -488,11 +1035,8 @@ namespace Msg {
         return;
       }
       posMap_.Add(other.posMap_);
-      if (other.FromId != 0L) {
-        FromId = other.FromId;
-      }
-      if (other.RoomId != 0L) {
-        RoomId = other.RoomId;
+      if (other.TimeStamp != 0L) {
+        TimeStamp = other.TimeStamp;
       }
     }
 
@@ -509,11 +1053,7 @@ namespace Msg {
             break;
           }
           case 16: {
-            FromId = input.ReadInt64();
-            break;
-          }
-          case 24: {
-            RoomId = input.ReadInt64();
+            TimeStamp = input.ReadInt64();
             break;
           }
         }
@@ -529,7 +1069,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[2]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -897,7 +1437,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[3]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -914,26 +1454,26 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public BasicType(BasicType other) : this() {
-      switch (other.TypeCase) {
-        case TypeOneofCase.S:
+      switch (other.DataCase) {
+        case DataOneofCase.S:
           S = other.S;
           break;
-        case TypeOneofCase.L:
+        case DataOneofCase.L:
           L = other.L;
           break;
-        case TypeOneofCase.F:
+        case DataOneofCase.F:
           F = other.F;
           break;
-        case TypeOneofCase.I:
+        case DataOneofCase.I:
           I = other.I;
           break;
-        case TypeOneofCase.B:
+        case DataOneofCase.B:
           B = other.B;
           break;
-        case TypeOneofCase.D:
+        case DataOneofCase.D:
           D = other.D;
           break;
-        case TypeOneofCase.A:
+        case DataOneofCase.A:
           A = other.A.Clone();
           break;
       }
@@ -949,10 +1489,10 @@ namespace Msg {
     public const int SFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string S {
-      get { return typeCase_ == TypeOneofCase.S ? (string) type_ : ""; }
+      get { return dataCase_ == DataOneofCase.S ? (string) data_ : ""; }
       set {
-        type_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-        typeCase_ = TypeOneofCase.S;
+        data_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        dataCase_ = DataOneofCase.S;
       }
     }
 
@@ -960,10 +1500,10 @@ namespace Msg {
     public const int LFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public long L {
-      get { return typeCase_ == TypeOneofCase.L ? (long) type_ : 0L; }
+      get { return dataCase_ == DataOneofCase.L ? (long) data_ : 0L; }
       set {
-        type_ = value;
-        typeCase_ = TypeOneofCase.L;
+        data_ = value;
+        dataCase_ = DataOneofCase.L;
       }
     }
 
@@ -971,10 +1511,10 @@ namespace Msg {
     public const int FFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public float F {
-      get { return typeCase_ == TypeOneofCase.F ? (float) type_ : 0F; }
+      get { return dataCase_ == DataOneofCase.F ? (float) data_ : 0F; }
       set {
-        type_ = value;
-        typeCase_ = TypeOneofCase.F;
+        data_ = value;
+        dataCase_ = DataOneofCase.F;
       }
     }
 
@@ -982,10 +1522,10 @@ namespace Msg {
     public const int IFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int I {
-      get { return typeCase_ == TypeOneofCase.I ? (int) type_ : 0; }
+      get { return dataCase_ == DataOneofCase.I ? (int) data_ : 0; }
       set {
-        type_ = value;
-        typeCase_ = TypeOneofCase.I;
+        data_ = value;
+        dataCase_ = DataOneofCase.I;
       }
     }
 
@@ -993,10 +1533,10 @@ namespace Msg {
     public const int BFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool B {
-      get { return typeCase_ == TypeOneofCase.B ? (bool) type_ : false; }
+      get { return dataCase_ == DataOneofCase.B ? (bool) data_ : false; }
       set {
-        type_ = value;
-        typeCase_ = TypeOneofCase.B;
+        data_ = value;
+        dataCase_ = DataOneofCase.B;
       }
     }
 
@@ -1004,10 +1544,10 @@ namespace Msg {
     public const int DFieldNumber = 6;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public double D {
-      get { return typeCase_ == TypeOneofCase.D ? (double) type_ : 0D; }
+      get { return dataCase_ == DataOneofCase.D ? (double) data_ : 0D; }
       set {
-        type_ = value;
-        typeCase_ = TypeOneofCase.D;
+        data_ = value;
+        dataCase_ = DataOneofCase.D;
       }
     }
 
@@ -1015,16 +1555,16 @@ namespace Msg {
     public const int AFieldNumber = 7;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Google.Protobuf.WellKnownTypes.Any A {
-      get { return typeCase_ == TypeOneofCase.A ? (global::Google.Protobuf.WellKnownTypes.Any) type_ : null; }
+      get { return dataCase_ == DataOneofCase.A ? (global::Google.Protobuf.WellKnownTypes.Any) data_ : null; }
       set {
-        type_ = value;
-        typeCase_ = value == null ? TypeOneofCase.None : TypeOneofCase.A;
+        data_ = value;
+        dataCase_ = value == null ? DataOneofCase.None : DataOneofCase.A;
       }
     }
 
-    private object type_;
-    /// <summary>Enum of possible cases for the "type" oneof.</summary>
-    public enum TypeOneofCase {
+    private object data_;
+    /// <summary>Enum of possible cases for the "Data" oneof.</summary>
+    public enum DataOneofCase {
       None = 0,
       S = 1,
       L = 2,
@@ -1034,16 +1574,16 @@ namespace Msg {
       D = 6,
       A = 7,
     }
-    private TypeOneofCase typeCase_ = TypeOneofCase.None;
+    private DataOneofCase dataCase_ = DataOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public TypeOneofCase TypeCase {
-      get { return typeCase_; }
+    public DataOneofCase DataCase {
+      get { return dataCase_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearType() {
-      typeCase_ = TypeOneofCase.None;
-      type_ = null;
+    public void ClearData() {
+      dataCase_ = DataOneofCase.None;
+      data_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1066,21 +1606,21 @@ namespace Msg {
       if (B != other.B) return false;
       if (D != other.D) return false;
       if (!object.Equals(A, other.A)) return false;
-      if (TypeCase != other.TypeCase) return false;
+      if (DataCase != other.DataCase) return false;
       return true;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (typeCase_ == TypeOneofCase.S) hash ^= S.GetHashCode();
-      if (typeCase_ == TypeOneofCase.L) hash ^= L.GetHashCode();
-      if (typeCase_ == TypeOneofCase.F) hash ^= F.GetHashCode();
-      if (typeCase_ == TypeOneofCase.I) hash ^= I.GetHashCode();
-      if (typeCase_ == TypeOneofCase.B) hash ^= B.GetHashCode();
-      if (typeCase_ == TypeOneofCase.D) hash ^= D.GetHashCode();
-      if (typeCase_ == TypeOneofCase.A) hash ^= A.GetHashCode();
-      hash ^= (int) typeCase_;
+      if (dataCase_ == DataOneofCase.S) hash ^= S.GetHashCode();
+      if (dataCase_ == DataOneofCase.L) hash ^= L.GetHashCode();
+      if (dataCase_ == DataOneofCase.F) hash ^= F.GetHashCode();
+      if (dataCase_ == DataOneofCase.I) hash ^= I.GetHashCode();
+      if (dataCase_ == DataOneofCase.B) hash ^= B.GetHashCode();
+      if (dataCase_ == DataOneofCase.D) hash ^= D.GetHashCode();
+      if (dataCase_ == DataOneofCase.A) hash ^= A.GetHashCode();
+      hash ^= (int) dataCase_;
       return hash;
     }
 
@@ -1091,31 +1631,31 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (typeCase_ == TypeOneofCase.S) {
+      if (dataCase_ == DataOneofCase.S) {
         output.WriteRawTag(10);
         output.WriteString(S);
       }
-      if (typeCase_ == TypeOneofCase.L) {
+      if (dataCase_ == DataOneofCase.L) {
         output.WriteRawTag(16);
         output.WriteInt64(L);
       }
-      if (typeCase_ == TypeOneofCase.F) {
+      if (dataCase_ == DataOneofCase.F) {
         output.WriteRawTag(29);
         output.WriteFloat(F);
       }
-      if (typeCase_ == TypeOneofCase.I) {
+      if (dataCase_ == DataOneofCase.I) {
         output.WriteRawTag(32);
         output.WriteInt32(I);
       }
-      if (typeCase_ == TypeOneofCase.B) {
+      if (dataCase_ == DataOneofCase.B) {
         output.WriteRawTag(40);
         output.WriteBool(B);
       }
-      if (typeCase_ == TypeOneofCase.D) {
+      if (dataCase_ == DataOneofCase.D) {
         output.WriteRawTag(49);
         output.WriteDouble(D);
       }
-      if (typeCase_ == TypeOneofCase.A) {
+      if (dataCase_ == DataOneofCase.A) {
         output.WriteRawTag(58);
         output.WriteMessage(A);
       }
@@ -1124,25 +1664,25 @@ namespace Msg {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (typeCase_ == TypeOneofCase.S) {
+      if (dataCase_ == DataOneofCase.S) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(S);
       }
-      if (typeCase_ == TypeOneofCase.L) {
+      if (dataCase_ == DataOneofCase.L) {
         size += 1 + pb::CodedOutputStream.ComputeInt64Size(L);
       }
-      if (typeCase_ == TypeOneofCase.F) {
+      if (dataCase_ == DataOneofCase.F) {
         size += 1 + 4;
       }
-      if (typeCase_ == TypeOneofCase.I) {
+      if (dataCase_ == DataOneofCase.I) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(I);
       }
-      if (typeCase_ == TypeOneofCase.B) {
+      if (dataCase_ == DataOneofCase.B) {
         size += 1 + 1;
       }
-      if (typeCase_ == TypeOneofCase.D) {
+      if (dataCase_ == DataOneofCase.D) {
         size += 1 + 8;
       }
-      if (typeCase_ == TypeOneofCase.A) {
+      if (dataCase_ == DataOneofCase.A) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(A);
       }
       return size;
@@ -1153,26 +1693,26 @@ namespace Msg {
       if (other == null) {
         return;
       }
-      switch (other.TypeCase) {
-        case TypeOneofCase.S:
+      switch (other.DataCase) {
+        case DataOneofCase.S:
           S = other.S;
           break;
-        case TypeOneofCase.L:
+        case DataOneofCase.L:
           L = other.L;
           break;
-        case TypeOneofCase.F:
+        case DataOneofCase.F:
           F = other.F;
           break;
-        case TypeOneofCase.I:
+        case DataOneofCase.I:
           I = other.I;
           break;
-        case TypeOneofCase.B:
+        case DataOneofCase.B:
           B = other.B;
           break;
-        case TypeOneofCase.D:
+        case DataOneofCase.D:
           D = other.D;
           break;
-        case TypeOneofCase.A:
+        case DataOneofCase.A:
           A = other.A;
           break;
       }
@@ -1213,7 +1753,7 @@ namespace Msg {
           }
           case 58: {
             global::Google.Protobuf.WellKnownTypes.Any subBuilder = new global::Google.Protobuf.WellKnownTypes.Any();
-            if (typeCase_ == TypeOneofCase.A) {
+            if (dataCase_ == DataOneofCase.A) {
               subBuilder.MergeFrom(A);
             }
             input.ReadMessage(subBuilder);
@@ -1233,7 +1773,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[4]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1434,7 +1974,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[5]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1579,7 +2119,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[6]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1752,7 +2292,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[7]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1772,6 +2312,7 @@ namespace Msg {
       userName_ = other.userName_;
       uuid_ = other.uuid_;
       ownCharacter_ = other.ownCharacter_.Clone();
+      usedCharacter_ = other.usedCharacter_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1811,6 +2352,17 @@ namespace Msg {
       get { return ownCharacter_; }
     }
 
+    /// <summary>Field number for the "UsedCharacter" field.</summary>
+    public const int UsedCharacterFieldNumber = 4;
+    private long usedCharacter_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long UsedCharacter {
+      get { return usedCharacter_; }
+      set {
+        usedCharacter_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UserInfo);
@@ -1827,6 +2379,7 @@ namespace Msg {
       if (UserName != other.UserName) return false;
       if (Uuid != other.Uuid) return false;
       if (!OwnCharacter.Equals(other.OwnCharacter)) return false;
+      if (UsedCharacter != other.UsedCharacter) return false;
       return true;
     }
 
@@ -1836,6 +2389,7 @@ namespace Msg {
       if (UserName.Length != 0) hash ^= UserName.GetHashCode();
       if (Uuid != 0L) hash ^= Uuid.GetHashCode();
       hash ^= OwnCharacter.GetHashCode();
+      if (UsedCharacter != 0L) hash ^= UsedCharacter.GetHashCode();
       return hash;
     }
 
@@ -1855,6 +2409,10 @@ namespace Msg {
         output.WriteInt64(Uuid);
       }
       ownCharacter_.WriteTo(output, _map_ownCharacter_codec);
+      if (UsedCharacter != 0L) {
+        output.WriteRawTag(32);
+        output.WriteInt64(UsedCharacter);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1867,6 +2425,9 @@ namespace Msg {
         size += 1 + pb::CodedOutputStream.ComputeInt64Size(Uuid);
       }
       size += ownCharacter_.CalculateSize(_map_ownCharacter_codec);
+      if (UsedCharacter != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(UsedCharacter);
+      }
       return size;
     }
 
@@ -1882,6 +2443,9 @@ namespace Msg {
         Uuid = other.Uuid;
       }
       ownCharacter_.Add(other.ownCharacter_);
+      if (other.UsedCharacter != 0L) {
+        UsedCharacter = other.UsedCharacter;
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1904,6 +2468,10 @@ namespace Msg {
             ownCharacter_.AddEntriesFrom(input, _map_ownCharacter_codec);
             break;
           }
+          case 32: {
+            UsedCharacter = input.ReadInt64();
+            break;
+          }
         }
       }
     }
@@ -1917,7 +2485,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[8]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[11]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2048,7 +2616,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[9]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[12]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2362,7 +2930,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[10]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[13]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2705,7 +3273,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[11]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[14]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2878,7 +3446,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[12]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[15]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3206,7 +3774,7 @@ namespace Msg {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[13]; }
+      get { return global::Msg.MessageReflection.Descriptor.MessageTypes[16]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3226,6 +3794,7 @@ namespace Msg {
       aTK_ = other.aTK_;
       dEF_ = other.dEF_;
       sPD_ = other.sPD_;
+      tSPD_ = other.tSPD_;
       mP_ = other.mP_;
       mAKT_ = other.mAKT_;
     }
@@ -3268,6 +3837,17 @@ namespace Msg {
       }
     }
 
+    /// <summary>Field number for the "TSPD" field.</summary>
+    public const int TSPDFieldNumber = 6;
+    private float tSPD_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float TSPD {
+      get { return tSPD_; }
+      set {
+        tSPD_ = value;
+      }
+    }
+
     /// <summary>Field number for the "MP" field.</summary>
     public const int MPFieldNumber = 4;
     private int mP_;
@@ -3306,6 +3886,7 @@ namespace Msg {
       if (ATK != other.ATK) return false;
       if (DEF != other.DEF) return false;
       if (SPD != other.SPD) return false;
+      if (TSPD != other.TSPD) return false;
       if (MP != other.MP) return false;
       if (MAKT != other.MAKT) return false;
       return true;
@@ -3317,6 +3898,7 @@ namespace Msg {
       if (ATK != 0) hash ^= ATK.GetHashCode();
       if (DEF != 0) hash ^= DEF.GetHashCode();
       if (SPD != 0F) hash ^= SPD.GetHashCode();
+      if (TSPD != 0F) hash ^= TSPD.GetHashCode();
       if (MP != 0) hash ^= MP.GetHashCode();
       if (MAKT != 0) hash ^= MAKT.GetHashCode();
       return hash;
@@ -3349,6 +3931,10 @@ namespace Msg {
         output.WriteRawTag(40);
         output.WriteInt32(MAKT);
       }
+      if (TSPD != 0F) {
+        output.WriteRawTag(53);
+        output.WriteFloat(TSPD);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3361,6 +3947,9 @@ namespace Msg {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(DEF);
       }
       if (SPD != 0F) {
+        size += 1 + 4;
+      }
+      if (TSPD != 0F) {
         size += 1 + 4;
       }
       if (MP != 0) {
@@ -3385,6 +3974,9 @@ namespace Msg {
       }
       if (other.SPD != 0F) {
         SPD = other.SPD;
+      }
+      if (other.TSPD != 0F) {
+        TSPD = other.TSPD;
       }
       if (other.MP != 0) {
         MP = other.MP;
@@ -3420,6 +4012,10 @@ namespace Msg {
           }
           case 40: {
             MAKT = input.ReadInt32();
+            break;
+          }
+          case 53: {
+            TSPD = input.ReadFloat();
             break;
           }
         }

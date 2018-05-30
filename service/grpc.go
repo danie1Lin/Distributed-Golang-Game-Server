@@ -15,7 +15,8 @@ import (
 	"golang.org/x/net/context"
 	"io"
 	"reflect"
-	//"time"
+	"sync"
+	"time"
 )
 
 /*
@@ -29,11 +30,10 @@ type RpcServer interface {
 */
 func NewRpc() *Rpc {
 	return &Rpc{
-		UserOnLine:         make(map[int64]*UserInfo),
 		SendFuncToClient:   make(map[int64](chan *CallFuncInfo)),
 		RecvFuncFromClient: make(chan *CallFuncInfo, 100),
 		PosToClient:        make(map[int64](chan *Position)),
-		PosFromClient:      make(chan *Position, 100),
+		InputFromClient:    make(chan *Input, 100),
 		ErrToClient:        make(map[int64](chan *Error)),
 		ErrFromClient:      make(chan *Error, 100),
 	}
@@ -41,11 +41,12 @@ func NewRpc() *Rpc {
 
 type Rpc struct {
 	//connection id map
-	UserOnLine         map[int64]*UserInfo
+	sync.RWMutex
+	IsDisconnect       sync.Map
 	SendFuncToClient   map[int64](chan *CallFuncInfo)
 	RecvFuncFromClient chan *CallFuncInfo
 	PosToClient        map[int64](chan *Position)
-	PosFromClient      chan *Position
+	InputFromClient    chan *Input
 	ErrToClient        map[int64](chan *Error)
 	ErrFromClient      chan *Error
 }
@@ -55,22 +56,28 @@ func (rpc *Rpc) ErrorPipLine(stream Rpc_ErrorPipLineServer) error {
 	id := err.FromId
 	send := rpc.ErrToClient[id]
 	recv := rpc.ErrFromClient
-	SendEnd := make(chan struct{})
+	c, _ := rpc.IsDisconnect.Load(id)
+	closeRpc := c.(chan struct{})
 	fmt.Println("Client[", id, "] start postion sync")
 	go func() {
 		for {
-			in, err := stream.Recv()
-			if err == io.EOF {
-				close(SendEnd)
-				break
+			select {
+			case <-closeRpc:
+			default:
+				in, err := stream.Recv()
+				if err == io.EOF {
+					rpc.Disconnect(id)
+					break
+				}
+				if err != nil {
+					fmt.Println("Recv Error: ", err)
+					rpc.Disconnect(id)
+					break
+				}
+				recv <- in
 			}
-			if err != nil {
-				close(SendEnd)
-				fmt.Println("Recv Error: ", err)
-				break
-			}
-			recv <- in
 		}
+		close(recv)
 	}()
 	for {
 		select {
@@ -78,51 +85,61 @@ func (rpc *Rpc) ErrorPipLine(stream Rpc_ErrorPipLineServer) error {
 			err := stream.Send(msg)
 			if err != nil {
 				fmt.Println("Send erro: r", err)
+				rpc.Disconnect(id)
 				break
 			}
-		case <-SendEnd:
+		case <-closeRpc:
 			break
 		}
 	}
-	delete(rpc.ErrToClient, id)
 	return nil
 }
 
 func (rpc *Rpc) SyncPos(stream Rpc_SyncPosServer) error {
-	position, _ := stream.Recv()
-	id := position.FromId
+	input, _ := stream.Recv()
+	id := input.UserId
 	send := rpc.PosToClient[id]
-	recv := rpc.PosFromClient
-	SendEnd := make(chan struct{})
+	recv := rpc.InputFromClient
+	c, _ := rpc.IsDisconnect.Load(id)
+	closeRpc := c.(chan struct{})
 	fmt.Println("Client[", id, "] start postion sync")
 	go func() {
 		for {
-			in, err := stream.Recv()
-			if err == io.EOF {
-				close(SendEnd)
-				break
+			select {
+			case <-closeRpc:
+			default:
+				in, err := stream.Recv()
+				if err == io.EOF {
+					rpc.Disconnect(id)
+					break
+				}
+				if err != nil {
+					fmt.Println("Recv Error: ", err)
+					rpc.Disconnect(id)
+					break
+				}
+				recv <- in
+				t := time.Now().Sub(time.Unix(in.TimeStamp * 1000000)).Second()
+				log.Debug("[grpc]{SyncPos}Recv:", in, " [Delay]", t, "(s)")
 			}
-			if err != nil {
-				close(SendEnd)
-				fmt.Println("Recv Error: ", err)
-				break
-			}
-			recv <- in
 		}
+		close(recv)
 	}()
 	for {
 		select {
-		case msg := <-send:
-			err := stream.Send(msg)
+		case data := <-send:
+			data.TimeStamp = time.Now().UnixNano()
+			err := stream.Send(data)
+			log.Debug("[grpc]{SyncPos}Send", data)
 			if err != nil {
 				fmt.Println("Send erro: r", err)
+				rpc.Disconnect(id)
 				break
 			}
-		case <-SendEnd:
+		case <-closeRpc:
 			break
 		}
 	}
-	delete(rpc.PosToClient, id)
 	return nil
 }
 
@@ -131,26 +148,34 @@ func (rpc *Rpc) CallMethod(stream Rpc_CallMethodServer) error {
 	id := callFuncInfo.FromId
 	send := rpc.SendFuncToClient[id]
 	recv := rpc.RecvFuncFromClient
-	SendEnd := make(chan struct{})
+	c, _ := rpc.IsDisconnect.Load(id)
+	closeRpc := c.(chan struct{})
 	fmt.Println("Client[", id, "] start CallMethod")
 	//recv := rpc.RecvFuncFromClient[id]
 	go func() {
 		for {
-			in, err := stream.Recv()
-			log.Debug("[RECIEVE]", in)
-			if err == io.EOF {
-				close(SendEnd)
-				log.Info("[RPC Disconnect] ID:", id)
+			select {
+
+			case <-closeRpc:
 				break
+			default:
+				in, err := stream.Recv()
+				log.Debug("[RECIEVE]", in)
+				if err == io.EOF {
+					log.Info("[RPC Disconnect] ID:", id)
+					rpc.Disconnect(id)
+					break
+				}
+				if err != nil {
+					fmt.Println("Recv Error: ", err)
+					rpc.Disconnect(id)
+					log.Info("[RPC Disconnect] ID:", id, "[Error]", err)
+					break
+				}
+				recv <- in
 			}
-			if err != nil {
-				close(SendEnd)
-				fmt.Println("Recv Error: ", err)
-				log.Info("[RPC Disconnect] ID:", id, "[Error]", err)
-				break
-			}
-			recv <- in
 		}
+		close(recv)
 	}()
 	for {
 		select {
@@ -159,15 +184,31 @@ func (rpc *Rpc) CallMethod(stream Rpc_CallMethodServer) error {
 			err := stream.Send(out)
 			if err != nil {
 				fmt.Println("Send error", err)
+				rpc.Disconnect(id)
 				log.Info("[RPC Disconnect] ID:", id, "[Error]", err)
 				break
 			}
-		case <-SendEnd:
+		case <-closeRpc:
 			break
 		}
 	}
-	delete(rpc.SendFuncToClient, id)
 	return nil
+}
+
+func (rpc *Rpc) Disconnect(userId int64) bool {
+	if closeCh, ok := rpc.IsDisconnect.Load(userId); ok {
+		rpc.Lock()
+		user.Manager.Logout(userId)
+		close(closeCh.(chan struct{}))
+		delete(rpc.SendFuncToClient, userId)
+		delete(rpc.ErrToClient, userId)
+		delete(rpc.PosToClient, userId)
+		rpc.IsDisconnect.Delete(userId)
+		rpc.Unlock()
+		return true
+	} else {
+		return false
+	}
 }
 
 func (rpc *Rpc) Login(ctx context.Context, in *LoginInput) (*UserInfo, error) {
@@ -180,6 +221,7 @@ func (rpc *Rpc) Login(ctx context.Context, in *LoginInput) (*UserInfo, error) {
 	rpc.SendFuncToClient[userInfo.Uuid] = make(chan *CallFuncInfo, 100)
 	rpc.PosToClient[userInfo.Uuid] = make(chan *Position, 100)
 	rpc.ErrToClient[userInfo.Uuid] = make(chan *Error, 100)
+	rpc.IsDisconnect.Store(userInfo.Uuid, make(chan struct{}))
 	//TEST send a default Room
 	/*
 		send := rpc.SendFuncToClient[userInfo.Uuid]
@@ -203,7 +245,6 @@ func (rpc *Rpc) Login(ctx context.Context, in *LoginInput) (*UserInfo, error) {
 		TargetId: userInfo.Uuid,
 	}
 	return userInfo, nil
-
 }
 
 func (rpc *Rpc) CreateAccount(ctx context.Context, userRegister *RegistInput) (*Error, error) {
