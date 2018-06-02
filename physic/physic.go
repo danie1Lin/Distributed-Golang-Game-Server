@@ -4,7 +4,7 @@ package physic
 import "C"
 
 import (
-	. "github.com/daniel840829/gameServer/data"
+	"github.com/daniel840829/gameServer/data"
 	. "github.com/daniel840829/gameServer/msg"
 	"github.com/gazed/vu/math/lin"
 	"github.com/golang/protobuf/proto"
@@ -13,6 +13,33 @@ import (
 	"math"
 	"sync"
 )
+
+// ObjCategory
+const (
+	Player_Bit = iota
+	Enemy_Bit
+	Skill_Bit
+	Terrain_Bit
+	Specified_Bit
+)
+
+func SetBits(b int, bits ...uint) int {
+	for _, bit := range bits {
+		b |= 1 << bit
+	}
+	return b
+}
+
+func SetBitExcept(b int, bits ...uint) int {
+	for _, bit := range bits {
+		b &= ^(1 << bit)
+	}
+	return b
+}
+
+func SetAllBits() int {
+	return 65535
+}
 
 type World struct {
 	sync.RWMutex
@@ -23,38 +50,70 @@ type World struct {
 	Cb    func(data interface{}, obj1, obj2 ode.Geom)
 }
 
+type WorldData struct {
+	Cb    func(data interface{}, obj1, obj2 ode.Geom)
+	CtGrp ode.JointGroup
+}
+
 func (w *World) Init(roomId int64) {
 	w.World = ode.NewWorld()
+	ctGrp := ode.NewJointGroup(100000)
+	var cb CollideCallback
+	cb = GetCollideHandler(w)
+	w.Cb = cb
+	w.World.SetData(WorldData{Cb: cb, CtGrp: ctGrp})
 	w.Space = ode.NilSpace().NewHashSpace()
-	w.Space.NewPlane(ode.V4(0, 0, 1, 0))
-	w.World.SetGravity(ode.V3(0, 0, -0.5))
-	ctGrp := ode.NewJointGroup(100)
-	w.World.SetData(ctGrp)
-	w.Cb = GetCollideHandler(w)
+	w.Space.SetSublevel(0)
+	plane := w.Space.NewPlane(ode.V4(0, 0, 1, 0))
+	plane.SetCategoryBits(SetBits(0, Terrain_Bit))
+	plane.SetCollideBits(SetAllBits())
+	plane.SetData(ObjData{Name: "Floor", Type: "Terrain"})
+	w.World.SetGravity(ode.V3(0, 0, -9.8))
 	w.CtGrp = ctGrp
 }
 
+type CollideCallback func(data interface{}, obj1, obj2 ode.Geom)
+
 func GetCollideHandler(w *World) func(data interface{}, obj1, obj2 ode.Geom) {
-	return func(data interface{}, obj1, obj2 ode.Geom) {
+	var cb func(data interface{}, obj1, obj2 ode.Geom)
+	cb = func(data interface{}, obj1, obj2 ode.Geom) {
 		contact := ode.NewContact()
 		body1, body2 := obj1.Body(), obj2.Body()
 
-		if body1 != 0 && body2 != 0 && body1.Connected(body2) {
-			return
-		}
 		world := body1.World()
-		ctGrp := world.Data().(ode.JointGroup)
-		//log.Debug("Body1:", body1.Data(), "\n\rBody2:", body2.Data())
-		contact.Surface.Mode = 0
-		contact.Surface.Mu = 0.1
-		contact.Surface.Mu2 = 0
-		cts := obj1.Collide(obj2, 1, 0)
-		if len(cts) > 0 {
-			contact.Geom = cts[0]
-			ct := world.NewContactJoint(ctGrp, contact)
-			ct.Attach(body1, body2)
+		if (obj1.IsSpace()) || (obj2.IsSpace()) {
+			spaceCallback := world.Data().(WorldData).Cb
+			obj1.Collide2(obj2, data, spaceCallback)
+			// if need to traverses through all spaces and sub-spaces
+			if obj1.IsSpace() {
+				obj1.ToSpace().Collide(data, spaceCallback)
+			}
+			if obj2.IsSpace() {
+				obj2.ToSpace().Collide(data, spaceCallback)
+			}
+		} else {
+			cat1, cat2 := obj1.CategoryBits(), obj2.CategoryBits()
+			col1, col2 := obj1.CollideBits(), obj2.CollideBits()
+			if ((cat1 & col2) | (cat2 & col1)) != 0 {
+				ctGrp := world.Data().(WorldData).CtGrp
+				//log.Debug("Body1:", body1.Data(), "\n\rBody2:", body2.Data())
+				contact.Surface.Mode = 0
+				contact.Surface.Mu = 0.1
+				contact.Surface.Mu2 = 0
+				cts := obj1.Collide(obj2, 1, 0)
+				if len(cts) > 0 {
+					d1, d2 := obj1.Data().(ObjData), obj2.Data().(ObjData)
+					d1.CollideTimes += 1
+					d2.CollideTimes += 1
+					contact.Geom = cts[0]
+					ct := world.NewContactJoint(ctGrp, contact)
+					ct.Attach(body1, body2)
+				}
+
+			}
 		}
 	}
+	return cb
 }
 func (w *World) PhysicUpdate() {
 	w.Lock()
@@ -80,31 +139,50 @@ func (w *World) GetAllTransform() (pos *Position) {
 	w.Unlock()
 	return
 }
+
+func (w *World) GetTransform(id int64) (p *lin.V3, q *lin.Q) {
+	w.Lock()
+	body, ok := w.Bodys.Get(id)
+	if !ok {
+		w.Unlock()
+		log.Warn("[physic]{GetTransform}id is missed", id)
+		return
+	}
+	p = V3_OdeToLin(body.Position())
+	q = Q_OdeToLin(body.Quaternion())
+	w.Unlock()
+	return
+}
+
 func (w *World) AddBody(id int64, body ode.Body) {
 	log.Debug("{physic}[Addbody] Id:", id)
 	w.Bodys.Store(id, body)
 }
 
-func (w *World) CreateEnitity(objName string, id int64, pos lin.V3, rot lin.Q) {
+func (w *World) CreateEntity(objName string, id int64, pos lin.V3, rot lin.Q) {
 
-	obj := ObjData[objName]
+	obj := data.ObjData[objName]
 	body := w.World.NewBody()
-	body.SetPosition(V3_LinToOde(&pos))
-	body.SetQuaternion(Q_LinToOde(&rot))
-	body.SetData(BodyData{Uuid: id, Name: objName, Type: obj.Type})
 	mass := ode.NewMass()
 	switch obj.Shape {
 	case "Box":
-		mass.SetBox(1, ode.NewVector3(obj.Lens[0], obj.Lens[1], obj.Lens[2]))
+		mass.SetBoxTotal(obj.Mass, ode.NewVector3(obj.Lens[0], obj.Lens[1], obj.Lens[2]))
 		box := w.Space.NewBox(ode.NewVector3(obj.Lens[0], obj.Lens[1], obj.Lens[2]))
+		box.SetData(ObjData{Uuid: id, Name: objName, Type: obj.Type})
+		box.SetCategoryBits(SetBits(0, Player_Bit))
+		box.SetCollideBits(SetAllBits())
 		box.SetBody(body)
 	case "Capsule":
-		mass.SetCapsule(1, 1, obj.Lens[0], obj.Lens[1])
+		mass.SetCapsuleTotal(obj.Mass, 1, obj.Lens[0], obj.Lens[1])
 		capsule := w.Space.NewCapsule(obj.Lens[0], obj.Lens[1])
+		capsule.SetData(ObjData{Uuid: id, Name: objName, Type: obj.Type})
+		capsule.SetCategoryBits(SetBits(0, Skill_Bit))
+		capsule.SetCollideBits(SetBits(0, Terrain_Bit, Player_Bit, Enemy_Bit))
 		capsule.SetBody(body)
 	}
+	body.SetPosition(V3_LinToOde(&pos))
+	body.SetQuaternion(Q_LinToOde(&rot))
 	w.AddBody(id, body)
-
 }
 
 func (w *World) SetTranform(id int64, t *TransForm) {
@@ -124,7 +202,7 @@ func (w *World) Move(id int64, v float64, omega float64) {
 		log.Warn("{physic}[Move] No such body ", id)
 	}
 	w.Lock()
-	body.SetAngularVelocity(ode.NewVector3(0, 0, -50.0*omega))
+	body.SetAngularVelocity(ode.NewVector3(0, 0, -10.0*omega))
 	body.SetLinearVelocity(body.VectorToWorld(ode.NewVector3(0, 50.0*v, 0)))
 	log.Debug("{physic}[Move] vel:", body.LinearVelocity(), "ang vel:", body.AngularVel())
 	w.Unlock()
@@ -141,10 +219,11 @@ func (b *Bodys) Get(id int64) (ode.Body, bool) {
 	return body, ok
 }
 
-type BodyData struct {
-	Uuid int64
-	Type string
-	Name string
+type ObjData struct {
+	Uuid         int64
+	Type         string
+	Name         string
+	CollideTimes int64
 }
 
 var (
@@ -155,7 +234,6 @@ var (
 func init() {
 	log.Debug("ode Init")
 	ode.Init(0, ode.AllAFlag)
-
 }
 
 func EulerToQuaternion(yaw, pitch, roll float64) *lin.Q {
@@ -224,5 +302,17 @@ func V3_MsgToOde(msg *Vector3) (v3 ode.Vector3) {
 }
 func Q_MsgToOde(msg *Quaternion) (q ode.Quaternion) {
 	q = ode.NewQuaternion(msg.X, msg.Y, msg.Z, msg.W)
+	return
+}
+
+func Q_LinToMsg(q *lin.Q) (msg *Quaternion) {
+	msg = &Quaternion{}
+	msg.X, msg.Y, msg.Z, msg.W = q.GetS()
+	return
+}
+
+func V3_LinToMsg(p *lin.V3) (msg *Vector3) {
+	msg = &Vector3{}
+	msg.X, msg.Y, msg.Z = p.GetS()
 	return
 }

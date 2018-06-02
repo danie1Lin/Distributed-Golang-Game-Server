@@ -78,10 +78,11 @@ func (gm *GameManager) RegistRoom(roomTypeName string, iRoom IRoom) {
 
 func (gm *GameManager) Call(f *CallFuncInfo) {
 	log.Debug("Function INFO :", f)
-
 	method, ok := gm.thisType.MethodByName(f.Func)
-	log.Debug("reflect.Method:", method)
-	log.Debug("Is OK? :", ok)
+	if !ok {
+		log.Debug("[GM]{Call}gm does not have ", f.Func, " method ")
+		return
+	}
 	param := make([]reflect.Value, 0)
 	param = append(param, reflect.ValueOf(gm))
 	param = append(param, reflect.ValueOf(f))
@@ -103,6 +104,27 @@ func (gm *GameManager) Call(f *CallFuncInfo) {
 	*/
 }
 
+func (gm *GameManager) Entity(f *CallFuncInfo) {
+	F := &CallFuncInfo{}
+	ptypes.UnmarshalAny(f.Param[0], F)
+	e, ok := gm.IdMapEntity[f.TargetId]
+	if !ok {
+		log.Warn("No Such Entity id", f.TargetId)
+		return
+	}
+	entity := reflect.ValueOf(e)
+	method, ok := entity.Type().MethodByName(F.Func)
+	if !ok {
+		log.Warn("entity does not have ", F.Func, " method ")
+		return
+	}
+	param := make([]reflect.Value, 0)
+	param = append(param, entity)
+	param = append(param, reflect.ValueOf(F))
+	method.Func.Call(param)
+	log.Debug("[gm]{Entity}call function", f)
+}
+
 func (gm *GameManager) ErrorHandle(err *Error) {
 	log.Warn("Something Wrong", err)
 }
@@ -114,7 +136,7 @@ func (gm *GameManager) SyncPos(input *Input) {
 		log.Warn("No Such Entity id", input.UserId)
 	}
 	//TODO
-	//if timestamp is too far from now
+	//if timestamp is too far from
 
 	entity.Move(input)
 }
@@ -159,7 +181,6 @@ func (gm *GameManager) RegistEnitity(EntityTypeName string, iEntity IEntity) {
 }
 
 func (gm *GameManager) CreatePlayer(room *Room, entityType string, userInfo *UserInfo) IEntity {
-	roomId := room.GetInfo().Uuid
 	tEntity, ok := gm.TypeMapEntity[entityType]
 	if !ok {
 		log.Warn(entityType, " is not registed yet. ")
@@ -177,8 +198,6 @@ func (gm *GameManager) CreatePlayer(room *Room, entityType string, userInfo *Use
 	gm.IdMapEntity[entityInfo.Uuid] = entity
 	gm.UserIdMapEntityId[userInfo.Uuid] = entityInfo.Uuid
 	gm.rl.Unlock()
-
-	gm.createEntity(roomId, entityInfo)
 	return entity
 }
 
@@ -213,19 +232,6 @@ func (gm *GameManager) ReadyRoom(f *CallFuncInfo) {
 }
 
 ////Send Rpc command to client function
-func (gm *GameManager) createEntity(roomId int64, entityInfo *Character) {
-	f := &CallFuncInfo{}
-	f.Func = "CreateEntity"
-	//TODO:param
-	params := make([]*any.Any, 0)
-	param, _ := ptypes.MarshalAny(entityInfo)
-	params = append(params, param)
-	f.Param = params
-	for _, id := range gm.IdMapRoom[roomId].GetUserInRoom() {
-		gm.SendFuncToClient[id] <- f
-	}
-}
-
 func (gm *GameManager) getLoginData(userId int64) {
 	//
 	//b := &BasicType{}

@@ -3,14 +3,14 @@
         "Name":"Tank",
         "Type":"Player",
         "Shape":"Box",
-        "Lens":[20, 20, 20],
-        "Mass":300
+        "Lens":[1.8, 2, 1.8],
+        "Mass":1.0
     },
     "Shell":{
         "Name":"Shell",
         "Type":"Skill",
         "Shape":"Capsule",
-        "Lens":[1,1],
-        "Mass":10
+        "Lens":[0.15,0.55],
+        "Mass":0.30
     }
 }

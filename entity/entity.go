@@ -3,15 +3,15 @@ package entity
 import (
 	"fmt"
 	. "github.com/daniel840829/gameServer/msg"
-	//"github.com/daniel840829/gameServer/physic"
+	"github.com/daniel840829/gameServer/physic"
 	//p "github.com/golang/protobuf/proto"
 	//"github.com/gazed/vu/math/lin"
+	//. "github.com/daniel840829/gameServer/uuid"
 	"github.com/golang/protobuf/proto"
-	//"github.com/ianremmler/ode"
-	"github.com/satori/go.uuid"
+	"github.com/ianremmler/ode"
 	log "github.com/sirupsen/logrus"
 	"os"
-	"reflect"
+	//"reflect"
 	"sync"
 	//"time"
 )
@@ -32,10 +32,11 @@ type Entity struct {
 	sync.RWMutex
 	EntityInfo *Character
 	TypeName   string
-	UUID       uuid.UUID
 	I          IEntity
 	GM         *GameManager
 	Room       *Room
+	World      *physic.World
+	Body       ode.Body
 }
 type IEntity interface {
 	IGameBehavier
@@ -46,38 +47,35 @@ type IEntity interface {
 	GetTransform() *TransForm
 }
 
-type Player struct {
-	Entity
-}
-
-func (e *Player) GetInfo() *Character {
+func (e *Entity) GetInfo() *Character {
 	e.RLock()
 	entityInfo := proto.Clone(e.EntityInfo).(*Character)
 	e.RUnlock()
 	return entityInfo
 }
-func (e *Player) Hit(damage int32) {
+func (e *Entity) Hit(damage int32) {
 	fmt.Println("-", damage)
 }
 
-func (e *Player) Init(gm *GameManager, room *Room, entityInfo *Character) {
+func (e *Entity) Init(gm *GameManager, room *Room, entityInfo *Character) {
 	e.GM = gm
 	e.EntityInfo = entityInfo
 	e.Room = room
+	e.World = room.World
 	//call All client create enitity at some point
 }
 
-func (e *Player) Tick() {
+func (e *Entity) Tick() {
 }
-func (e *Player) Destroy() {
-}
-
-func (e *Player) Run() {
-}
-func (e *Player) PhysicUpdate() {
+func (e *Entity) Destroy() {
 }
 
-func (e *Player) GetTransform() *TransForm {
+func (e *Entity) Run() {
+}
+func (e *Entity) PhysicUpdate() {
+}
+
+func (e *Entity) GetTransform() *TransForm {
 	return &TransForm{}
 }
 func (e *Entity) Move(in *Input) {
@@ -88,6 +86,7 @@ func (e *Entity) Move(in *Input) {
 	e.Room.World.Move(e.EntityInfo.Uuid, float64(moveValue*moveSpeed), float64(turnValue*turnSpeed))
 }
 
+/*
 type EntityInfo struct {
 	//mathod's name map to Mathod's info
 	MethodMap map[string]EntityMathod
@@ -99,7 +98,6 @@ type EntityMathod struct {
 	Type reflect.Type
 	Args int
 }
-
 type EntityManager struct {
 	EntityTypeMap map[string]EntityInfo
 	EntityIdMap   map[uuid.UUID]reflect.Value
@@ -165,3 +163,5 @@ func RegisterEnitity(iEntity IEntity) {
 	eManager.EntityTypeMap[entityName] = *entityInfo
 	fmt.Println(eManager)
 }
+
+*/

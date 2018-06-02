@@ -12,6 +12,7 @@ type Obj struct {
 	Type  string
 	Shape string
 	Lens  []float64
+	Mass  float64
 }
 
 type Objs map[string]Obj

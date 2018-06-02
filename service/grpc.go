@@ -119,7 +119,7 @@ func (rpc *Rpc) SyncPos(stream Rpc_SyncPosServer) error {
 					break
 				}
 				recv <- in
-				t := time.Now().Sub(time.Unix(in.TimeStamp * 1000000)).Second()
+				t := time.Now().Sub(time.Unix(0, in.TimeStamp*1000000)).Seconds()
 				log.Debug("[grpc]{SyncPos}Recv:", in, " [Delay]", t, "(s)")
 			}
 		}
@@ -128,13 +128,16 @@ func (rpc *Rpc) SyncPos(stream Rpc_SyncPosServer) error {
 	for {
 		select {
 		case data := <-send:
-			data.TimeStamp = time.Now().UnixNano()
-			err := stream.Send(data)
-			log.Debug("[grpc]{SyncPos}Send", data)
-			if err != nil {
-				fmt.Println("Send erro: r", err)
-				rpc.Disconnect(id)
-				break
+			if data.TimeStamp+10 > int64(time.Now().UnixNano()/1000000) {
+				err := stream.Send(data)
+				//log.Debug("[grpc]{SyncPos}Send", data)
+				if err != nil {
+					fmt.Println("Send erro: r", err)
+					rpc.Disconnect(id)
+					break
+				}
+			} else {
+				log.Warn("[grpc]{SyncPos} Send package Delay", int64(time.Now().UnixNano()/1000000)-data.TimeStamp)
 			}
 		case <-closeRpc:
 			break
@@ -180,6 +183,7 @@ func (rpc *Rpc) CallMethod(stream Rpc_CallMethodServer) error {
 	for {
 		select {
 		case out := <-send:
+			out.TimeStamp = int64(time.Now().UnixNano() / 1000000)
 			log.Debug("[SEND]", out)
 			err := stream.Send(out)
 			if err != nil {

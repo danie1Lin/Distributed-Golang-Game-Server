@@ -6,6 +6,8 @@ import (
 	"github.com/daniel840829/gameServer/user"
 	"github.com/gazed/vu/math/lin"
 	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
+	any "github.com/golang/protobuf/ptypes/any"
 	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
@@ -42,6 +44,7 @@ type Room struct {
 	EntityOfUser map[int64]int64
 	World        *physic.World
 	PosChans     [](chan *Position)
+	FuncChans    [](chan *CallFuncInfo)
 }
 
 func (r *Room) Init(gm *GameManager, roomInfo *RoomInfo) {
@@ -50,6 +53,7 @@ func (r *Room) Init(gm *GameManager, roomInfo *RoomInfo) {
 	r.EntityInRoom = make(map[int64]IEntity)
 	r.EntityOfUser = make(map[int64]int64)
 	r.PosChans = make([](chan *Position), 0)
+	r.FuncChans = make([](chan *CallFuncInfo), 0)
 	r.Lock()
 	r.RoomInfo = roomInfo
 	r.World.Init(r.RoomInfo.Uuid)
@@ -98,6 +102,7 @@ func (r *Room) EnterRoom(userId int64) bool {
 		}
 	*/
 	r.PosChans = append(r.PosChans, r.GM.PosToClient[userId])
+	r.FuncChans = append(r.FuncChans, r.GM.SendFuncToClient[userId])
 	r.RoomInfo.UserInRoom[userId] = user.Manager.GetUserInfo(userId)
 	r.RoomInfo.ReadyUser[userId] = false
 	log.Debug("{Room}[EnterRoom]", r.RoomInfo.UserInRoom)
@@ -153,9 +158,18 @@ func (r *Room) GetUserInRoom() (ids []int64) {
 }
 
 func (r *Room) GetAllTransform() {
+	//t1 := time.Now().UnixNano()
 	pos := r.World.GetAllTransform()
+	//log.Debug("[room]{GetAllTransform}GetAllTransform time:", (time.Now().UnixNano() - t1))
+	pos.TimeStamp = int64(time.Now().UnixNano() / 1000000)
 	for _, posChan := range r.PosChans {
 		posChan <- pos
+	}
+}
+
+func (r *Room) SendFuncToAll(f *CallFuncInfo) {
+	for _, funcChan := range r.FuncChans {
+		funcChan <- f
 	}
 }
 func (r *Room) createPlayers() {
@@ -171,18 +185,40 @@ func (r *Room) createPlayers() {
 		if entity == nil {
 			return
 		}
-		r.createEntity(entity)
 		q := physic.EulerToQuaternion(0.0, 0.0, 0.0)
-		r.World.CreateEnitity("Tank", entity.GetInfo().Uuid, *lin.NewV3S(10, 10, 10), *q)
+		p := lin.NewV3S(10, 10, 10)
+		r.World.CreateEntity("Tank", entity.GetInfo().Uuid, *p, *q)
+		r.createEntity(entity, p, q)
+
 	}
 	r.RUnlock()
 }
 
-func (r *Room) createEntity(iEntity IEntity) {
+func (r *Room) createEntity(iEntity IEntity, position *lin.V3, quaternion *lin.Q) {
 	entityInfo := iEntity.GetInfo()
 	//r.Lock()
 	r.EntityInRoom[entityInfo.Uuid] = iEntity
-	//r.Unlock()
+
+	f := &CallFuncInfo{}
+	f.Func = "CreateEntity"
+	f.FromPos = &TransForm{Position: physic.V3_LinToMsg(position), Rotation: physic.Q_LinToMsg(quaternion)}
+	params := make([]*any.Any, 0)
+	param, _ := ptypes.MarshalAny(entityInfo)
+	params = append(params, param)
+	f.Param = params
+	r.SendFuncToAll(f) //r.Unlock()
+}
+
+func (r *Room) CreateShell(entityInfo *Character, p *Vector3, q *Quaternion) {
+	//send msg to all
+	f := &CallFuncInfo{}
+	f.Func = "CreateShell"
+	f.FromPos = &TransForm{Position: p, Rotation: q}
+	param, _ := ptypes.MarshalAny(entityInfo)
+	params := make([]*any.Any, 0)
+	params = append(params, param)
+	f.Param = params
+	r.SendFuncToAll(f)
 }
 
 func (r *Room) start() {

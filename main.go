@@ -35,6 +35,8 @@ func main() {
 	gm.Init(rpc)
 	gm.RegistRoom("room", &entity.Room{})
 	gm.RegistEnitity("Player", &entity.Player{})
+	gm.RegistEnitity("Shell", &entity.Shell{})
+	gm.RegistEnitity("Enemy", &entity.Enemy{})
 	go gm.Run()
 	// 注册HelloService
 	s := grpc.NewServer()
