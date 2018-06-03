@@ -46,7 +46,7 @@ type World struct {
 	World ode.World
 	Space ode.Space
 	CtGrp ode.JointGroup
-	Bodys Bodys
+	Objs  Objs
 	Cb    func(data interface{}, obj1, obj2 ode.Geom)
 }
 
@@ -67,7 +67,11 @@ func (w *World) Init(roomId int64) {
 	plane := w.Space.NewPlane(ode.V4(0, 0, 1, 0))
 	plane.SetCategoryBits(SetBits(0, Terrain_Bit))
 	plane.SetCollideBits(SetAllBits())
-	plane.SetData(ObjData{Name: "Floor", Type: "Terrain"})
+	obj := &Obj{
+		CGeom: plane,
+		Data:  &ObjData{Name: "Floor", Type: "Terrain"},
+	}
+	obj.AddGeom(plane)
 	w.World.SetGravity(ode.V3(0, 0, -9.8))
 	w.CtGrp = ctGrp
 }
@@ -79,7 +83,6 @@ func GetCollideHandler(w *World) func(data interface{}, obj1, obj2 ode.Geom) {
 	cb = func(data interface{}, obj1, obj2 ode.Geom) {
 		contact := ode.NewContact()
 		body1, body2 := obj1.Body(), obj2.Body()
-
 		world := body1.World()
 		if (obj1.IsSpace()) || (obj2.IsSpace()) {
 			spaceCallback := world.Data().(WorldData).Cb
@@ -102,9 +105,9 @@ func GetCollideHandler(w *World) func(data interface{}, obj1, obj2 ode.Geom) {
 				contact.Surface.Mu2 = 0
 				cts := obj1.Collide(obj2, 1, 0)
 				if len(cts) > 0 {
-					d1, d2 := obj1.Data().(ObjData), obj2.Data().(ObjData)
-					d1.CollideTimes += 1
-					d2.CollideTimes += 1
+					d1, d2 := obj1.Data().(*Obj), obj2.Data().(*Obj)
+					d1.Collide()
+					d2.Collide()
 					contact.Geom = cts[0]
 					ct := world.NewContactJoint(ctGrp, contact)
 					ct.Attach(body1, body2)
@@ -127,7 +130,7 @@ func (w *World) GetAllTransform() (pos *Position) {
 	pos.PosMap = make(map[int64]*TransForm)
 	f := func(key interface{}, value interface{}) bool {
 		k := key.(int64)
-		v := value.(ode.Body)
+		v := value.(*Obj).CBody
 		p := V3_OdeToMsg(v.Position())
 		q := Q_OdeToMsg(v.Quaternion())
 		t := &TransForm{proto.Clone(p).(*Vector3), proto.Clone(q).(*Quaternion)}
@@ -135,14 +138,15 @@ func (w *World) GetAllTransform() (pos *Position) {
 		return true
 	}
 	w.Lock()
-	w.Bodys.Range(f)
+	w.Objs.Range(f)
 	w.Unlock()
 	return
 }
 
 func (w *World) GetTransform(id int64) (p *lin.V3, q *lin.Q) {
 	w.Lock()
-	body, ok := w.Bodys.Get(id)
+	obj, ok := w.Objs.Get(id)
+	body := obj.CBody
 	if !ok {
 		w.Unlock()
 		log.Warn("[physic]{GetTransform}id is missed", id)
@@ -154,9 +158,9 @@ func (w *World) GetTransform(id int64) (p *lin.V3, q *lin.Q) {
 	return
 }
 
-func (w *World) AddBody(id int64, body ode.Body) {
+func (w *World) AddObj(id int64, obj *Obj) {
 	log.Debug("{physic}[Addbody] Id:", id)
-	w.Bodys.Store(id, body)
+	w.Objs.Store(id, obj)
 }
 
 func (w *World) CreateEntity(objName string, id int64, pos lin.V3, rot lin.Q) {
@@ -168,27 +172,47 @@ func (w *World) CreateEntity(objName string, id int64, pos lin.V3, rot lin.Q) {
 	case "Box":
 		mass.SetBoxTotal(obj.Mass, ode.NewVector3(obj.Lens[0], obj.Lens[1], obj.Lens[2]))
 		box := w.Space.NewBox(ode.NewVector3(obj.Lens[0], obj.Lens[1], obj.Lens[2]))
-		box.SetData(ObjData{Uuid: id, Name: objName, Type: obj.Type})
 		box.SetCategoryBits(SetBits(0, Player_Bit))
 		box.SetCollideBits(SetAllBits())
 		box.SetBody(body)
+		object := &Obj{
+			CBody: body,
+			CGeom: box,
+			Data:  &ObjData{Uuid: id, Name: objName, Type: obj.Type},
+		}
+		w.Lock()
+		object.AddGeom(box)
+		object.AddBody(body)
+		w.AddObj(id, object)
 	case "Capsule":
 		mass.SetCapsuleTotal(obj.Mass, 1, obj.Lens[0], obj.Lens[1])
 		capsule := w.Space.NewCapsule(obj.Lens[0], obj.Lens[1])
-		capsule.SetData(ObjData{Uuid: id, Name: objName, Type: obj.Type})
 		capsule.SetCategoryBits(SetBits(0, Skill_Bit))
 		capsule.SetCollideBits(SetBits(0, Terrain_Bit, Player_Bit, Enemy_Bit))
 		capsule.SetBody(body)
+		object := &Obj{
+			CBody: body,
+			CGeom: capsule,
+			Data:  &ObjData{Uuid: id, Name: objName, Type: obj.Type},
+		}
+		w.Lock()
+		object.AddGeom(capsule)
+		object.AddBody(body)
+		w.AddObj(id, object)
+	default:
+		log.Debug("[World]{CreateEntity} No ", objName)
+		return
 	}
 	body.SetPosition(V3_LinToOde(&pos))
 	body.SetQuaternion(Q_LinToOde(&rot))
-	w.AddBody(id, body)
+	w.Unlock()
 }
 
 func (w *World) SetTranform(id int64, t *TransForm) {
 	q := t.Rotation
 	v3 := t.Position
-	body, ok := w.Bodys.Get(id)
+	obj, ok := w.Objs.Get(id)
+	body := obj.CBody
 	if !ok {
 		log.Warn("{physic}[SetTranform]Not Found:", id)
 	}
@@ -197,11 +221,12 @@ func (w *World) SetTranform(id int64, t *TransForm) {
 }
 
 func (w *World) Move(id int64, v float64, omega float64) {
-	body, ok := w.Bodys.Get(id)
+	w.Lock()
+	obj, ok := w.Objs.Get(id)
 	if !ok {
 		log.Warn("{physic}[Move] No such body ", id)
 	}
-	w.Lock()
+	body := obj.CBody
 	body.SetAngularVelocity(ode.NewVector3(0, 0, -10.0*omega))
 	body.SetLinearVelocity(body.VectorToWorld(ode.NewVector3(0, 50.0*v, 0)))
 	log.Debug("{physic}[Move] vel:", body.LinearVelocity(), "ang vel:", body.AngularVel())
@@ -209,14 +234,14 @@ func (w *World) Move(id int64, v float64, omega float64) {
 	//log.Debug("{physic}[Move] position: ", body.Position(), " Rotation: ", body.Quaternion())
 }
 
-type Bodys struct {
+type Objs struct {
 	sync.Map
 }
 
-func (b *Bodys) Get(id int64) (ode.Body, bool) {
-	v, ok := b.Load(id)
-	body := v.(ode.Body)
-	return body, ok
+func (g *Objs) Get(id int64) (*Obj, bool) {
+	v, ok := g.Load(id)
+	obj := v.(*Obj)
+	return obj, ok
 }
 
 type ObjData struct {
@@ -224,6 +249,40 @@ type ObjData struct {
 	Type         string
 	Name         string
 	CollideTimes int64
+}
+
+type Obj struct {
+	CBody      ode.Body
+	CGeom      ode.Geom
+	Space      ode.Space
+	OtherBodys []ode.Body
+	OtherGeoms []ode.Geom
+	Data       *ObjData
+}
+
+func (obj *Obj) AddGeom(geom ode.Geom) {
+	obj.OtherGeoms = append(obj.OtherGeoms, geom)
+	geom.SetData(obj)
+}
+
+func (obj *Obj) AddBody(body ode.Body) {
+	obj.OtherBodys = append(obj.OtherBodys, body)
+}
+
+func (obj *Obj) Collide() {
+	obj.Data.CollideTimes += 1
+}
+
+func (obj *Obj) ResetCollide() {
+	obj.Data.CollideTimes = 0
+}
+
+func (obj *Obj) GetData() *ObjData {
+	return obj.Data
+}
+
+func (obj *Obj) SetData(objData ObjData) {
+	obj.Data = &objData
 }
 
 var (

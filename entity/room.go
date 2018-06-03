@@ -9,6 +9,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	any "github.com/golang/protobuf/ptypes/any"
 	log "github.com/sirupsen/logrus"
+	"math/rand"
 	"sync"
 	"time"
 )
@@ -186,7 +187,7 @@ func (r *Room) createPlayers() {
 			return
 		}
 		q := physic.EulerToQuaternion(0.0, 0.0, 0.0)
-		p := lin.NewV3S(10, 10, 10)
+		p := lin.NewV3S((rand.Float64()*64 - 32), (rand.Float64()*64 - 32), 1.0)
 		r.World.CreateEntity("Tank", entity.GetInfo().Uuid, *p, *q)
 		r.createEntity(entity, p, q)
 
