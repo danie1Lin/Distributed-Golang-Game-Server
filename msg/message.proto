@@ -127,6 +127,7 @@ message Character {
     Color Color =4;
     int32 Level = 5;
     int32 Exp = 6;
+    float MaxHealth = 10;
     //基本能力值
     Ability Ability = 7;
     map<int64,Equipment> EquipmentMap = 8;
@@ -160,6 +161,4 @@ message Ability{
     int32 MP = 4;
     int32 MAKT = 5;
 }
-
-
 

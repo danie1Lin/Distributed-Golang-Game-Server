@@ -95,6 +95,7 @@ func NewCharacter() (c *Character) {
 	c.Uuid = uuid
 	c.Color = &Color{int32(rand.Intn(256)), int32(rand.Intn(256)), int32(rand.Intn(256))}
 	c.CharacterType = "Player"
+	c.MaxHealth = 100.0
 	c.Ability = &Ability{}
 	c.Ability.SPD = 1.0
 	c.Ability.TSPD = 1.0

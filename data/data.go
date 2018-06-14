@@ -18,7 +18,8 @@ type Obj struct {
 type Objs map[string]Obj
 
 func ReadObjData() Objs {
-	raw, err := ioutil.ReadFile("./data/PhysicObj.json")
+	dir := os.Getenv("GOPATH")
+	raw, err := ioutil.ReadFile(dir + "/src/github.com/daniel840829/gameServer/data/PhysicObj.json")
 	if err != nil {
 		log.Fatal(err.Error())
 		os.Exit(1)

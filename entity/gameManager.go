@@ -9,6 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"reflect"
 	"sync"
+	"time"
 )
 
 type GameManager struct {
@@ -18,6 +19,8 @@ type GameManager struct {
 	thisType reflect.Type
 	////child component
 	//rpcCallableObject map[int64]reflect.Value
+	//time calibration
+
 	//room
 	rl          sync.RWMutex
 	TypeMapRoom map[string]reflect.Type
@@ -27,6 +30,9 @@ type GameManager struct {
 	TypeMapEntity     map[string]reflect.Type
 	IdMapEntity       map[int64]IEntity
 	UserIdMapEntityId map[int64]int64
+	UserIdMapRoomId   sync.Map
+	//Buffer
+
 	////rpc channel
 	SendFuncToClient   map[int64](chan *CallFuncInfo)
 	RecvFuncFromClient chan *CallFuncInfo
@@ -43,6 +49,7 @@ func (gm *GameManager) Init(rpc *service.Rpc) {
 	gm.TypeMapEntity = make(map[string]reflect.Type)
 	gm.IdMapEntity = make(map[int64]IEntity)
 	gm.UserIdMapEntityId = make(map[int64]int64)
+	gm.UserIdMapRoomId = sync.Map{}
 	//gm.rpcCallableObject = make(map[int64]reflect.Value)
 	gm.SendFuncToClient = rpc.SendFuncToClient
 	gm.RecvFuncFromClient = rpc.RecvFuncFromClient
@@ -67,6 +74,16 @@ func (gm *GameManager) Run() {
 	}
 }
 
+func (gm *GameManager) Calibrate(f *CallFuncInfo) {
+	f_send := &CallFuncInfo{}
+	//client time
+	f_send.TargetId = f.TimeStamp
+	//recieve time
+	f_send.FromId = int64(time.Now().UnixNano() / 1000000)
+	f_send.Func = "Calibrate"
+	gm.SendFuncToClient[f.FromId] <- f_send
+}
+
 func (gm *GameManager) RegistRoom(roomTypeName string, iRoom IRoom) {
 	if _, ok := gm.TypeMapRoom[roomTypeName]; ok {
 		log.Fatal(roomTypeName, "is already registed.")
@@ -74,6 +91,10 @@ func (gm *GameManager) RegistRoom(roomTypeName string, iRoom IRoom) {
 	vRoom := reflect.ValueOf(iRoom)
 	gm.TypeMapRoom[roomTypeName] = vRoom.Type().Elem()
 	//TODO : Record method info to speed up reflection invoke.
+}
+
+func (gm *GameManager) DestroyEntity(entityId int64) {
+	delete(gm.IdMapEntity, entityId)
 }
 
 func (gm *GameManager) Call(f *CallFuncInfo) {
@@ -102,6 +123,18 @@ func (gm *GameManager) Call(f *CallFuncInfo) {
 			log.Warn(targetType, " is not callable!")
 		}
 	*/
+}
+
+func (gm *GameManager) UserDisconnect(f *CallFuncInfo) {
+	userId := f.TargetId
+	log.Debug("[GM]{UserDisconnect}", userId)
+	v, ok := gm.UserIdMapRoomId.Load(userId)
+	if !ok {
+		return
+	}
+	roomId := v.(int64)
+	room := gm.IdMapRoom[roomId]
+	room.UserDisconnect(userId)
 }
 
 func (gm *GameManager) Entity(f *CallFuncInfo) {
@@ -134,6 +167,7 @@ func (gm *GameManager) SyncPos(input *Input) {
 	entity, ok := gm.IdMapEntity[gm.UserIdMapEntityId[input.UserId]]
 	if !ok {
 		log.Warn("No Such Entity id", input.UserId)
+		return
 	}
 	//TODO
 	//if timestamp is too far from
@@ -168,7 +202,7 @@ func (gm *GameManager) CreateNewRoom(f *CallFuncInfo) {
 	gm.rl.Lock()
 	gm.IdMapRoom[id] = room
 	gm.rl.Unlock()
-	gm.getMyRoom(f.FromId, roomInfo)
+	gm.getAllRoomInfo(f.FromId)
 }
 
 func (gm *GameManager) RegistEnitity(EntityTypeName string, iEntity IEntity) {
@@ -201,6 +235,25 @@ func (gm *GameManager) CreatePlayer(room *Room, entityType string, userInfo *Use
 	return entity
 }
 
+func (gm *GameManager) CreateEntity(room *Room, entityInfo *Character, entityType string) IEntity {
+	tEntity, ok := gm.TypeMapEntity[entityType]
+	if !ok {
+		log.Warn(entityType, " is not registed yet. ")
+		return nil
+	}
+	entity, ok := reflect.New(tEntity).Interface().(IEntity)
+	if !ok {
+		log.Warn("Something Wrong with RegistEnitity")
+		return nil
+	}
+	entity.Init(gm, room, entityInfo)
+	gm.rl.Lock()
+	gm.IdMapEntity[entityInfo.Uuid] = entity
+	gm.rl.Unlock()
+	return entity
+
+}
+
 //Not Done Yet
 func (gm *GameManager) GetRoomStatus(f *CallFuncInfo) {
 	//leftSecond := gm.IdMapRoom[f.TargetId].GetStatus()
@@ -211,6 +264,7 @@ func (gm *GameManager) EnterRoom(f *CallFuncInfo) {
 	log.Debug("{GM}[EnterRoom]Excute")
 	if ok := gm.IdMapRoom[f.TargetId].EnterRoom(f.FromId); ok {
 		gm.enterRoom(f.FromId, gm.IdMapRoom[f.TargetId].GetInfo())
+		gm.UserIdMapRoomId.Store(f.FromId, f.TargetId)
 	}
 }
 
@@ -219,7 +273,12 @@ func (gm *GameManager) GetAllRoomInfo(f *CallFuncInfo) {
 }
 
 func (gm *GameManager) LeaveRoom(f *CallFuncInfo) {
-	gm.IdMapRoom[f.TargetId].LeaveRoom(f.FromId)
+	id := gm.IdMapRoom[f.TargetId].LeaveRoom(f.FromId)
+	f_send := &CallFuncInfo{
+		Func:     "LeaveRoom",
+		TargetId: id,
+	}
+	gm.SendFuncToClient[f.FromId] <- f_send
 }
 
 func (gm *GameManager) GetLoginData(f *CallFuncInfo) {

@@ -203,11 +203,16 @@ func (rpc *Rpc) Disconnect(userId int64) bool {
 	if closeCh, ok := rpc.IsDisconnect.Load(userId); ok {
 		rpc.Lock()
 		user.Manager.Logout(userId)
+		rpc.RecvFuncFromClient <- &CallFuncInfo{
+			Func:     "UserDisconnect",
+			TargetId: userId,
+		}
 		close(closeCh.(chan struct{}))
 		delete(rpc.SendFuncToClient, userId)
 		delete(rpc.ErrToClient, userId)
 		delete(rpc.PosToClient, userId)
 		rpc.IsDisconnect.Delete(userId)
+		//GM ROOM DISConnect
 		rpc.Unlock()
 		return true
 	} else {

@@ -4,6 +4,7 @@ import (
 	. "github.com/daniel840829/gameServer/msg"
 	"github.com/daniel840829/gameServer/physic"
 	"github.com/daniel840829/gameServer/user"
+	. "github.com/daniel840829/gameServer/uuid"
 	"github.com/gazed/vu/math/lin"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
@@ -30,9 +31,11 @@ type IRoom interface {
 	IGameBehavier
 	Init(*GameManager, *RoomInfo)
 	//CreateEnitity()
+	UserDisconnect(userId int64)
+	UserReconnect(userId int64)
 	GetInfo() *RoomInfo
 	EnterRoom(int64) bool
-	LeaveRoom(int64) bool
+	LeaveRoom(int64) int64
 	Ready(int64) bool
 	GetUserInRoom() []int64
 }
@@ -42,19 +45,40 @@ type Room struct {
 	sync.RWMutex
 	EntityInRoom map[int64]IEntity
 	GM           *GameManager
-	EntityOfUser map[int64]int64
+	EntityOfUser map[int64]int64 //map[id]id
 	World        *physic.World
-	PosChans     [](chan *Position)
-	FuncChans    [](chan *CallFuncInfo)
+	PosChans     map[int64](chan *Position)
+	FuncChans    map[int64](chan *CallFuncInfo)
+	roomEndChan  chan (struct{})
+}
+
+func (r *Room) UserDisconnect(userId int64) {
+	entity, ok := r.EntityInRoom[r.GM.UserIdMapEntityId[userId]]
+	if !ok {
+		log.Info("Entity of User[", userId, "] is not created yet.")
+
+	} else {
+
+		entity.Destroy()
+	}
+	r.LeaveRoom(userId)
+	if len(r.GetInfo().UserInRoom) == 0 {
+		r.Destroy()
+	}
+}
+
+func (r *Room) UserReconnect(userId int64) {
+	//TODO
 }
 
 func (r *Room) Init(gm *GameManager, roomInfo *RoomInfo) {
 	r.World = &physic.World{}
+	r.roomEndChan = make(chan (struct{}))
 	r.GM = gm
 	r.EntityInRoom = make(map[int64]IEntity)
 	r.EntityOfUser = make(map[int64]int64)
-	r.PosChans = make([](chan *Position), 0)
-	r.FuncChans = make([](chan *CallFuncInfo), 0)
+	r.PosChans = make(map[int64](chan *Position), 0)
+	r.FuncChans = make(map[int64](chan *CallFuncInfo), 0)
 	r.Lock()
 	r.RoomInfo = roomInfo
 	r.World.Init(r.RoomInfo.Uuid)
@@ -75,13 +99,29 @@ func (r *Room) Tick() {
 	}
 }
 func (r *Room) Destroy() {
+	log.Debug("[Room]{Destroy}")
+	r.Lock()
+	r.roomEndChan <- struct{}{}
+	r.World.Destroy()
+	r.Unlock()
+	r = nil
 }
 
+func (r *Room) DestroyEntity(id int64) {
+	r.Lock()
+	delete(r.EntityInRoom, id)
+	if _, ok := r.EntityOfUser[id]; ok {
+		delete(r.EntityOfUser, id)
+	}
+	f := &CallFuncInfo{}
+	f.Func = "DestroyEntity"
+	f.TargetId = id
+	r.SendFuncToAll(f)
+	r.Unlock()
+}
 func (r *Room) GetInfo() *RoomInfo {
-	log.Debug("[Room][GetInfo] wait get lock")
 	r.RLock()
 	roomInfo, _ := proto.Clone(r.RoomInfo).(*RoomInfo)
-	log.Debug("[Room][GetInfo]", roomInfo, r.RoomInfo)
 	r.RUnlock()
 	return roomInfo
 }
@@ -94,16 +134,14 @@ func (r *Room) Ready(userId int64) bool {
 	return true
 }
 func (r *Room) EnterRoom(userId int64) bool {
-	log.Debug("[Room][EnterRoom] wait get lock")
 	r.Lock()
-	/*
-		if _, ok := r.RoomInfo.UserInRoom[userId]; ok {
-			r.roomInfoLock.Unlock()
-			return false
-		}
-	*/
-	r.PosChans = append(r.PosChans, r.GM.PosToClient[userId])
-	r.FuncChans = append(r.FuncChans, r.GM.SendFuncToClient[userId])
+	if _, ok := r.RoomInfo.UserInRoom[userId]; ok {
+		r.Unlock()
+		log.Debug("User", userId, " is already in room")
+		return false
+	}
+	r.PosChans[userId] = r.GM.PosToClient[userId]
+	r.FuncChans[userId] = r.GM.SendFuncToClient[userId]
 	r.RoomInfo.UserInRoom[userId] = user.Manager.GetUserInfo(userId)
 	r.RoomInfo.ReadyUser[userId] = false
 	log.Debug("{Room}[EnterRoom]", r.RoomInfo.UserInRoom)
@@ -111,12 +149,15 @@ func (r *Room) EnterRoom(userId int64) bool {
 	return true
 }
 
-func (r *Room) LeaveRoom(userId int64) bool {
+func (r *Room) LeaveRoom(userId int64) int64 {
 	r.Lock()
+	log.Debug("[room]{LeaveRoom}")
 	delete(r.RoomInfo.UserInRoom, userId)
 	delete(r.RoomInfo.ReadyUser, userId)
+	delete(r.FuncChans, userId)
+	delete(r.PosChans, userId)
 	r.Unlock()
-	return false
+	return r.RoomInfo.Uuid
 }
 func (r *Room) Run() {
 	//Read Info
@@ -136,15 +177,18 @@ func (r *Room) Run() {
 	}
 	log.Debug("{room}[Run]:start")
 	r.createPlayers()
+	r.CreateEnemies()
 	r.start()
 	physicUpdate := time.NewTicker(PHYSIC_UPDATE_INTERVAL)
 	frameUpdate := time.NewTicker(FRAME_INTERVAL)
 	for {
 		select {
 		case <-frameUpdate.C:
-			go r.Tick()
+			r.Tick()
 		case <-physicUpdate.C:
-			go r.PhysicUpdate()
+			r.PhysicUpdate()
+		case <-r.roomEndChan:
+			return
 		}
 	}
 }
@@ -163,34 +207,76 @@ func (r *Room) GetAllTransform() {
 	pos := r.World.GetAllTransform()
 	//log.Debug("[room]{GetAllTransform}GetAllTransform time:", (time.Now().UnixNano() - t1))
 	pos.TimeStamp = int64(time.Now().UnixNano() / 1000000)
-	for _, posChan := range r.PosChans {
-		posChan <- pos
-	}
+	go func() {
+		for _, posChan := range r.PosChans {
+			posChan <- pos
+		}
+	}()
 }
 
 func (r *Room) SendFuncToAll(f *CallFuncInfo) {
-	for _, funcChan := range r.FuncChans {
-		funcChan <- f
+
+	go func() {
+		for _, funcChan := range r.FuncChans {
+			funcChan <- f
+		}
+	}()
+}
+
+func (r *Room) CreateEnemies() {
+	log.Debug("[Room]{CreateEnemies}")
+	for i := 0; i < 1; i++ {
+		r.CreateEnemy()
 	}
+}
+
+func (r *Room) CreateEnemy() {
+	r.Lock()
+	log.Debug("[Room]{CreateEnemy}")
+	entityInfo := &Character{
+		MaxHealth:     100.0,
+		CharacterType: "Enemy",
+		Color: &Color{
+			B: 255.0,
+			R: 0.0,
+			G: 0.0,
+		},
+		Ability: &Ability{
+			SPD:  0.5,
+			TSPD: 1.0,
+		},
+	}
+	entityInfo.Uuid, _ = Uid.NewId(ENTITY_ID)
+	q := physic.EulerToQuaternion(0.0, 0.0, 0.0)
+	p := lin.NewV3S((rand.Float64()*64 - 32), (rand.Float64()*64 - 32), 1.0)
+	r.World.CreateEntity("Tank", entityInfo.Uuid, *p, *q)
+	entity := r.GM.CreateEntity(r, entityInfo, "Enemy")
+	if entity == nil {
+		return
+	}
+	r.createEntity(entity, p, q)
+	r.Unlock()
 }
 func (r *Room) createPlayers() {
 	r.RLock()
-	for _, userInfo := range r.RoomInfo.UserInRoom {
+	for id, userInfo := range r.RoomInfo.UserInRoom {
+		log.Debug("[RoomInfo.UserInRoom]", id, userInfo)
 		if userInfo.UsedCharacter == int64(0) {
 			for id, _ := range userInfo.OwnCharacter {
 				userInfo.UsedCharacter = id
 				break
 			}
 		}
+		entityInfo := userInfo.OwnCharacter[userInfo.UsedCharacter]
+		q := physic.EulerToQuaternion(0.0, 0.0, 0.0)
+		p := lin.NewV3S((rand.Float64()*64 - 32), (rand.Float64()*64 - 32), 1.0)
+		r.World.CreateEntity("Tank", entityInfo.Uuid, *p, *q)
 		entity := r.GM.CreatePlayer(r, "Player", userInfo)
 		if entity == nil {
 			return
 		}
-		q := physic.EulerToQuaternion(0.0, 0.0, 0.0)
-		p := lin.NewV3S((rand.Float64()*64 - 32), (rand.Float64()*64 - 32), 1.0)
-		r.World.CreateEntity("Tank", entity.GetInfo().Uuid, *p, *q)
+		r.EntityOfUser[entityInfo.Uuid] = userInfo.Uuid
 		r.createEntity(entity, p, q)
-
 	}
 	r.RUnlock()
 }
@@ -210,8 +296,11 @@ func (r *Room) createEntity(iEntity IEntity, position *lin.V3, quaternion *lin.Q
 	r.SendFuncToAll(f) //r.Unlock()
 }
 
-func (r *Room) CreateShell(entityInfo *Character, p *Vector3, q *Quaternion) {
+//TODO : These two function should be combined
+func (r *Room) CreateShell(iEntity IEntity, entityInfo *Character, p *Vector3, q *Quaternion) {
 	//send msg to all
+	r.EntityInRoom[entityInfo.Uuid] = iEntity
+
 	f := &CallFuncInfo{}
 	f.Func = "CreateShell"
 	f.FromPos = &TransForm{Position: p, Rotation: q}
@@ -232,8 +321,10 @@ func (r *Room) start() {
 	r.RUnlock()
 }
 func (r *Room) PhysicUpdate() {
+	//r.Lock()
 	r.World.PhysicUpdate()
 	for _, entity := range r.EntityInRoom {
 		entity.PhysicUpdate()
 	}
+	//r.Lock()
 }

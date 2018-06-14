@@ -61,28 +61,28 @@ namespace Msg {
             "ASgDGkAKD1VzZXJJblJvb21FbnRyeRILCgNrZXkYASABKAMSHAoFdmFsdWUY",
             "AiABKAsyDS5tc2cuVXNlckluZm86AjgBGjAKDlJlYWR5VXNlckVudHJ5EgsK",
             "A2tleRgBIAEoAxINCgV2YWx1ZRgCIAEoCDoCOAEiNgoKUm9vbVN0YXR1cxIN",
-            "CglQcmVwYXJpbmcQABINCglPblBsYXlpbmcQARIKCgZFbmRpbmcQAiLmAgoJ",
+            "CglQcmVwYXJpbmcQABINCglPblBsYXlpbmcQARIKCgZFbmRpbmcQAiL5AgoJ",
             "Q2hhcmFjdGVyEgwKBFV1aWQYASABKAMSFQoNQ2hhcmFjdGVyVHlwZRgCIAEo",
             "CRIMCgROYW1lGAMgASgJEhkKBUNvbG9yGAQgASgLMgoubXNnLkNvbG9yEg0K",
-            "BUxldmVsGAUgASgFEgsKA0V4cBgGIAEoBRIdCgdBYmlsaXR5GAcgASgLMgwu",
-            "bXNnLkFiaWxpdHkSNgoMRXF1aXBtZW50TWFwGAggAygLMiAubXNnLkNoYXJh",
-            "Y3Rlci5FcXVpcG1lbnRNYXBFbnRyeRImCgRBdHRyGAkgAygLMhgubXNnLkNo",
-            "YXJhY3Rlci5BdHRyRW50cnkaQwoRRXF1aXBtZW50TWFwRW50cnkSCwoDa2V5",
-            "GAEgASgDEh0KBXZhbHVlGAIgASgLMg4ubXNnLkVxdWlwbWVudDoCOAEaKwoJ",
-            "QXR0ckVudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoAjoCOAEiKAoF",
-            "Q29sb3ISCQoBUhgBIAEoBRIJCgFHGAIgASgFEgkKAUIYAyABKAUingEKCUVx",
-            "dWlwbWVudBIMCgROYW1lGAEgASgJEgwKBFR5cGUYAiABKAkSDAoEVXVpZBgD",
-            "IAEoAxIZCgVDb2xvchgEIAEoCzIKLm1zZy5Db2xvchIdCgdBYmlsaXR5GAUg",
-            "ASgLMgwubXNnLkFiaWxpdHkSCgoCQ0QYBiABKAUSDgoGVXNhYmxlGAcgASgF",
-            "EhEKCUludmVudG9yeRgIIAEoBSJYCgdBYmlsaXR5EgsKA0FUSxgBIAEoBRIL",
-            "CgNERUYYAiABKAUSCwoDU1BEGAMgASgCEgwKBFRTUEQYBiABKAISCgoCTVAY",
-            "BCABKAUSDAoETUFLVBgFIAEoBTL1AQoDUnBjEioKB1N5bmNQb3MSCi5tc2cu",
-            "SW5wdXQaDS5tc2cuUG9zaXRpb24iACgBMAESOAoKQ2FsbE1ldGhvZBIRLm1z",
-            "Zy5DYWxsRnVuY0luZm8aES5tc2cuQ2FsbEZ1bmNJbmZvIgAoATABEiwKDEVy",
-            "cm9yUGlwTGluZRIKLm1zZy5FcnJvchoKLm1zZy5FcnJvciIAKAEwARIpCgVM",
-            "b2dpbhIPLm1zZy5Mb2dpbklucHV0Gg0ubXNnLlVzZXJJbmZvIgASLwoNQ3Jl",
-            "YXRlQWNjb3VudBIQLm1zZy5SZWdpc3RJbnB1dBoKLm1zZy5FcnJvciIAYgZw",
-            "cm90bzM="));
+            "BUxldmVsGAUgASgFEgsKA0V4cBgGIAEoBRIRCglNYXhIZWFsdGgYCiABKAIS",
+            "HQoHQWJpbGl0eRgHIAEoCzIMLm1zZy5BYmlsaXR5EjYKDEVxdWlwbWVudE1h",
+            "cBgIIAMoCzIgLm1zZy5DaGFyYWN0ZXIuRXF1aXBtZW50TWFwRW50cnkSJgoE",
+            "QXR0chgJIAMoCzIYLm1zZy5DaGFyYWN0ZXIuQXR0ckVudHJ5GkMKEUVxdWlw",
+            "bWVudE1hcEVudHJ5EgsKA2tleRgBIAEoAxIdCgV2YWx1ZRgCIAEoCzIOLm1z",
+            "Zy5FcXVpcG1lbnQ6AjgBGisKCUF0dHJFbnRyeRILCgNrZXkYASABKAkSDQoF",
+            "dmFsdWUYAiABKAI6AjgBIigKBUNvbG9yEgkKAVIYASABKAUSCQoBRxgCIAEo",
+            "BRIJCgFCGAMgASgFIp4BCglFcXVpcG1lbnQSDAoETmFtZRgBIAEoCRIMCgRU",
+            "eXBlGAIgASgJEgwKBFV1aWQYAyABKAMSGQoFQ29sb3IYBCABKAsyCi5tc2cu",
+            "Q29sb3ISHQoHQWJpbGl0eRgFIAEoCzIMLm1zZy5BYmlsaXR5EgoKAkNEGAYg",
+            "ASgFEg4KBlVzYWJsZRgHIAEoBRIRCglJbnZlbnRvcnkYCCABKAUiWAoHQWJp",
+            "bGl0eRILCgNBVEsYASABKAUSCwoDREVGGAIgASgFEgsKA1NQRBgDIAEoAhIM",
+            "CgRUU1BEGAYgASgCEgoKAk1QGAQgASgFEgwKBE1BS1QYBSABKAUy9QEKA1Jw",
+            "YxIqCgdTeW5jUG9zEgoubXNnLklucHV0Gg0ubXNnLlBvc2l0aW9uIgAoATAB",
+            "EjgKCkNhbGxNZXRob2QSES5tc2cuQ2FsbEZ1bmNJbmZvGhEubXNnLkNhbGxG",
+            "dW5jSW5mbyIAKAEwARIsCgxFcnJvclBpcExpbmUSCi5tc2cuRXJyb3IaCi5t",
+            "c2cuRXJyb3IiACgBMAESKQoFTG9naW4SDy5tc2cuTG9naW5JbnB1dBoNLm1z",
+            "Zy5Vc2VySW5mbyIAEi8KDUNyZWF0ZUFjY291bnQSEC5tc2cuUmVnaXN0SW5w",
+            "dXQaCi5tc2cuRXJyb3IiAGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.AnyReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
@@ -99,7 +99,7 @@ namespace Msg {
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.UserInfo), global::Msg.UserInfo.Parser, new[]{ "UserName", "Uuid", "OwnCharacter", "UsedCharacter" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.UserState), global::Msg.UserState.Parser, new[]{ "State" }, null, new[]{ typeof(global::Msg.UserState.Types.UserStatus) }, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.RoomInfo), global::Msg.RoomInfo.Parser, new[]{ "Uuid", "Name", "GameType", "OwnerUuid", "UserInRoom", "ReadyUser", "Status", "LeftMilliSecond" }, null, new[]{ typeof(global::Msg.RoomInfo.Types.RoomStatus) }, new pbr::GeneratedClrTypeInfo[] { null, null, }),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Character), global::Msg.Character.Parser, new[]{ "Uuid", "CharacterType", "Name", "Color", "Level", "Exp", "Ability", "EquipmentMap", "Attr" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, }),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Character), global::Msg.Character.Parser, new[]{ "Uuid", "CharacterType", "Name", "Color", "Level", "Exp", "MaxHealth", "Ability", "EquipmentMap", "Attr" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Color), global::Msg.Color.Parser, new[]{ "R", "G", "B" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Equipment), global::Msg.Equipment.Parser, new[]{ "Name", "Type", "Uuid", "Color", "Ability", "CD", "Usable", "Inventory" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Msg.Ability), global::Msg.Ability.Parser, new[]{ "ATK", "DEF", "SPD", "TSPD", "MP", "MAKT" }, null, null, null)
@@ -2953,6 +2953,7 @@ namespace Msg {
       Color = other.color_ != null ? other.Color.Clone() : null;
       level_ = other.level_;
       exp_ = other.exp_;
+      maxHealth_ = other.maxHealth_;
       Ability = other.ability_ != null ? other.Ability.Clone() : null;
       equipmentMap_ = other.equipmentMap_.Clone();
       attr_ = other.attr_.Clone();
@@ -3029,6 +3030,17 @@ namespace Msg {
       }
     }
 
+    /// <summary>Field number for the "MaxHealth" field.</summary>
+    public const int MaxHealthFieldNumber = 10;
+    private float maxHealth_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float MaxHealth {
+      get { return maxHealth_; }
+      set {
+        maxHealth_ = value;
+      }
+    }
+
     /// <summary>Field number for the "Ability" field.</summary>
     public const int AbilityFieldNumber = 7;
     private global::Msg.Ability ability_;
@@ -3085,6 +3097,7 @@ namespace Msg {
       if (!object.Equals(Color, other.Color)) return false;
       if (Level != other.Level) return false;
       if (Exp != other.Exp) return false;
+      if (MaxHealth != other.MaxHealth) return false;
       if (!object.Equals(Ability, other.Ability)) return false;
       if (!EquipmentMap.Equals(other.EquipmentMap)) return false;
       if (!Attr.Equals(other.Attr)) return false;
@@ -3100,6 +3113,7 @@ namespace Msg {
       if (color_ != null) hash ^= Color.GetHashCode();
       if (Level != 0) hash ^= Level.GetHashCode();
       if (Exp != 0) hash ^= Exp.GetHashCode();
+      if (MaxHealth != 0F) hash ^= MaxHealth.GetHashCode();
       if (ability_ != null) hash ^= Ability.GetHashCode();
       hash ^= EquipmentMap.GetHashCode();
       hash ^= Attr.GetHashCode();
@@ -3143,6 +3157,10 @@ namespace Msg {
       }
       equipmentMap_.WriteTo(output, _map_equipmentMap_codec);
       attr_.WriteTo(output, _map_attr_codec);
+      if (MaxHealth != 0F) {
+        output.WriteRawTag(85);
+        output.WriteFloat(MaxHealth);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3165,6 +3183,9 @@ namespace Msg {
       }
       if (Exp != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Exp);
+      }
+      if (MaxHealth != 0F) {
+        size += 1 + 4;
       }
       if (ability_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Ability);
@@ -3199,6 +3220,9 @@ namespace Msg {
       }
       if (other.Exp != 0) {
         Exp = other.Exp;
+      }
+      if (other.MaxHealth != 0F) {
+        MaxHealth = other.MaxHealth;
       }
       if (other.ability_ != null) {
         if (ability_ == null) {
@@ -3258,6 +3282,10 @@ namespace Msg {
           }
           case 74: {
             attr_.AddEntriesFrom(input, _map_attr_codec);
+            break;
+          }
+          case 85: {
+            MaxHealth = input.ReadFloat();
             break;
           }
         }
