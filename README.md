@@ -5,7 +5,7 @@
 <h2>How to Use : </h2>
 <h3>client endpoint:</h3>
   download client code<a href="https://github.com/daniel840829/Tank-Online">Here</a>
-<h3>server endpoint<h3>
+<h3>server endpoint</h3>
   physic package is base on https://github.com/ianremmler/ode Open Dynamic Engine<br>
   use some struct to wrap ianremmler's ode golang library<br>
   Please read his repository to build ODE's share library<br>
