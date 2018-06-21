@@ -14,7 +14,7 @@ use some struct to wrapper
   - ObjData
 - rpctest
 - service
-  Use gRPC to communicate with client
+  - Use gRPC to communicate with client
   I divide the message into __ part
   Error
   Sync Postion
