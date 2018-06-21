@@ -3,7 +3,11 @@ https://github.com/daniel840829/Tank-Online
 
 The file structure:
 - data
+  - use to load some model data e.g. character or map
 - entity
+  - GameManager
+  - Entity
+  - Room
 - hmap
 - msg
 - physic
