@@ -22,9 +22,9 @@ use some struct to wrapper
       - Regist
       - Login
   - use Game Manager to select three part of these
-    -Error
-    -Sync Postion
-    -CallMathod
+    - Error
+    - Sync Postion
+    - CallMathod
 - storage
 - timeCalibrate
 - user
