@@ -6,9 +6,9 @@ import "C"
 import (
 	"github.com/daniel840829/gameServer/data"
 	. "github.com/daniel840829/gameServer/msg"
+	"github.com/daniel840829/ode"
 	"github.com/gazed/vu/math/lin"
 	"github.com/golang/protobuf/proto"
-	"github.com/ianremmler/ode"
 	log "github.com/sirupsen/logrus"
 	"math"
 	"strconv"
@@ -509,4 +509,10 @@ func V3_LinToMsg(p *lin.V3) (msg *Vector3) {
 	msg = &Vector3{}
 	msg.X, msg.Y, msg.Z = p.GetS()
 	return
+}
+
+func DirectionV3ToQuaternion(v3 ode.Vector3) ode.Quaternion {
+	angle := -1 * math.Atan2(v3.X, v3.Y)
+	targetQ := lin.NewQ().SetS(0, 0, math.Sin(angle/2), math.Cos(angle/2))
+	return Q_LinToOde(targetQ)
 }
