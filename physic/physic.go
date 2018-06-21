@@ -8,7 +8,7 @@ import (
 	. "github.com/daniel840829/gameServer/msg"
 	"github.com/gazed/vu/math/lin"
 	"github.com/golang/protobuf/proto"
-	"github.com/ianremmler/ode"
+	"github.com/daniel840829/ode"
 	log "github.com/sirupsen/logrus"
 	"math"
 	"strconv"
