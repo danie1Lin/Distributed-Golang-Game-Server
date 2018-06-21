@@ -15,12 +15,12 @@ use some struct to wrapper
 - rpctest
 - service
   - Use gRPC to communicate with client
-    - I divide the message into __ part
-      -Error
-      -Sync Postion
-      -CallMathod
-      -Regist
-      -Login
+    - I divide the message into five parts
+      - Error
+      - Sync Postion
+      - CallMathod
+      - Regist
+      - Login
   - use Game Manager to select three part of these
     -Error
     -Sync Postion
