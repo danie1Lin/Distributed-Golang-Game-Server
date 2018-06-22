@@ -511,7 +511,7 @@ func V3_LinToMsg(p *lin.V3) (msg *Vector3) {
 	return
 }
 
-func DirectionV3ToQuaternion(v3 ode.Vector3) ode.Quaternion {
+func DirectionV3ToQuaternion(v3 *lin.V3) ode.Quaternion {
 	angle := -1 * math.Atan2(v3.X, v3.Y)
 	targetQ := lin.NewQ().SetS(0, 0, math.Sin(angle/2), math.Cos(angle/2))
 	return Q_LinToOde(targetQ)

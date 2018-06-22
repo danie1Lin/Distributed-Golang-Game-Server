@@ -6,7 +6,6 @@ import (
 	"github.com/daniel840829/ode"
 	"github.com/gazed/vu/math/lin"
 	log "github.com/sirupsen/logrus"
-	"math"
 	/*
 		"fmt"
 		//p "github.com/golang/protobuf/proto"
@@ -57,7 +56,7 @@ func (e *Enemy) FindTargetAndAttack(searchRadius float64) {
 	}
 	if isFindTarget {
 		directionV3 := lin.NewV3().Sub(physic.V3_OdeToLin(targetPos), physic.V3_OdeToLin(e.Obj.CBody.Position()))
-		targetQ := physic.DirectionV3ToQuaternion(directionV3)
+		targetQ := physic.Q_OdeToLin(physic.DirectionV3ToQuaternion(directionV3))
 		NowQ := physic.Q_OdeToLin(e.Obj.CBody.Quaternion())
 		if isReadyToAttack {
 			e.Obj.CBody.SetQuaternion(physic.Q_LinToOde(targetQ))
