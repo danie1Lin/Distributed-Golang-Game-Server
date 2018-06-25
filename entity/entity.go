@@ -39,6 +39,7 @@ type Entity struct {
 	Room       *Room
 	World      *physic.World
 	Obj        *physic.Obj
+	Skill      map[string]AttackBehavier
 }
 type IEntity interface {
 	IGameBehavier
