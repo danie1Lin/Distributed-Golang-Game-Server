@@ -6,12 +6,13 @@ import (
 )
 
 const (
-	GM_ID     = "GameManager"
-	ROOM_ID   = "Room"
-	USER_ID   = "User"
-	ENTITY_ID = "Entity"
-	EQUIP_ID  = "Equipment"
-	CHA_ID    = "Character"
+	GM_ID      = "GameManager"
+	ROOM_ID    = "Room"
+	USER_ID    = "User"
+	ENTITY_ID  = "Entity"
+	EQUIP_ID   = "Equipment"
+	CHA_ID     = "Character"
+	SESSION_ID = "Session"
 )
 
 type UID struct {
@@ -50,5 +51,5 @@ func (u *UID) ParseId(id int64) (worker string, ts int64) {
 var Uid *UID = &UID{}
 
 func init() {
-	Uid.RegisterWorker(GM_ID, ROOM_ID, USER_ID, CHA_ID, ENTITY_ID, EQUIP_ID)
+	Uid.RegisterWorker(GM_ID, ROOM_ID, USER_ID, CHA_ID, ENTITY_ID, EQUIP_ID, SESSION_ID)
 }

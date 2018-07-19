@@ -1,0 +1,25 @@
+syntax = "proto3";
+package remoteProxy
+
+
+
+message Invoker {
+    string Func = 1;
+    int64 id = 2;
+    string objName = 3;
+    repeated Data Arg = 4;
+}
+
+message Data {
+    oneof data{
+        string String = 1;
+        int32 Int32 = 2;
+        int64 Int64 = 3;
+        double Double = 4;
+        float Float =5;
+    }
+}
+
+message CallableObj {
+    string Name = 1;
+}

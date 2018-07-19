@@ -8,38 +8,469 @@
 using grpc = global::Grpc.Core;
 
 namespace Msg {
-  public static partial class Rpc
+  public static partial class ClientToGame
   {
-    static readonly string __ServiceName = "msg.Rpc";
+    static readonly string __ServiceName = "msg.ClientToGame";
 
+    static readonly grpc::Marshaller<global::Msg.ServerInfo> __Marshaller_ServerInfo = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.ServerInfo.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.Success> __Marshaller_Success = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Success.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.Empty> __Marshaller_Empty = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Empty.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.Input> __Marshaller_Input = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Input.Parser.ParseFrom);
-    static readonly grpc::Marshaller<global::Msg.Position> __Marshaller_Position = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Position.Parser.ParseFrom);
-    static readonly grpc::Marshaller<global::Msg.CallFuncInfo> __Marshaller_CallFuncInfo = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.CallFuncInfo.Parser.ParseFrom);
-    static readonly grpc::Marshaller<global::Msg.Error> __Marshaller_Error = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Error.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.RoomPrepareView> __Marshaller_RoomPrepareView = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.RoomPrepareView.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.GameFrame> __Marshaller_GameFrame = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.GameFrame.Parser.ParseFrom);
+
+    static readonly grpc::Method<global::Msg.ServerInfo, global::Msg.Success> __Method_EnterRoom = new grpc::Method<global::Msg.ServerInfo, global::Msg.Success>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "EnterRoom",
+        __Marshaller_ServerInfo,
+        __Marshaller_Success);
+
+    static readonly grpc::Method<global::Msg.Empty, global::Msg.Success> __Method_LeaveRoom = new grpc::Method<global::Msg.Empty, global::Msg.Success>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "LeaveRoom",
+        __Marshaller_Empty,
+        __Marshaller_Success);
+
+    static readonly grpc::Method<global::Msg.Input, global::Msg.Success> __Method_PlayerInput = new grpc::Method<global::Msg.Input, global::Msg.Success>(
+        grpc::MethodType.ClientStreaming,
+        __ServiceName,
+        "PlayerInput",
+        __Marshaller_Input,
+        __Marshaller_Success);
+
+    static readonly grpc::Method<global::Msg.Empty, global::Msg.RoomPrepareView> __Method_UpdateRoomPrepareView = new grpc::Method<global::Msg.Empty, global::Msg.RoomPrepareView>(
+        grpc::MethodType.ServerStreaming,
+        __ServiceName,
+        "UpdateRoomPrepareView",
+        __Marshaller_Empty,
+        __Marshaller_RoomPrepareView);
+
+    static readonly grpc::Method<global::Msg.Empty, global::Msg.GameFrame> __Method_UpdateGameFrame = new grpc::Method<global::Msg.Empty, global::Msg.GameFrame>(
+        grpc::MethodType.ServerStreaming,
+        __ServiceName,
+        "UpdateGameFrame",
+        __Marshaller_Empty,
+        __Marshaller_GameFrame);
+
+    /// <summary>Service descriptor</summary>
+    public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
+    {
+      get { return global::Msg.MessageReflection.Descriptor.Services[0]; }
+    }
+
+    /// <summary>Base class for server-side implementations of ClientToGame</summary>
+    public abstract partial class ClientToGameBase
+    {
+      /// <summary>
+      ///roomManager
+      /// </summary>
+      /// <param name="request">The request received from the client.</param>
+      /// <param name="context">The context of the server-side call handler being invoked.</param>
+      /// <returns>The response to send back to the client (wrapped by a task).</returns>
+      public virtual global::System.Threading.Tasks.Task<global::Msg.Success> EnterRoom(global::Msg.ServerInfo request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      public virtual global::System.Threading.Tasks.Task<global::Msg.Success> LeaveRoom(global::Msg.Empty request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      /// <summary>
+      ///entityManager
+      /// </summary>
+      /// <param name="requestStream">Used for reading requests from the client.</param>
+      /// <param name="context">The context of the server-side call handler being invoked.</param>
+      /// <returns>The response to send back to the client (wrapped by a task).</returns>
+      public virtual global::System.Threading.Tasks.Task<global::Msg.Success> PlayerInput(grpc::IAsyncStreamReader<global::Msg.Input> requestStream, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      /// <summary>
+      ///View
+      /// </summary>
+      /// <param name="request">The request received from the client.</param>
+      /// <param name="responseStream">Used for sending responses back to the client.</param>
+      /// <param name="context">The context of the server-side call handler being invoked.</param>
+      /// <returns>A task indicating completion of the handler.</returns>
+      public virtual global::System.Threading.Tasks.Task UpdateRoomPrepareView(global::Msg.Empty request, grpc::IServerStreamWriter<global::Msg.RoomPrepareView> responseStream, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      public virtual global::System.Threading.Tasks.Task UpdateGameFrame(global::Msg.Empty request, grpc::IServerStreamWriter<global::Msg.GameFrame> responseStream, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+    }
+
+    /// <summary>Client for ClientToGame</summary>
+    public partial class ClientToGameClient : grpc::ClientBase<ClientToGameClient>
+    {
+      /// <summary>Creates a new client for ClientToGame</summary>
+      /// <param name="channel">The channel to use to make remote calls.</param>
+      public ClientToGameClient(grpc::Channel channel) : base(channel)
+      {
+      }
+      /// <summary>Creates a new client for ClientToGame that uses a custom <c>CallInvoker</c>.</summary>
+      /// <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+      public ClientToGameClient(grpc::CallInvoker callInvoker) : base(callInvoker)
+      {
+      }
+      /// <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+      protected ClientToGameClient() : base()
+      {
+      }
+      /// <summary>Protected constructor to allow creation of configured clients.</summary>
+      /// <param name="configuration">The client configuration.</param>
+      protected ClientToGameClient(ClientBaseConfiguration configuration) : base(configuration)
+      {
+      }
+
+      /// <summary>
+      ///roomManager
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The response received from the server.</returns>
+      public virtual global::Msg.Success EnterRoom(global::Msg.ServerInfo request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return EnterRoom(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///roomManager
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The response received from the server.</returns>
+      public virtual global::Msg.Success EnterRoom(global::Msg.ServerInfo request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_EnterRoom, null, options, request);
+      }
+      /// <summary>
+      ///roomManager
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncUnaryCall<global::Msg.Success> EnterRoomAsync(global::Msg.ServerInfo request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return EnterRoomAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///roomManager
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncUnaryCall<global::Msg.Success> EnterRoomAsync(global::Msg.ServerInfo request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_EnterRoom, null, options, request);
+      }
+      public virtual global::Msg.Success LeaveRoom(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return LeaveRoom(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual global::Msg.Success LeaveRoom(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_LeaveRoom, null, options, request);
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.Success> LeaveRoomAsync(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return LeaveRoomAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.Success> LeaveRoomAsync(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_LeaveRoom, null, options, request);
+      }
+      /// <summary>
+      ///entityManager
+      /// </summary>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncClientStreamingCall<global::Msg.Input, global::Msg.Success> PlayerInput(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return PlayerInput(new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///entityManager
+      /// </summary>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncClientStreamingCall<global::Msg.Input, global::Msg.Success> PlayerInput(grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncClientStreamingCall(__Method_PlayerInput, null, options);
+      }
+      /// <summary>
+      ///View
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncServerStreamingCall<global::Msg.RoomPrepareView> UpdateRoomPrepareView(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return UpdateRoomPrepareView(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///View
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncServerStreamingCall<global::Msg.RoomPrepareView> UpdateRoomPrepareView(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncServerStreamingCall(__Method_UpdateRoomPrepareView, null, options, request);
+      }
+      public virtual grpc::AsyncServerStreamingCall<global::Msg.GameFrame> UpdateGameFrame(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return UpdateGameFrame(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual grpc::AsyncServerStreamingCall<global::Msg.GameFrame> UpdateGameFrame(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncServerStreamingCall(__Method_UpdateGameFrame, null, options, request);
+      }
+      /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+      protected override ClientToGameClient NewInstance(ClientBaseConfiguration configuration)
+      {
+        return new ClientToGameClient(configuration);
+      }
+    }
+
+    /// <summary>Creates service definition that can be registered with a server</summary>
+    /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+    public static grpc::ServerServiceDefinition BindService(ClientToGameBase serviceImpl)
+    {
+      return grpc::ServerServiceDefinition.CreateBuilder()
+          .AddMethod(__Method_EnterRoom, serviceImpl.EnterRoom)
+          .AddMethod(__Method_LeaveRoom, serviceImpl.LeaveRoom)
+          .AddMethod(__Method_PlayerInput, serviceImpl.PlayerInput)
+          .AddMethod(__Method_UpdateRoomPrepareView, serviceImpl.UpdateRoomPrepareView)
+          .AddMethod(__Method_UpdateGameFrame, serviceImpl.UpdateGameFrame).Build();
+    }
+
+  }
+  public static partial class AgentToGame
+  {
+    static readonly string __ServiceName = "msg.AgentToGame";
+
+    static readonly grpc::Marshaller<global::Msg.SessionInfo> __Marshaller_SessionInfo = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.SessionInfo.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.Success> __Marshaller_Success = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Success.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.SessionKey> __Marshaller_SessionKey = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.SessionKey.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.ServerInfo> __Marshaller_ServerInfo = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.ServerInfo.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.RoomList> __Marshaller_RoomList = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.RoomList.Parser.ParseFrom);
+
+    static readonly grpc::Method<global::Msg.SessionInfo, global::Msg.Success> __Method_CreateSession = new grpc::Method<global::Msg.SessionInfo, global::Msg.Success>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "CreateSession",
+        __Marshaller_SessionInfo,
+        __Marshaller_Success);
+
+    static readonly grpc::Method<global::Msg.SessionKey, global::Msg.ServerInfo> __Method_GetGameServerInfo = new grpc::Method<global::Msg.SessionKey, global::Msg.ServerInfo>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "GetGameServerInfo",
+        __Marshaller_SessionKey,
+        __Marshaller_ServerInfo);
+
+    static readonly grpc::Method<global::Msg.SessionKey, global::Msg.RoomList> __Method_GetRoomList = new grpc::Method<global::Msg.SessionKey, global::Msg.RoomList>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "GetRoomList",
+        __Marshaller_SessionKey,
+        __Marshaller_RoomList);
+
+    /// <summary>Service descriptor</summary>
+    public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
+    {
+      get { return global::Msg.MessageReflection.Descriptor.Services[1]; }
+    }
+
+    /// <summary>Base class for server-side implementations of AgentToGame</summary>
+    public abstract partial class AgentToGameBase
+    {
+      /// <summary>
+      ///SessionManager
+      /// </summary>
+      /// <param name="request">The request received from the client.</param>
+      /// <param name="context">The context of the server-side call handler being invoked.</param>
+      /// <returns>The response to send back to the client (wrapped by a task).</returns>
+      public virtual global::System.Threading.Tasks.Task<global::Msg.Success> CreateSession(global::Msg.SessionInfo request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      public virtual global::System.Threading.Tasks.Task<global::Msg.ServerInfo> GetGameServerInfo(global::Msg.SessionKey request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      public virtual global::System.Threading.Tasks.Task<global::Msg.RoomList> GetRoomList(global::Msg.SessionKey request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+    }
+
+    /// <summary>Client for AgentToGame</summary>
+    public partial class AgentToGameClient : grpc::ClientBase<AgentToGameClient>
+    {
+      /// <summary>Creates a new client for AgentToGame</summary>
+      /// <param name="channel">The channel to use to make remote calls.</param>
+      public AgentToGameClient(grpc::Channel channel) : base(channel)
+      {
+      }
+      /// <summary>Creates a new client for AgentToGame that uses a custom <c>CallInvoker</c>.</summary>
+      /// <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+      public AgentToGameClient(grpc::CallInvoker callInvoker) : base(callInvoker)
+      {
+      }
+      /// <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+      protected AgentToGameClient() : base()
+      {
+      }
+      /// <summary>Protected constructor to allow creation of configured clients.</summary>
+      /// <param name="configuration">The client configuration.</param>
+      protected AgentToGameClient(ClientBaseConfiguration configuration) : base(configuration)
+      {
+      }
+
+      /// <summary>
+      ///SessionManager
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The response received from the server.</returns>
+      public virtual global::Msg.Success CreateSession(global::Msg.SessionInfo request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return CreateSession(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///SessionManager
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The response received from the server.</returns>
+      public virtual global::Msg.Success CreateSession(global::Msg.SessionInfo request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_CreateSession, null, options, request);
+      }
+      /// <summary>
+      ///SessionManager
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncUnaryCall<global::Msg.Success> CreateSessionAsync(global::Msg.SessionInfo request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return CreateSessionAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///SessionManager
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncUnaryCall<global::Msg.Success> CreateSessionAsync(global::Msg.SessionInfo request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_CreateSession, null, options, request);
+      }
+      public virtual global::Msg.ServerInfo GetGameServerInfo(global::Msg.SessionKey request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return GetGameServerInfo(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual global::Msg.ServerInfo GetGameServerInfo(global::Msg.SessionKey request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_GetGameServerInfo, null, options, request);
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.ServerInfo> GetGameServerInfoAsync(global::Msg.SessionKey request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return GetGameServerInfoAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.ServerInfo> GetGameServerInfoAsync(global::Msg.SessionKey request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_GetGameServerInfo, null, options, request);
+      }
+      public virtual global::Msg.RoomList GetRoomList(global::Msg.SessionKey request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return GetRoomList(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual global::Msg.RoomList GetRoomList(global::Msg.SessionKey request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_GetRoomList, null, options, request);
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.RoomList> GetRoomListAsync(global::Msg.SessionKey request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return GetRoomListAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.RoomList> GetRoomListAsync(global::Msg.SessionKey request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_GetRoomList, null, options, request);
+      }
+      /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+      protected override AgentToGameClient NewInstance(ClientBaseConfiguration configuration)
+      {
+        return new AgentToGameClient(configuration);
+      }
+    }
+
+    /// <summary>Creates service definition that can be registered with a server</summary>
+    /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+    public static grpc::ServerServiceDefinition BindService(AgentToGameBase serviceImpl)
+    {
+      return grpc::ServerServiceDefinition.CreateBuilder()
+          .AddMethod(__Method_CreateSession, serviceImpl.CreateSession)
+          .AddMethod(__Method_GetGameServerInfo, serviceImpl.GetGameServerInfo)
+          .AddMethod(__Method_GetRoomList, serviceImpl.GetRoomList).Build();
+    }
+
+  }
+  public static partial class ClientToAgent
+  {
+    static readonly string __ServiceName = "msg.ClientToAgent";
+
+    static readonly grpc::Marshaller<global::Msg.Empty> __Marshaller_Empty = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Empty.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.SessionKey> __Marshaller_SessionKey = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.SessionKey.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.ServerInfo> __Marshaller_ServerInfo = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.ServerInfo.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.LoginInput> __Marshaller_LoginInput = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.LoginInput.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.UserInfo> __Marshaller_UserInfo = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.UserInfo.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.RegistInput> __Marshaller_RegistInput = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.RegistInput.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.Error> __Marshaller_Error = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Error.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.AttrSetting> __Marshaller_AttrSetting = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.AttrSetting.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.Success> __Marshaller_Success = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Success.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.HomeView> __Marshaller_HomeView = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.HomeView.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.RoomList> __Marshaller_RoomList = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.RoomList.Parser.ParseFrom);
 
-    static readonly grpc::Method<global::Msg.Input, global::Msg.Position> __Method_SyncPos = new grpc::Method<global::Msg.Input, global::Msg.Position>(
-        grpc::MethodType.DuplexStreaming,
+    static readonly grpc::Method<global::Msg.Empty, global::Msg.SessionKey> __Method_AquireSessionKey = new grpc::Method<global::Msg.Empty, global::Msg.SessionKey>(
+        grpc::MethodType.Unary,
         __ServiceName,
-        "SyncPos",
-        __Marshaller_Input,
-        __Marshaller_Position);
+        "AquireSessionKey",
+        __Marshaller_Empty,
+        __Marshaller_SessionKey);
 
-    static readonly grpc::Method<global::Msg.CallFuncInfo, global::Msg.CallFuncInfo> __Method_CallMethod = new grpc::Method<global::Msg.CallFuncInfo, global::Msg.CallFuncInfo>(
-        grpc::MethodType.DuplexStreaming,
+    static readonly grpc::Method<global::Msg.Empty, global::Msg.ServerInfo> __Method_AquireOtherAgent = new grpc::Method<global::Msg.Empty, global::Msg.ServerInfo>(
+        grpc::MethodType.Unary,
         __ServiceName,
-        "CallMethod",
-        __Marshaller_CallFuncInfo,
-        __Marshaller_CallFuncInfo);
-
-    static readonly grpc::Method<global::Msg.Error, global::Msg.Error> __Method_ErrorPipLine = new grpc::Method<global::Msg.Error, global::Msg.Error>(
-        grpc::MethodType.DuplexStreaming,
-        __ServiceName,
-        "ErrorPipLine",
-        __Marshaller_Error,
-        __Marshaller_Error);
+        "AquireOtherAgent",
+        __Marshaller_Empty,
+        __Marshaller_ServerInfo);
 
     static readonly grpc::Method<global::Msg.LoginInput, global::Msg.UserInfo> __Method_Login = new grpc::Method<global::Msg.LoginInput, global::Msg.UserInfo>(
         grpc::MethodType.Unary,
@@ -55,30 +486,66 @@ namespace Msg {
         __Marshaller_RegistInput,
         __Marshaller_Error);
 
+    static readonly grpc::Method<global::Msg.AttrSetting, global::Msg.Success> __Method_SetAccount = new grpc::Method<global::Msg.AttrSetting, global::Msg.Success>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "SetAccount",
+        __Marshaller_AttrSetting,
+        __Marshaller_Success);
+
+    static readonly grpc::Method<global::Msg.AttrSetting, global::Msg.Success> __Method_SetCharacter = new grpc::Method<global::Msg.AttrSetting, global::Msg.Success>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "SetCharacter",
+        __Marshaller_AttrSetting,
+        __Marshaller_Success);
+
+    static readonly grpc::Method<global::Msg.Empty, global::Msg.ServerInfo> __Method_AquireGameServer = new grpc::Method<global::Msg.Empty, global::Msg.ServerInfo>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "AquireGameServer",
+        __Marshaller_Empty,
+        __Marshaller_ServerInfo);
+
+    static readonly grpc::Method<global::Msg.Empty, global::Msg.HomeView> __Method_UpdateHome = new grpc::Method<global::Msg.Empty, global::Msg.HomeView>(
+        grpc::MethodType.ServerStreaming,
+        __ServiceName,
+        "UpdateHome",
+        __Marshaller_Empty,
+        __Marshaller_HomeView);
+
+    static readonly grpc::Method<global::Msg.Empty, global::Msg.RoomList> __Method_UpdateRoomList = new grpc::Method<global::Msg.Empty, global::Msg.RoomList>(
+        grpc::MethodType.ServerStreaming,
+        __ServiceName,
+        "UpdateRoomList",
+        __Marshaller_Empty,
+        __Marshaller_RoomList);
+
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
     {
-      get { return global::Msg.MessageReflection.Descriptor.Services[0]; }
+      get { return global::Msg.MessageReflection.Descriptor.Services[2]; }
     }
 
-    /// <summary>Base class for server-side implementations of Rpc</summary>
-    public abstract partial class RpcBase
+    /// <summary>Base class for server-side implementations of ClientToAgent</summary>
+    public abstract partial class ClientToAgentBase
     {
-      public virtual global::System.Threading.Tasks.Task SyncPos(grpc::IAsyncStreamReader<global::Msg.Input> requestStream, grpc::IServerStreamWriter<global::Msg.Position> responseStream, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task<global::Msg.SessionKey> AquireSessionKey(global::Msg.Empty request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
 
-      public virtual global::System.Threading.Tasks.Task CallMethod(grpc::IAsyncStreamReader<global::Msg.CallFuncInfo> requestStream, grpc::IServerStreamWriter<global::Msg.CallFuncInfo> responseStream, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task<global::Msg.ServerInfo> AquireOtherAgent(global::Msg.Empty request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
 
-      public virtual global::System.Threading.Tasks.Task ErrorPipLine(grpc::IAsyncStreamReader<global::Msg.Error> requestStream, grpc::IServerStreamWriter<global::Msg.Error> responseStream, grpc::ServerCallContext context)
-      {
-        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
-      }
-
+      /// <summary>
+      ///Login
+      /// </summary>
+      /// <param name="request">The request received from the client.</param>
+      /// <param name="context">The context of the server-side call handler being invoked.</param>
+      /// <returns>The response to send back to the client (wrapped by a task).</returns>
       public virtual global::System.Threading.Tasks.Task<global::Msg.UserInfo> Login(global::Msg.LoginInput request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
@@ -89,67 +556,147 @@ namespace Msg {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
 
+      /// <summary>
+      ///UserSetting
+      /// </summary>
+      /// <param name="request">The request received from the client.</param>
+      /// <param name="context">The context of the server-side call handler being invoked.</param>
+      /// <returns>The response to send back to the client (wrapped by a task).</returns>
+      public virtual global::System.Threading.Tasks.Task<global::Msg.Success> SetAccount(global::Msg.AttrSetting request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      public virtual global::System.Threading.Tasks.Task<global::Msg.Success> SetCharacter(global::Msg.AttrSetting request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      /// <summary>
+      ///allocate room
+      /// </summary>
+      /// <param name="request">The request received from the client.</param>
+      /// <param name="context">The context of the server-side call handler being invoked.</param>
+      /// <returns>The response to send back to the client (wrapped by a task).</returns>
+      public virtual global::System.Threading.Tasks.Task<global::Msg.ServerInfo> AquireGameServer(global::Msg.Empty request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      /// <summary>
+      ///View
+      /// </summary>
+      /// <param name="request">The request received from the client.</param>
+      /// <param name="responseStream">Used for sending responses back to the client.</param>
+      /// <param name="context">The context of the server-side call handler being invoked.</param>
+      /// <returns>A task indicating completion of the handler.</returns>
+      public virtual global::System.Threading.Tasks.Task UpdateHome(global::Msg.Empty request, grpc::IServerStreamWriter<global::Msg.HomeView> responseStream, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      public virtual global::System.Threading.Tasks.Task UpdateRoomList(global::Msg.Empty request, grpc::IServerStreamWriter<global::Msg.RoomList> responseStream, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
     }
 
-    /// <summary>Client for Rpc</summary>
-    public partial class RpcClient : grpc::ClientBase<RpcClient>
+    /// <summary>Client for ClientToAgent</summary>
+    public partial class ClientToAgentClient : grpc::ClientBase<ClientToAgentClient>
     {
-      /// <summary>Creates a new client for Rpc</summary>
+      /// <summary>Creates a new client for ClientToAgent</summary>
       /// <param name="channel">The channel to use to make remote calls.</param>
-      public RpcClient(grpc::Channel channel) : base(channel)
+      public ClientToAgentClient(grpc::Channel channel) : base(channel)
       {
       }
-      /// <summary>Creates a new client for Rpc that uses a custom <c>CallInvoker</c>.</summary>
+      /// <summary>Creates a new client for ClientToAgent that uses a custom <c>CallInvoker</c>.</summary>
       /// <param name="callInvoker">The callInvoker to use to make remote calls.</param>
-      public RpcClient(grpc::CallInvoker callInvoker) : base(callInvoker)
+      public ClientToAgentClient(grpc::CallInvoker callInvoker) : base(callInvoker)
       {
       }
       /// <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
-      protected RpcClient() : base()
+      protected ClientToAgentClient() : base()
       {
       }
       /// <summary>Protected constructor to allow creation of configured clients.</summary>
       /// <param name="configuration">The client configuration.</param>
-      protected RpcClient(ClientBaseConfiguration configuration) : base(configuration)
+      protected ClientToAgentClient(ClientBaseConfiguration configuration) : base(configuration)
       {
       }
 
-      public virtual grpc::AsyncDuplexStreamingCall<global::Msg.Input, global::Msg.Position> SyncPos(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      public virtual global::Msg.SessionKey AquireSessionKey(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
-        return SyncPos(new grpc::CallOptions(headers, deadline, cancellationToken));
+        return AquireSessionKey(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
-      public virtual grpc::AsyncDuplexStreamingCall<global::Msg.Input, global::Msg.Position> SyncPos(grpc::CallOptions options)
+      public virtual global::Msg.SessionKey AquireSessionKey(global::Msg.Empty request, grpc::CallOptions options)
       {
-        return CallInvoker.AsyncDuplexStreamingCall(__Method_SyncPos, null, options);
+        return CallInvoker.BlockingUnaryCall(__Method_AquireSessionKey, null, options, request);
       }
-      public virtual grpc::AsyncDuplexStreamingCall<global::Msg.CallFuncInfo, global::Msg.CallFuncInfo> CallMethod(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      public virtual grpc::AsyncUnaryCall<global::Msg.SessionKey> AquireSessionKeyAsync(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
-        return CallMethod(new grpc::CallOptions(headers, deadline, cancellationToken));
+        return AquireSessionKeyAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
-      public virtual grpc::AsyncDuplexStreamingCall<global::Msg.CallFuncInfo, global::Msg.CallFuncInfo> CallMethod(grpc::CallOptions options)
+      public virtual grpc::AsyncUnaryCall<global::Msg.SessionKey> AquireSessionKeyAsync(global::Msg.Empty request, grpc::CallOptions options)
       {
-        return CallInvoker.AsyncDuplexStreamingCall(__Method_CallMethod, null, options);
+        return CallInvoker.AsyncUnaryCall(__Method_AquireSessionKey, null, options, request);
       }
-      public virtual grpc::AsyncDuplexStreamingCall<global::Msg.Error, global::Msg.Error> ErrorPipLine(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      public virtual global::Msg.ServerInfo AquireOtherAgent(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
-        return ErrorPipLine(new grpc::CallOptions(headers, deadline, cancellationToken));
+        return AquireOtherAgent(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
-      public virtual grpc::AsyncDuplexStreamingCall<global::Msg.Error, global::Msg.Error> ErrorPipLine(grpc::CallOptions options)
+      public virtual global::Msg.ServerInfo AquireOtherAgent(global::Msg.Empty request, grpc::CallOptions options)
       {
-        return CallInvoker.AsyncDuplexStreamingCall(__Method_ErrorPipLine, null, options);
+        return CallInvoker.BlockingUnaryCall(__Method_AquireOtherAgent, null, options, request);
       }
+      public virtual grpc::AsyncUnaryCall<global::Msg.ServerInfo> AquireOtherAgentAsync(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return AquireOtherAgentAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.ServerInfo> AquireOtherAgentAsync(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_AquireOtherAgent, null, options, request);
+      }
+      /// <summary>
+      ///Login
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The response received from the server.</returns>
       public virtual global::Msg.UserInfo Login(global::Msg.LoginInput request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
         return Login(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
+      /// <summary>
+      ///Login
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The response received from the server.</returns>
       public virtual global::Msg.UserInfo Login(global::Msg.LoginInput request, grpc::CallOptions options)
       {
         return CallInvoker.BlockingUnaryCall(__Method_Login, null, options, request);
       }
+      /// <summary>
+      ///Login
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The call object.</returns>
       public virtual grpc::AsyncUnaryCall<global::Msg.UserInfo> LoginAsync(global::Msg.LoginInput request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
         return LoginAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
+      /// <summary>
+      ///Login
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The call object.</returns>
       public virtual grpc::AsyncUnaryCall<global::Msg.UserInfo> LoginAsync(global::Msg.LoginInput request, grpc::CallOptions options)
       {
         return CallInvoker.AsyncUnaryCall(__Method_Login, null, options, request);
@@ -170,23 +717,161 @@ namespace Msg {
       {
         return CallInvoker.AsyncUnaryCall(__Method_CreateAccount, null, options, request);
       }
-      /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
-      protected override RpcClient NewInstance(ClientBaseConfiguration configuration)
+      /// <summary>
+      ///UserSetting
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The response received from the server.</returns>
+      public virtual global::Msg.Success SetAccount(global::Msg.AttrSetting request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
-        return new RpcClient(configuration);
+        return SetAccount(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///UserSetting
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The response received from the server.</returns>
+      public virtual global::Msg.Success SetAccount(global::Msg.AttrSetting request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_SetAccount, null, options, request);
+      }
+      /// <summary>
+      ///UserSetting
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncUnaryCall<global::Msg.Success> SetAccountAsync(global::Msg.AttrSetting request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return SetAccountAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///UserSetting
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncUnaryCall<global::Msg.Success> SetAccountAsync(global::Msg.AttrSetting request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_SetAccount, null, options, request);
+      }
+      public virtual global::Msg.Success SetCharacter(global::Msg.AttrSetting request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return SetCharacter(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual global::Msg.Success SetCharacter(global::Msg.AttrSetting request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_SetCharacter, null, options, request);
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.Success> SetCharacterAsync(global::Msg.AttrSetting request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return SetCharacterAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.Success> SetCharacterAsync(global::Msg.AttrSetting request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_SetCharacter, null, options, request);
+      }
+      /// <summary>
+      ///allocate room
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The response received from the server.</returns>
+      public virtual global::Msg.ServerInfo AquireGameServer(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return AquireGameServer(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///allocate room
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The response received from the server.</returns>
+      public virtual global::Msg.ServerInfo AquireGameServer(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_AquireGameServer, null, options, request);
+      }
+      /// <summary>
+      ///allocate room
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncUnaryCall<global::Msg.ServerInfo> AquireGameServerAsync(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return AquireGameServerAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///allocate room
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncUnaryCall<global::Msg.ServerInfo> AquireGameServerAsync(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_AquireGameServer, null, options, request);
+      }
+      /// <summary>
+      ///View
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncServerStreamingCall<global::Msg.HomeView> UpdateHome(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return UpdateHome(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      ///View
+      /// </summary>
+      /// <param name="request">The request to send to the server.</param>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The call object.</returns>
+      public virtual grpc::AsyncServerStreamingCall<global::Msg.HomeView> UpdateHome(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncServerStreamingCall(__Method_UpdateHome, null, options, request);
+      }
+      public virtual grpc::AsyncServerStreamingCall<global::Msg.RoomList> UpdateRoomList(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return UpdateRoomList(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual grpc::AsyncServerStreamingCall<global::Msg.RoomList> UpdateRoomList(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncServerStreamingCall(__Method_UpdateRoomList, null, options, request);
+      }
+      /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+      protected override ClientToAgentClient NewInstance(ClientBaseConfiguration configuration)
+      {
+        return new ClientToAgentClient(configuration);
       }
     }
 
     /// <summary>Creates service definition that can be registered with a server</summary>
     /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
-    public static grpc::ServerServiceDefinition BindService(RpcBase serviceImpl)
+    public static grpc::ServerServiceDefinition BindService(ClientToAgentBase serviceImpl)
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
-          .AddMethod(__Method_SyncPos, serviceImpl.SyncPos)
-          .AddMethod(__Method_CallMethod, serviceImpl.CallMethod)
-          .AddMethod(__Method_ErrorPipLine, serviceImpl.ErrorPipLine)
+          .AddMethod(__Method_AquireSessionKey, serviceImpl.AquireSessionKey)
+          .AddMethod(__Method_AquireOtherAgent, serviceImpl.AquireOtherAgent)
           .AddMethod(__Method_Login, serviceImpl.Login)
-          .AddMethod(__Method_CreateAccount, serviceImpl.CreateAccount).Build();
+          .AddMethod(__Method_CreateAccount, serviceImpl.CreateAccount)
+          .AddMethod(__Method_SetAccount, serviceImpl.SetAccount)
+          .AddMethod(__Method_SetCharacter, serviceImpl.SetCharacter)
+          .AddMethod(__Method_AquireGameServer, serviceImpl.AquireGameServer)
+          .AddMethod(__Method_UpdateHome, serviceImpl.UpdateHome)
+          .AddMethod(__Method_UpdateRoomList, serviceImpl.UpdateRoomList).Build();
     }
 
   }

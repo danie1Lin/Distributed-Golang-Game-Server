@@ -16,7 +16,7 @@ message Input{
 
 message TransForm {
     Vector3 Position= 1;
-    Quaternion Rotation = 2; 
+    Quaternion Rotation = 2;
 }
 
 message Vector3{
@@ -61,18 +61,124 @@ message BasicType {
     }
 }
 message Error{
-    string ErrType = 1; 
+    string ErrType = 1;
     string ErrMsg = 2;
     string RunnigNo = 3;
     int64 FromId = 4;
 }
 
-service Rpc{
-    rpc SyncPos(stream Input) returns (stream Position){}
-    rpc CallMethod(stream CallFuncInfo) returns (stream CallFuncInfo){}
-    rpc ErrorPipLine(stream Error) returns (stream Error){}
+
+service ClientToGame{
+    //roomManager
+    rpc EnterRoom(ServerInfo) returns (Success) {}
+    rpc LeaveRoom(Empty) returns (Success) {}
+    //entityManager
+    rpc PlayerInput(stream Input) returns (Success){}
+    //View
+    rpc UpdateRoomPrepareView(Empty) returns (stream RoomPrepareView) {}
+    rpc UpdateGameFrame(Empty) returns (stream GameFrame) {}
+}
+
+service AgentToGame{
+    //SessionManager
+    rpc CreateSession(SessionInfo) returns (Success) {}
+    rpc GetGameServerInfo(SessionKey) returns (ServerInfo) {}
+    rpc GetRoomList(SessionKey) returns (RoomList) {}
+}
+
+service ClientToAgent{
+    rpc AquireSessionKey(Empty) returns (SessionKey) {}
+    rpc AquireOtherAgent(Empty) returns (ServerInfo) {}
+    //Login
     rpc Login(LoginInput) returns(UserInfo){}
     rpc CreateAccount(RegistInput) returns(Error){}
+    //UserSetting
+    rpc SetAccount(AttrSetting) returns (Success) {}
+    rpc SetCharacter(AttrSetting) returns (Success) {}
+    //allocate room
+    rpc AquireGameServer(Empty) returns (ServerInfo){}
+    //View
+    rpc UpdateHome(Empty) returns (stream HomeView) {}
+    rpc UpdateRoomList(Empty) returns (stream RoomList) {}
+    //rpc UpdateRoomInfo(SessionKey) returns (stream RoomInfoView) {}
+}
+
+message Empty{
+}
+
+
+message RoomPrepareView{
+
+}
+
+message GameFrame {
+
+}
+
+message RoomView{
+
+}
+
+message HomeView {
+
+}
+
+message RoomInfoView {
+
+}
+
+message RoomList {
+    repeated RoomInfo item = 1;
+}
+
+message SessionInfo{
+    enum SessionState {
+        NoSession = 0;
+        Guest = 1;
+        UserIdle = 2;
+        UserInRoom = 3;
+        WaitToStart = 4;
+        Playing = 5;
+    }
+    enum SessionCapacity {
+        GM = 0;
+        RoomMaster = 1;
+        RoomClient = 2;
+        None = 3;
+    }
+    SessionState State = 1;
+    SessionCapacity Capacity = 2;
+    int64 Uuid = 5;
+    SessionKey Key = 3;
+    UserInfo UserInfo = 4;
+}
+
+message Success {
+    bool ok = 1;
+}
+
+message AttrSetting {
+    string Method = 1;
+    string Key = 2;
+    string Value = 3;
+}
+
+message SessionKey {
+    string Value = 1;
+}
+
+message ServerInfo {
+    enum Type {
+        GameServer = 0;
+        AgentServer = 1;
+    }
+    Type ServerType = 1;
+    string PublicKey = 2;
+    string Port = 3;
+    string Addr = 4;
+    SessionKey SessionKey = 5;
+    int64 MaxConn = 6;
+    int64 NowConn = 7;
 }
 
 message LoginInput {

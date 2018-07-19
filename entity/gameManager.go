@@ -16,7 +16,8 @@ type GameManager struct {
 	////basic information
 	Uuid int64
 	////Reflection
-	thisType reflect.Type
+	thisType    reflect.Type
+	ReflectFunc sync.Map
 	////child component
 	//rpcCallableObject map[int64]reflect.Value
 	//time calibration
@@ -50,6 +51,7 @@ func (gm *GameManager) Init(rpc *service.Rpc) {
 	gm.IdMapEntity = make(map[int64]IEntity)
 	gm.UserIdMapEntityId = make(map[int64]int64)
 	gm.UserIdMapRoomId = sync.Map{}
+
 	//gm.rpcCallableObject = make(map[int64]reflect.Value)
 	gm.SendFuncToClient = rpc.SendFuncToClient
 	gm.RecvFuncFromClient = rpc.RecvFuncFromClient
@@ -58,6 +60,11 @@ func (gm *GameManager) Init(rpc *service.Rpc) {
 	gm.ErrFromClient = rpc.ErrFromClient
 	gm.ErrToClient = rpc.ErrToClient
 	gm.thisType = reflect.TypeOf(gm)
+	gm.ReflectFunc = sync.Map{}
+	for i := 0; i < gm.thisType.NumMethod(); i++ {
+		f := gm.thisType.Method(i)
+		gm.ReflectFunc.Store(f.Name, f)
+	}
 }
 
 func (gm *GameManager) Run() {
@@ -99,6 +106,10 @@ func (gm *GameManager) DestroyEntity(entityId int64) {
 
 func (gm *GameManager) Call(f *CallFuncInfo) {
 	log.Debug("Function INFO :", f)
+	/**
+	m, ok := gm.ReflectFunc.Load(f.Func)
+	method := m.(reflect.Method)
+	**/
 	method, ok := gm.thisType.MethodByName(f.Func)
 	if !ok {
 		log.Debug("[GM]{Call}gm does not have ", f.Func, " method ")
