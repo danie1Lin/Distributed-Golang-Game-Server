@@ -89,6 +89,15 @@ func (u *User) GetInfo() *UserInfo {
 	return userInfo
 }
 
+func (u *User) SetCharacter(setting *CharacterSetting) bool {
+	if c, ok := u.UserInfo.OwnCharacter[setting.Uuid]; ok {
+		c.Equipments = setting.Equipments
+		c.Color = setting.Color
+		return true
+	} else {
+		return false
+	}
+}
 func NewCharacter() (c *Character) {
 	c = &Character{}
 	uuid, _ := Uid.NewId(CHA_ID)

@@ -70,20 +70,16 @@ message Error{
 
 service ClientToGame{
     //roomManager
-    rpc EnterRoom(ServerInfo) returns (Success) {}
-    rpc LeaveRoom(Empty) returns (Success) {}
     //entityManager
-    rpc PlayerInput(stream Input) returns (Success){}
+    rpc PlayerInput(stream Input) returns (Empty){}
     //View
-    rpc UpdateRoomPrepareView(Empty) returns (stream RoomPrepareView) {}
     rpc UpdateGameFrame(Empty) returns (stream GameFrame) {}
+    rpc Pipe(stream LogMessage) returns (stream MessageToUser) {}
 }
 
 service AgentToGame{
     //SessionManager
-    rpc CreateSession(SessionInfo) returns (Success) {}
-    rpc GetGameServerInfo(SessionKey) returns (ServerInfo) {}
-    rpc GetRoomList(SessionKey) returns (RoomList) {}
+    rpc AquireGameRoom(GameCreation) returns (PemKey) {}
 }
 
 service ClientToAgent{
@@ -94,16 +90,84 @@ service ClientToAgent{
     rpc CreateAccount(RegistInput) returns(Error){}
     //UserSetting
     rpc SetAccount(AttrSetting) returns (Success) {}
-    rpc SetCharacter(AttrSetting) returns (Success) {}
-    //allocate room
+    rpc SetCharacter(CharacterSetting) returns (Success) {}
+    //room
     rpc AquireGameServer(Empty) returns (ServerInfo){}
+    rpc CreateRoom(RoomSetting) returns (Success){}
+    rpc JoinRoom(ID) returns (Success){}
+    rpc RoomReady(Empty) returns (Success) {}
+    //Team
+    /*
+    rpc InviteTeam() returns (){}
+    rpc ReplyInvite() returns (){}
+    rpc AddFriend(FriendRequest) returns (Success) {}
+    rpc AcceptFriend(FriendRequest)returns(Success) {}
+    rpc SearchUser(SearchKeyWord) returns (SearchResult) {}
+    */
     //View
+    rpc UpdateRoomContent(Empty) returns (stream RoomContent) {}
     rpc UpdateHome(Empty) returns (stream HomeView) {}
     rpc UpdateRoomList(Empty) returns (stream RoomList) {}
+    rpc UpdateUserList(Empty) returns (stream UserList) {}
     //rpc UpdateRoomInfo(SessionKey) returns (stream RoomInfoView) {}
+    rpc Pipe(stream LogMessage) returns (stream MessageToUser) {}
+}
+
+
+
+message ID {
+    int64 Value = 1;
+}
+
+message MessageToUser {
+    enum Type {
+        ToView = 0;
+        ToDebugLog = 2;
+    }
+    Type MsgType = 1;
+    string Context = 2;
+}
+
+message LogMessage {
+    enum Level {
+        Debug = 0;
+        Info = 1;
+        Warn = 2;
+        Fatal = 3;
+    }
+    Level LogLevel = 1;
+    string Context = 2;
+}
+
+message FriendRequest{
+    int64 UserId = 1;
+    string UserName = 2;
+}
+
+message SearchKeyWord {
+    string Value = 1;
+}
+
+message SearchResult {
+    repeated UserInfo List = 1;
+}
+
+message UserList {
+    repeated UserInfo userInfos = 1;
+}
+
+message GameCreation {
+    RoomInfo RoomInfo = 1;
+    repeated SessionInfo PlayerSessions = 2;
+}
+
+message PemKey{
+    string TLS = 1;
+    string SSL = 2;
 }
 
 message Empty{
+
 }
 
 
@@ -112,23 +176,78 @@ message RoomPrepareView{
 }
 
 message GameFrame {
-
+    map<string,EntityInfo> Entitys = 1;
 }
 
-message RoomView{
 
+
+message EntityInfo{
+    int64 Uuid = 1;
+    int32 TeamNo = 4;
+    TransForm TransForm = 2;
+    int64 CharacterId = 3;
+    Skill ActiveSkill = 5;
+    string Motion = 6;
+}
+
+message Skill {
+    bool  Active = 1;
+    string Name = 2;
+    float Value = 3; 
 }
 
 message HomeView {
 
 }
 
-message RoomInfoView {
-
+message RoomSetting {
+    int32 MaxPlayer = 1;
+    string GameType = 2;
+    string Name = 3;
 }
 
+
 message RoomList {
-    repeated RoomInfo item = 1;
+    repeated RoomReview item = 1;
+}
+
+message RoomInfo{
+    int64 Uuid = 1;
+    string Name = 2;
+    string GameType = 3;
+    int64 OwnerUuid = 4;
+    map<int64, UserInfo> UserInRoom = 5;
+    map<int64,bool> ReadyUser = 6;
+    enum RoomStatus {
+        Preparing = 0;
+        OnPlaying = 1;
+        Ending = 2;
+    }
+    RoomStatus Status = 7;
+    int64 LeftMilliSecond = 8;
+}
+
+
+message RoomReview {
+    int64 Uuid = 1;
+    string Name = 2;
+    string GameType = 3;
+    int32 MaxPlayer = 4;
+    int32 InRoomPlayer = 5;
+}
+
+message RoomContent {
+    int64 Uuid = 1;
+    map<string,PlayerInfo> Players = 2;
+}
+
+message PlayerInfo {
+    int64 CharacterCode = 1;
+    int32 TeamNo = 2;
+    Character Character = 4;
+    int64 UserId = 5;
+    string UserName = 6;
+    bool IsReady = 7;
 }
 
 message SessionInfo{
@@ -201,28 +320,20 @@ message UserInfo{
 
 message UserState{
     enum UserStatus {
-        OnCreating = 0;        
+        OnCreating = 0;
         Login = 1;
         Offline = 2;
         OnPlaying = 3;
     }
-    UserStatus State = 1; 
+    UserStatus State = 1;
 }
-message RoomInfo{
+
+message CharacterSetting{
     int64 Uuid = 1;
-    string Name = 2;
-    string GameType = 3;
-    int64 OwnerUuid = 4;
-    map<int64, UserInfo> UserInRoom = 5;
-    map<int64,bool> ReadyUser = 6;
-    enum RoomStatus {
-        Preparing = 0;
-        OnPlaying = 1;
-        Ending = 2; 
-    }
-    RoomStatus Status = 7;
-    int64 LeftMilliSecond = 8;
+    Color Color = 2;
+    repeated Equipment Equipments = 8;
 }
+
 
 //character 即是沒有實體之腳色
 //entity 則藉由character來初始化
@@ -236,10 +347,9 @@ message Character {
     float MaxHealth = 10;
     //基本能力值
     Ability Ability = 7;
-    map<int64,Equipment> EquipmentMap = 8;
+    repeated Equipment Equipments = 8;
     //戰鬥時添加的狀態
     map<string,float> Attr  = 9;
-    
 }
 
 message Color {
@@ -252,7 +362,7 @@ message Equipment{
     string Name = 1;
     string Type =2 ;
     int64 Uuid = 3 ;
-    Color Color = 4;
+    repeated Color Colors = 4;
     Ability Ability =5;
     int32 CD =6;//Cool down time tick
     int32 Usable =7;
@@ -267,4 +377,3 @@ message Ability{
     int32 MP = 4;
     int32 MAKT = 5;
 }
-

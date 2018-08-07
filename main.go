@@ -4,8 +4,8 @@ import (
 	"net"
 
 	//"github.com/daniel840829/gameServer2/entity"
+	"github.com/daniel840829/gameServer2/agent"
 	"github.com/daniel840829/gameServer2/msg"
-	"github.com/daniel840829/gameServer2/service"
 	"google.golang.org/grpc"
 	//"google.golang.org/grpc/grpclog"
 	"flag"
@@ -15,9 +15,11 @@ import (
 )
 
 var (
-	serverType string = *flag.String("type", "agent", "choose server Type")
-	configFile string = *flag.String("config", "", "config file's path")
-	port       string = *flag.String("port", "8080", "port")
+	serverType       string = *flag.String("type", "agent", "choose server Type")
+	configFile       string = *flag.String("config", "", "config file's path")
+	AgentPort        string = *flag.String("agentPort", "8080", "ClientToAgent Port")
+	AgentToGamePort  string = *flag.String("agentToGamePort", "3000", "AgentToGame Port")
+	ClientToGamePort string = *flag.String("clientToGamePort", "8000", "ClientToGame Port")
 )
 
 func init() {
@@ -30,29 +32,12 @@ func init() {
 
 func main() {
 	if serverType == "agent" {
-		listen, err := net.Listen("tcp", ":"+port)
-		if err != nil {
-			fmt.Println("failed to listen: %v", err)
-		}
-		agentRpc := service.NewAgentRpc()
-		s := grpc.NewServer()
-		msg.RegisterClientToAgentServer(s, agentRpc)
-
-		fmt.Println("Listen on " + port)
-
-		s.Serve(listen)
+		RunAgent()
 	} else if serverType == "game" {
-		listen, err := net.Listen("tcp", ":"+port)
-		if err != nil {
-			fmt.Println("failed to listen: %v", err)
-		}
-		agentRpc := service.NewAgentRpc()
-		s := grpc.NewServer()
-		msg.RegisterClientToAgentServer(s, agentRpc)
-
-		fmt.Println("Listen on " + port)
-
-		s.Serve(listen)
+		RunGame()
+	} else {
+		go RunGame()
+		RunAgent()
 	}
 	/*
 		//初始化gameManager
@@ -66,4 +51,34 @@ func main() {
 		go gm.Run()
 		// 注册HelloService
 	*/
+}
+
+func RunAgent() {
+
+	listen, err := net.Listen("tcp", ":"+AgentPort)
+	if err != nil {
+		fmt.Println("failed to listen: %v", err)
+	}
+	agentRpc := agent.NewAgentRpc()
+	s := grpc.NewServer()
+	msg.RegisterClientToAgentServer(s, agentRpc)
+
+	fmt.Println("Listen on " + port)
+
+	s.Serve(listen)
+}
+
+func RunGame() {
+	listen, err := net.Listen("tcp", ":"+AgentPort)
+	if err != nil {
+		fmt.Println("failed to listen: %v", err)
+	}
+	agentRpc := agent.NewAgentRpc()
+	agentRpc.Init(AgentToGamePort)
+	s := grpc.NewServer()
+	msg.RegisterClientToAgentServer(s, agentRpc)
+
+	fmt.Println("Listen on " + port)
+
+	s.Serve(listen)
 }
