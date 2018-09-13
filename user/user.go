@@ -53,6 +53,7 @@ func (um *UserManager) Logout(userId int64) {
 	user = nil
 	um.Unlock()
 }
+
 func (um *UserManager) Regist(in *RegistInput) (*Error, error) {
 	if iter := um.Db.Find(storage.RegistInput_COLLECTION, bson.M{"username": in.UserName}); iter.Next(&RegistInput{}) {
 		return &Error{ErrMsg: "Username exists"}, nil
@@ -93,6 +94,14 @@ func (u *User) SetCharacter(setting *CharacterSetting) bool {
 	if c, ok := u.UserInfo.OwnCharacter[setting.Uuid]; ok {
 		c.Equipments = setting.Equipments
 		c.Color = setting.Color
+		u.UserInfo.UsedCharacter = setting.Uuid
+		log.Debug(u.UserInfo)
+		Manager.Db.Update(storage.UserInfo_COLLECTION, bson.M{"username": u.UserInfo.UserName}, u.UserInfo)
+		var userInfo *UserInfo
+		iter := Manager.Db.Find(storage.UserInfo_COLLECTION, bson.M{"username": u.UserInfo.UserName})
+		if iter.Next(userInfo) {
+			log.Debug("[Userinfo Update]", userInfo)
+		}
 		return true
 	} else {
 		return false
@@ -118,6 +127,7 @@ func NewUserInfo(userName string) (u *UserInfo) {
 	u.UserName = userName
 	c := NewCharacter()
 	u.OwnCharacter[c.Uuid] = c
+	u.UsedCharacter = c.Uuid
 	return
 }
 

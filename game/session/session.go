@@ -4,11 +4,12 @@ import (
 	//"github.com/daniel840829/gameServer2/entity"
 	. "github.com/daniel840829/gameServer2/msg"
 	"github.com/daniel840829/gameServer2/user"
-	. "github.com/daniel840829/gameServer2/uuid"
+	//. "github.com/daniel840829/gameServer2/uuid"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/metadata"
 	"strconv"
 	"sync"
+	"time"
 )
 
 type MsgChannel struct {
@@ -66,12 +67,19 @@ type sessionManager struct {
 	sync.RWMutex
 }
 
-func (sm *sessionManager) MakeSession() int64 {
-	s := NewSession()
+func (sm *sessionManager) MakeSession(info *SessionInfo) int64 {
+	s := NewSession(info)
 	sm.Lock()
 	sm.Sessions[s.Info.Uuid] = s
 	sm.Unlock()
 	return s.Info.Uuid
+}
+
+func (sm *sessionManager) CreateSessionFromAgent(sessionInfo *SessionInfo) *Session {
+	characterInfo := sessionInfo.UserInfo.OwnCharacter[sessionInfo.UserInfo.UsedCharacter]
+	log.Debug(characterInfo)
+	s := sm.Sessions[sm.MakeSession(sessionInfo)]
+	return s
 }
 
 func (sm *sessionManager) GetSession(md metadata.MD) *Session {
@@ -83,7 +91,10 @@ func (sm *sessionManager) GetSession(md metadata.MD) *Session {
 	if err != nil {
 		return nil
 	}
-	s := sm.Sessions[id]
+	s, ok := sm.Sessions[id]
+	if !ok {
+		return s
+	}
 	s.RLock()
 	if s.User != nil {
 		uname := md.Get("uname")
@@ -98,18 +109,20 @@ func (sm *sessionManager) GetSession(md metadata.MD) *Session {
 	s.RUnlock()
 	return s
 }
-func NewSession() *Session {
+
+func NewSession(info *SessionInfo) *Session {
 	s := &Session{
-		Info:              &SessionInfo{},
+		Info:              info,
 		MsgChannelManager: NewMsgChannelManager(),
 		PlayerInfo:        &PlayerInfo{},
 	}
-	for i := 0; i < 6; i++ {
+	for i := int32(SessionInfo_NoSession); i <= int32(SessionInfo_GameServerWaitReconnect); i++ {
 		ss := SessionStateFactory.makeSessionState(s, SessionInfo_SessionState(i))
 		s.States = append(s.States, ss)
 	}
-	s.SetState(0)
+	s.SetState(int32(SessionInfo_OnStart))
 	s.State.CreateSession()
+	s.AddMsgChan("GameFrame", 5)
 	return s
 }
 
@@ -120,11 +133,12 @@ type Session struct {
 	User       *user.User
 	States     []SessionState
 	Room       *Room
-	*MsgChannelManager
 	sync.RWMutex
 	PlayerInfo *PlayerInfo
 	TeamNo     int32
-	IsReady    bool
+	InputPool  *MsgChannel
+	InputStamp int64
+	*MsgChannelManager
 }
 
 func (s *Session) GetPlayerInfo() *PlayerInfo {
@@ -143,7 +157,6 @@ func (s *Session) GetPlayerInfo() *PlayerInfo {
 		s.PlayerInfo.Character = s.User.UserInfo.OwnCharacter[s.User.UserInfo.UsedCharacter]
 	}
 	s.PlayerInfo.TeamNo = s.TeamNo
-	s.PlayerInfo.IsReady = s.IsReady
 	return s.PlayerInfo
 }
 
@@ -171,7 +184,13 @@ type SessionState interface {
 	EndRoom() bool
 	String() string
 	Lock()
+	HandleInput(input *Input)
 	Unlock()
+	StartGame()
+	Reconnect()
+	EndConnection()
+	WaitReconnect()
+	End()
 }
 
 func (sb *SessionStateBase) SetSession(s *Session) bool {
@@ -182,11 +201,30 @@ func (sb *SessionStateBase) SetSession(s *Session) bool {
 	return true
 }
 
+func (sb *SessionStateBase) End() {
+	log.Debug("origin")
+}
+
 func (sb *SessionStateBase) String() string {
 	return SessionInfo_SessionState_name[int32(sb.StateCode)]
 }
 
-func (sb *SessionStateBase) SetStateCode(code SessionInfo_SessionState) {
+func (sb *SessionStateBase) StartGame() {
+	//TODO
+}
+
+func (sb *SessionStateBase) Reconnect() {
+
+}
+
+func (sb *SessionStateBase) WaitReconnect() {
+
+}
+func (sb *SessionStateBase) EndConnection() {
+
+}
+
+fun: (sb *SessionStateBase) SetStateCode(code SessionInfo_SessionState) {
 	sb.StateCode = code
 }
 func (sb *SessionStateBase) GetStateCode() SessionInfo_SessionState {
@@ -195,6 +233,10 @@ func (sb *SessionStateBase) GetStateCode() SessionInfo_SessionState {
 func (sb *SessionStateBase) CreateSession() int64 {
 	return 0
 }
+
+func (sb *SessionStateBase) HandleInput(input *Input) {
+}
+
 func (sb *SessionStateBase) Login(uname string, pswd string) *user.User {
 	return nil
 }
@@ -242,142 +284,89 @@ type SessionStateBase struct {
 	sync.RWMutex
 }
 
-type NoSessionState struct {
+type SessionStateGameOnStart struct {
 	SessionStateBase
 }
 
-func (ss *NoSessionState) CreateSession() int64 {
-	//TODO
-	s := ss.Session
-	s.Lock()
-	s.Info.Uuid, _ = Uid.NewId(SESSION_ID)
-	uuid := s.Info.Uuid
-	ss.Session.SetState(int32(ss.StateCode) + 1)
-	s.Unlock()
-	return uuid
+func (ssgos *SessionStateGameOnStart) StartGame() {
+	//firsttimeGetGameframe
+	ssgos.Session.Room.GameStart <- struct{}{}
+	ssgos.Session.SetState(int32(SessionInfo_Playing))
+	log.Debug("state code :", int32(ssgos.Session.State.GetStateCode()))
 }
 
-type GuestSessionState struct {
+type SessionStatePlaying struct {
 	SessionStateBase
 }
 
-func (ss *GuestSessionState) Regist(uname string, pswd string, info ...string) bool {
-	//TODO
-	in := &RegistInput{UserName: uname, Pswd: pswd}
-	_, err := user.Manager.Regist(in)
-	if err != nil {
-		return false
+func (sb *SessionStatePlaying) HandleInput(input *Input) {
+	if sb.Session.InputStamp > input.TimeStamp {
+		log.Debug("input sequence is disorder")
 	}
-	return true
+	sb.Session.InputPool.DataCh <- input
 }
 
-func (ss *GuestSessionState) Login(uname string, pswd string) *user.User {
-	//TODO
-	in := &LoginInput{UserName: uname, Pswd: pswd}
-	userInfo, err := user.Manager.Login(in)
-	if err != nil {
-		log.Warn(err)
-	}
-	if userInfo == nil {
-		return nil
-	}
-	user := user.Manager.UserOnline[userInfo.Uuid]
-	ss.Session.User = user
-	ss.Session.SetState(int32(ss.StateCode) + 1)
-	log.Info("user state:", ss.Session.State)
-	ss.Session.AddMsgChan("RoomList", 2)
-	RoomManager.AddIdleUserMsgChan(ss.Session.GetMsgChan("RoomList"))
-	RoomManager.UpdateRoomList()
-	return user
+func (sb *SessionStatePlaying) WaitReconnect() {
+	sb.Session.SetState(int32(SessionInfo_GameServerWaitReconnect))
 }
 
-type UserIdleSessionState struct {
+func (sb *SessionStatePlaying) EndConnection() {
+	sb.Session.SetState(int32(SessionInfo_GameOver))
+	log.Debug("state code :", int32(sb.Session.State.GetStateCode()))
+	sb.Session.State.End()
+}
+
+type SessionStateWaitingReconnection struct {
 	SessionStateBase
 }
 
-func (ss *UserIdleSessionState) CreateRoom(roomSetting *RoomSetting) bool {
-	//TODO
-	ss.Session.Info.Capacity = SessionInfo_RoomMaster
-	ss.Session.AddMsgChan("RoomContent", 2)
-	room := RoomManager.CreateRoom(ss.Session, roomSetting)
-	ss.Session.Room = room
-	ss.Session.SetState(int32(ss.StateCode) + 1)
-	RoomManager.RemoveIdleUserMsgChan(ss.Session.GetMsgChan("RoomList"))
-	ss.Session.CloseMsgChan("RoomList")
-
-	return true
-}
-
-func (ss *UserIdleSessionState) EnterRoom(roomId int64) bool {
-	room := RoomManager.Rooms[roomId]
-	if room != nil {
-		ss.Session.AddMsgChan("RoomContent", 2)
-		if room.EnterRoom(ss.Session) {
-			ss.Session.Room = room
-			ss.Session.SetState(int32(ss.StateCode) + 1)
-			RoomManager.RemoveIdleUserMsgChan(ss.Session.GetMsgChan("RoomList"))
-			ss.Session.CloseMsgChan("RoomList")
-			return true
-		} else {
-			ss.Session.CloseMsgChan("RoomContent")
+func (sswr *SessionStateWaitingReconnection) Waiting() {
+	go func() {
+		c := time.After(10 * time.Second)
+	END:
+		for {
+			select {
+			case <-c:
+				break END
+			}
 		}
+
+		log.Warn("Exceed waiting time, end connection!")
+		sswr.EndConnection()
+	}()
+}
+
+func (sswr *SessionStateWaitingReconnection) EndConnection() {
+	sswr.Session.SetState(int32(SessionInfo_GameOver))
+	log.Debug("state code :", int32(sswr.Session.State.GetStateCode()))
+	sswr.Session.State.End()
+}
+
+func (sswr *SessionStateWaitingReconnection) StartGame() {
+	sswr.Reconnect()
+	log.Debug("state code :", int32(sswr.Session.State.GetStateCode()))
+}
+
+func (sswr *SessionStateWaitingReconnection) Reconnect() {
+	sswr.Session.SetState(int32(SessionInfo_Playing))
+	log.Debug("state code :", int32(sswr.Session.State.GetStateCode()))
+	sswr.Session.Room.Client[sswr.Session] = struct{}{}
+}
+
+type SessionStateGameOver struct {
+	SessionStateBase
+}
+
+func (ssgo *SessionStateGameOver) End() {
+	ssgo.Session.Lock()
+	if ssgo.Session.Room == nil {
+		ssgo.Session.Unlock()
+		return
 	}
-	return false
-}
-
-type UserInRoomSessionState struct {
-	SessionStateBase
-}
-
-func (ss *UserInRoomSessionState) DeleteRoom() bool {
-	return false
-}
-
-func (ss *UserInRoomSessionState) ReadyRoom() bool {
-	ss.Session.IsReady = true
-	ss.Session.Room.CheckReady()
-	return true
-}
-
-func (ss *UserInRoomSessionState) LeaveRoom() bool {
-	ss.Session.IsReady = false
-	ss.Session.Room = nil
-	ss.Session.SetState(int32(ss.StateCode) - 1)
-	return false
-}
-
-func (ss *UserInRoomSessionState) SettingCharacter(setting *CharacterSetting) bool {
-	if ss.Session.User.SetCharacter(setting) {
-		ss.Session.Room.UpdateRoomContent()
-		return true
-	}
-	return false
-
-}
-func (ss *UserInRoomSessionState) CancelReady() bool {
-	ss.Session.IsReady = false
-	ss.Session.Room.CheckReady()
-	return true
-}
-
-type WaitToStartSessionState struct {
-	SessionStateBase
-}
-
-func (ss *WaitToStartSessionState) StartRoom() bool {
-	return false
-}
-
-func (ss *WaitToStartSessionState) SettingRoom() bool {
-	return false
-}
-
-type PlayingSessionState struct {
-	SessionStateBase
-}
-
-func (ss *PlayingSessionState) EndRoom() bool {
-	return false
+	ssgo.Session.Room.PlayerLeave(ssgo.Session)
+	log.Debug("ssgo.Session.Room", ssgo.Session.Room)
+	ssgo.Session.Room = nil
+	ssgo.Session.Unlock()
 }
 
 type sessionStateFactory struct {
@@ -386,20 +375,16 @@ type sessionStateFactory struct {
 func (sf *sessionStateFactory) makeSessionState(session *Session, state_code SessionInfo_SessionState) SessionState {
 	var s SessionState
 	switch state_code {
-	case SessionInfo_NoSession:
-		s = &NoSessionState{}
-	case SessionInfo_Guest:
-		s = &GuestSessionState{}
-	case SessionInfo_UserIdle:
-		s = &UserIdleSessionState{}
-	case SessionInfo_UserInRoom:
-		s = &UserInRoomSessionState{}
-	case SessionInfo_WaitToStart:
-		s = &WaitToStartSessionState{}
+	case SessionInfo_OnStart:
+		s = &SessionStateGameOnStart{}
 	case SessionInfo_Playing:
-		s = &PlayingSessionState{}
+		s = &SessionStatePlaying{}
+	case SessionInfo_GameOver:
+		s = &SessionStateGameOver{}
+	case SessionInfo_GameServerWaitReconnect:
+		s = &SessionStateWaitingReconnection{}
 	default:
-		s = (SessionState)(nil)
+		s = &SessionStateBase{}
 	}
 	s.Lock()
 	s.SetSession(session)

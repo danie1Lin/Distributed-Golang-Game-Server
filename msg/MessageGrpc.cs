@@ -17,6 +17,7 @@ namespace Msg {
     static readonly grpc::Marshaller<global::Msg.GameFrame> __Marshaller_GameFrame = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.GameFrame.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.LogMessage> __Marshaller_LogMessage = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.LogMessage.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.MessageToUser> __Marshaller_MessageToUser = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.MessageToUser.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.TimeStamp> __Marshaller_TimeStamp = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.TimeStamp.Parser.ParseFrom);
 
     static readonly grpc::Method<global::Msg.Input, global::Msg.Empty> __Method_PlayerInput = new grpc::Method<global::Msg.Input, global::Msg.Empty>(
         grpc::MethodType.ClientStreaming,
@@ -38,6 +39,13 @@ namespace Msg {
         "Pipe",
         __Marshaller_LogMessage,
         __Marshaller_MessageToUser);
+
+    static readonly grpc::Method<global::Msg.Empty, global::Msg.TimeStamp> __Method_TimeCalibrate = new grpc::Method<global::Msg.Empty, global::Msg.TimeStamp>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "TimeCalibrate",
+        __Marshaller_Empty,
+        __Marshaller_TimeStamp);
 
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
@@ -73,6 +81,11 @@ namespace Msg {
       }
 
       public virtual global::System.Threading.Tasks.Task Pipe(grpc::IAsyncStreamReader<global::Msg.LogMessage> requestStream, grpc::IServerStreamWriter<global::Msg.MessageToUser> responseStream, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      public virtual global::System.Threading.Tasks.Task<global::Msg.TimeStamp> TimeCalibrate(global::Msg.Empty request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -154,6 +167,22 @@ namespace Msg {
       {
         return CallInvoker.AsyncDuplexStreamingCall(__Method_Pipe, null, options);
       }
+      public virtual global::Msg.TimeStamp TimeCalibrate(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return TimeCalibrate(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual global::Msg.TimeStamp TimeCalibrate(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_TimeCalibrate, null, options, request);
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.TimeStamp> TimeCalibrateAsync(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return TimeCalibrateAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.TimeStamp> TimeCalibrateAsync(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_TimeCalibrate, null, options, request);
+      }
       /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
       protected override ClientToGameClient NewInstance(ClientBaseConfiguration configuration)
       {
@@ -168,7 +197,8 @@ namespace Msg {
       return grpc::ServerServiceDefinition.CreateBuilder()
           .AddMethod(__Method_PlayerInput, serviceImpl.PlayerInput)
           .AddMethod(__Method_UpdateGameFrame, serviceImpl.UpdateGameFrame)
-          .AddMethod(__Method_Pipe, serviceImpl.Pipe).Build();
+          .AddMethod(__Method_Pipe, serviceImpl.Pipe)
+          .AddMethod(__Method_TimeCalibrate, serviceImpl.TimeCalibrate).Build();
     }
 
   }

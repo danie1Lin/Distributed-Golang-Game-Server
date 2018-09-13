@@ -83,7 +83,10 @@ func (sm *sessionManager) GetSession(md metadata.MD) *Session {
 	if err != nil {
 		return nil
 	}
-	s := sm.Sessions[id]
+	s, ok := sm.Sessions[id]
+	if !ok {
+		return nil
+	}
 	s.RLock()
 	if s.User != nil {
 		uname := md.Get("uname")
@@ -104,7 +107,7 @@ func NewSession() *Session {
 		MsgChannelManager: NewMsgChannelManager(),
 		PlayerInfo:        &PlayerInfo{},
 	}
-	for i := 0; i < 6; i++ {
+	for i := int32(SessionInfo_NoSession); i <= int32(SessionInfo_GameServerWaitReconnect); i++ {
 		ss := SessionStateFactory.makeSessionState(s, SessionInfo_SessionState(i))
 		s.States = append(s.States, ss)
 	}
@@ -149,6 +152,15 @@ func (s *Session) GetPlayerInfo() *PlayerInfo {
 
 func (s *Session) SetState(state_index int32) {
 	s.State = s.States[state_index]
+}
+
+func (s *Session) GetSessionInfo() *SessionInfo {
+	info := s.User.GetInfo()
+	return &SessionInfo{
+		Uuid:     s.Info.Uuid,
+		UserInfo: info,
+		State:    s.State.GetStateCode(),
+	}
 }
 
 type SessionState interface {
@@ -304,7 +316,7 @@ func (ss *UserIdleSessionState) CreateRoom(roomSetting *RoomSetting) bool {
 	ss.Session.SetState(int32(ss.StateCode) + 1)
 	RoomManager.RemoveIdleUserMsgChan(ss.Session.GetMsgChan("RoomList"))
 	ss.Session.CloseMsgChan("RoomList")
-
+	ss.Session.AddMsgChan("ServerInfo", 1)
 	return true
 }
 
@@ -317,6 +329,7 @@ func (ss *UserIdleSessionState) EnterRoom(roomId int64) bool {
 			ss.Session.SetState(int32(ss.StateCode) + 1)
 			RoomManager.RemoveIdleUserMsgChan(ss.Session.GetMsgChan("RoomList"))
 			ss.Session.CloseMsgChan("RoomList")
+			ss.Session.AddMsgChan("ServerInfo", 1)
 			return true
 		} else {
 			ss.Session.CloseMsgChan("RoomContent")
@@ -360,23 +373,11 @@ func (ss *UserInRoomSessionState) CancelReady() bool {
 	return true
 }
 
-type WaitToStartSessionState struct {
+type ConnectingGameSessionState struct {
 	SessionStateBase
 }
 
-func (ss *WaitToStartSessionState) StartRoom() bool {
-	return false
-}
-
-func (ss *WaitToStartSessionState) SettingRoom() bool {
-	return false
-}
-
-type PlayingSessionState struct {
-	SessionStateBase
-}
-
-func (ss *PlayingSessionState) EndRoom() bool {
+func (ss *ConnectingGameSessionState) EndRoom() bool {
 	return false
 }
 
@@ -394,12 +395,10 @@ func (sf *sessionStateFactory) makeSessionState(session *Session, state_code Ses
 		s = &UserIdleSessionState{}
 	case SessionInfo_UserInRoom:
 		s = &UserInRoomSessionState{}
-	case SessionInfo_WaitToStart:
-		s = &WaitToStartSessionState{}
-	case SessionInfo_Playing:
-		s = &PlayingSessionState{}
+	case SessionInfo_ConnectingGame:
+		s = &ConnectingGameSessionState{}
 	default:
-		s = (SessionState)(nil)
+		s = &SessionStateBase{}
 	}
 	s.Lock()
 	s.SetSession(session)

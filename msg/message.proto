@@ -2,64 +2,73 @@ syntax = "proto3";
 
 package msg;
 
-import "any.proto";
+//import "any.proto";
 
 message Input{
-    int64 UserId = 1;
-    float H_Movement = 2;
-    float V_Movement = 3;
-    string SkillName = 5;
-    float SkillForce = 4;
+    map<int64,EntityState> EntityStates = 1;
+    repeated Interaction Interaction = 2;
+    map<int64,Character> NewEntityCharacters = 3;
+    repeated int64 DestroyEntity = 4;
     int64 TimeStamp = 6;
-    int64 RunnigNo = 7;
 }
 
-message TransForm {
+
+
+message Interaction{
+    int64 FromEntityId = 6;
+    int64 ToEntityId = 1;
+    string Type = 2;//Force Harm Torque Use
+    Vector3 Direction = 3;//if is scalar then only X has value
+    Vector3 ApplyPoint = 4;
+    bool IsRebouncable = 5;
+}
+
+message EntityState {
+    int64 Uuid =1;
+    Transform Transform = 2;
+    Vector3 Speed = 3;
+    Animation Animation = 8;
+    string PrefabName = 5;//Obj Player Obstacle
+    float Health = 6;
+}
+
+message GameFrame {
+    map<int64,EntityState> EntityStates = 1;
+    repeated Interaction Interaction = 2;
+    map<int64,Character> Characters = 3;
+    repeated int64 DestroyEntity = 6;
+    int64 TimeStamp = 4;
+    int64 RunnigNo = 5;
+}
+
+message Animation{
+    string Name = 1;
+    float Value = 2;
+}
+
+message Transform {
     Vector3 Position= 1;
     Quaternion Rotation = 2;
 }
 
 message Vector3{
-    double X = 1;
-    double Y = 2;
-    double Z = 3;
+    float X = 1;
+    float Y = 2;
+    float Z = 3;
 }
 
 message Quaternion{
-    double X = 1;
-    double Y= 2;
-    double Z = 3;
-    double W = 4;
+    float X = 1;
+    float Y= 2;
+    float Z = 3;
+    float W = 4;
 }
+
 message  Position{
-    map<int64,TransForm> PosMap = 1;
+    map<int64,Transform> PosMap = 1;
     int64 TimeStamp = 2;
 }
 
-message CallFuncInfo {
-    string RunnigNo = 1;
-    int64 TargetId = 2;
-    int64 FromId = 4;
-    int64 TimeStamp = 5;
-    string Func = 6;
-    TransForm FromPos = 7;
-    TransForm ToPos = 8;
-    float Value = 9;
-    repeated google.protobuf.Any Param = 10;
-    repeated BasicType Params = 11;
-    //repeated google.protobuf.Any param = 3;
-}
-message BasicType {
-    oneof Data{
-        string S = 1;
-        int64 L = 2;
-        float F = 3;
-        int32 I = 4;
-        bool B = 5;
-        double D = 6;
-        google.protobuf.Any A = 7;
-    }
-}
 message Error{
     string ErrType = 1;
     string ErrMsg = 2;
@@ -67,6 +76,9 @@ message Error{
     int64 FromId = 4;
 }
 
+message TimeStamp {
+    int64 Value = 1;
+}
 
 service ClientToGame{
     //roomManager
@@ -75,6 +87,7 @@ service ClientToGame{
     //View
     rpc UpdateGameFrame(Empty) returns (stream GameFrame) {}
     rpc Pipe(stream LogMessage) returns (stream MessageToUser) {}
+    rpc TimeCalibrate(Empty) returns (TimeStamp) {}
 }
 
 service AgentToGame{
@@ -112,8 +125,6 @@ service ClientToAgent{
     //rpc UpdateRoomInfo(SessionKey) returns (stream RoomInfoView) {}
     rpc Pipe(stream LogMessage) returns (stream MessageToUser) {}
 }
-
-
 
 message ID {
     int64 Value = 1;
@@ -159,32 +170,30 @@ message UserList {
 message GameCreation {
     RoomInfo RoomInfo = 1;
     repeated SessionInfo PlayerSessions = 2;
+    int64 MasterSessionId = 3;
 }
+
 
 message PemKey{
     string TLS = 1;
     string SSL = 2;
 }
 
-message Empty{
-
-}
+message Empty{}
 
 
 message RoomPrepareView{
 
 }
 
-message GameFrame {
-    map<string,EntityInfo> Entitys = 1;
-}
+
 
 
 
 message EntityInfo{
     int64 Uuid = 1;
     int32 TeamNo = 4;
-    TransForm TransForm = 2;
+    Transform Transform = 2;
     int64 CharacterId = 3;
     Skill ActiveSkill = 5;
     string Motion = 6;
@@ -227,7 +236,6 @@ message RoomInfo{
     int64 LeftMilliSecond = 8;
 }
 
-
 message RoomReview {
     int64 Uuid = 1;
     string Name = 2;
@@ -250,14 +258,36 @@ message PlayerInfo {
     bool IsReady = 7;
 }
 
+//character 即是沒有實體之腳色
+//entity 則藉由character來初始化
+message Character {
+    int64 Uuid = 1;
+    string CharacterType = 2;
+    string Name = 3;
+    Color Color =4;
+    int32 Level = 5;
+    int32 Exp = 6;
+    float MaxHealth = 10;
+    //基本能力值
+    Ability Ability = 7;
+    repeated Equipment Equipments = 8;
+    //戰鬥時添加的狀態
+    map<string,float> Attr  = 9;
+}
+
 message SessionInfo{
     enum SessionState {
         NoSession = 0;
         Guest = 1;
         UserIdle = 2;
         UserInRoom = 3;
-        WaitToStart = 4;
-        Playing = 5;
+        ConnectingGame = 4;
+        AgentServerWaitReconnect = 5;
+        //in game server
+        OnStart = 6;
+        Playing = 7;
+        GameOver = 8;
+        GameServerWaitReconnect = 9;
     }
     enum SessionCapacity {
         GM = 0;
@@ -335,22 +365,7 @@ message CharacterSetting{
 }
 
 
-//character 即是沒有實體之腳色
-//entity 則藉由character來初始化
-message Character {
-    int64 Uuid = 1;
-    string CharacterType = 2;
-    string Name = 3;
-    Color Color =4;
-    int32 Level = 5;
-    int32 Exp = 6;
-    float MaxHealth = 10;
-    //基本能力值
-    Ability Ability = 7;
-    repeated Equipment Equipments = 8;
-    //戰鬥時添加的狀態
-    map<string,float> Attr  = 9;
-}
+
 
 message Color {
     int32 R = 1;

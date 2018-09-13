@@ -5,6 +5,8 @@ import (
 	. "github.com/daniel840829/gameServer2/uuid"
 	"github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 	"sync"
 )
 
@@ -25,15 +27,56 @@ var limitReadyTime = 1000 //wait ms to start a room
 var RoomManager *roomManager = &roomManager{
 	Rooms:                make(map[int64]*Room),
 	UserIdleRoomListChan: make(map[*MsgChannel]struct{}),
+	GameServers:          make(map[*GameServer]struct{}),
+}
+
+type GameServer struct {
+	Addr   string
+	Port   string
+	Client AgentToGameClient
+	Rooms  map[*Room]struct{}
+}
+
+func NewGameServer(addr string) (gameServer *GameServer) {
+	conn, err := grpc.Dial(":"+addr, grpc.WithInsecure())
+	if err != nil {
+		log.Warn("Agent can't connect to GameServer", err)
+		return
+	}
+	gameServer = &GameServer{
+		Addr:  "35.201.150.218",
+		Port:  ":" + addr,
+		Rooms: make(map[*Room]struct{}, 0),
+	}
+	gameServer.Client = NewAgentToGameClient(conn)
+
+	log.Debug("client", gameServer.Client)
+	return
 }
 
 type roomManager struct {
 	UserIdleRoomListChan map[*MsgChannel]struct{}
 	Rooms                map[int64]*Room
+	GameServers          map[*GameServer]struct{}
 	sync.RWMutex
 	RoomList *RoomList
 }
 
+func (rm *roomManager) ConnectGameServer(addr string) {
+	rm.GameServers[NewGameServer(addr)] = struct{}{}
+	log.Debug("Connect Game Server")
+}
+
+func (rm *roomManager) GetGameServer() (game *GameServer) {
+	for gs, _ := range rm.GameServers {
+		if game == nil {
+			game = gs
+		} else if len(gs.Rooms) < len(game.Rooms) {
+			game = gs
+		}
+	}
+	return
+}
 func (rm *roomManager) UpdateRoomList() {
 	roomList := &RoomList{
 		Item: make([]*RoomReview, 0),
@@ -109,6 +152,7 @@ type Room struct {
 	MaxPlyer     int32
 	PlayerInRoom int32
 	Review       *RoomReview
+	GameServer   *GameServer
 	sync.RWMutex
 }
 
@@ -218,7 +262,7 @@ func (r *Room) CheckReady() bool {
 			return false
 		}
 	}
-	//r.CreateRoomOnGameServer()
+	r.CreateRoomOnGameServer()
 	return true
 	//Start Game
 }
@@ -226,15 +270,30 @@ func (r *Room) CheckReady() bool {
 func (r *Room) CreateRoomOnGameServer() {
 	gameCreation := &GameCreation{
 		PlayerSessions: make([]*SessionInfo, 0),
-		RoomInfo:       &RoomInfo,
+		RoomInfo:       &RoomInfo{},
 	}
 	gameCreation.RoomInfo.GameType = r.GameType
-	r.Master.SetState(int32(r.Master.State.GetStateCode()) + 1)
-	GameCreation.PlayerSessions = append(GameCreation.PlayerSessions, r.Master)
-	r.Master.AddMsgChan("ServerInfo", 1)
+	r.Master.SetState(int32(SessionInfo_ConnectingGame))
+	gameCreation.PlayerSessions = append(gameCreation.PlayerSessions, r.Master.GetSessionInfo())
 	for s, _ := range r.Client {
-		s.SetState(int32(s.State.GetStateCode()) + 1)
-		s.AddMsgChan("ServerInfo", 1)
-		GameCreation.PlayerSessions = append(GameCreation.PlayerSessions, s.)
+		s.SetState(int32(SessionInfo_ConnectingGame))
+		gameCreation.PlayerSessions = append(gameCreation.PlayerSessions, s.GetSessionInfo())
+	}
+	gs := RoomManager.GetGameServer()
+	gs.Rooms[r] = struct{}{}
+	key, err := gs.Client.AquireGameRoom(context.Background(), gameCreation)
+	if err != nil {
+		log.Warn("GameServer has some issue", err)
+	}
+	c := r.Master.GetMsgChan("ServerInfo")
+	serverInfo := &ServerInfo{
+		Addr:      gs.Addr,
+		Port:      gs.Port,
+		PublicKey: key.SSL,
+	}
+	c.DataCh <- serverInfo
+	for s, _ := range r.Client {
+		c = s.GetMsgChan("ServerInfo")
+		c.DataCh <- serverInfo
 	}
 }

@@ -3,7 +3,7 @@ package agent
 import (
 	"github.com/daniel840829/gameServer2/agent/session"
 	. "github.com/daniel840829/gameServer2/msg"
-	//"github.com/daniel840829/gameServer2/user"
+	"github.com/daniel840829/gameServer2/user"
 	"strconv"
 	//. "github.com/daniel840829/gameServer/uuid"
 	//"github.com/globalsign/mgo"
@@ -16,8 +16,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	/*
 		"io"
 		"reflect"
@@ -52,7 +53,7 @@ type ErrorPipe struct {
 	toClient chan (*MessageToUser)
 }
 
-func NewAgentRpc() (agent *Agent, GameServerAddr string) {
+func NewAgentRpc() (agent *Agent) {
 	agent = &Agent{
 		ErrorPipe: &ErrorPipe{
 			toClient: make(chan (*MessageToUser), 10),
@@ -67,13 +68,10 @@ type Agent struct {
 	GameServer AgentToGameClient
 }
 
-func (a *Agent) Init() {
-	conn, err := grpc.Dial(a.GameServerAddr)
-	if err {
-		log.Fatal("Agent can't connect to GameServer", err)
-		return
+func (a *Agent) Init(gameServerAddr ...string) {
+	for _, addr := range gameServerAddr {
+		session.RoomManager.ConnectGameServer(addr)
 	}
-	a.GameServer = NewAgentToGameClient(conn)
 }
 
 func (a *Agent) AquireSessionKey(c context.Context, e *Empty) (*SessionKey, error) {
@@ -88,6 +86,9 @@ func (a *Agent) AquireOtherAgent(c context.Context, e *Empty) (*ServerInfo, erro
 
 func (a *Agent) Login(c context.Context, in *LoginInput) (*UserInfo, error) {
 	s := GetSesionFromContext(c)
+	if s == nil {
+		return &UserInfo{}, status.Errorf(codes.NotFound, "Session Not Found!")
+	}
 	s.Lock()
 	user := s.State.Login(in.UserName, in.Pswd)
 	if user == nil {
@@ -97,21 +98,22 @@ func (a *Agent) Login(c context.Context, in *LoginInput) (*UserInfo, error) {
 	s.Unlock()
 	return user.UserInfo, nil
 }
-func (a *Agent) CreateAccount(context.Context, *RegistInput) (*Error, error) {
-	return nil, nil
+func (a *Agent) CreateAccount(c context.Context, in *RegistInput) (*Error, error) {
+	errmsg, err := user.Manager.Regist(in)
+	return errmsg, err
 }
 
 // UserSetting
 func (a *Agent) SetAccount(context.Context, *AttrSetting) (*Success, error) {
 	return nil, nil
 }
+
 func (a *Agent) SetCharacter(c context.Context, setting *CharacterSetting) (*Success, error) {
 	s := GetSesionFromContext(c)
 	if s == nil {
-		log.Warn("No Session key")
 		return &Success{
 			Ok: false,
-		}, nil
+		}, status.Errorf(codes.NotFound, "Session Not Found!")
 	}
 	ok := s.State.SettingCharacter(setting)
 	return &Success{
@@ -122,7 +124,11 @@ func (a *Agent) SetCharacter(c context.Context, setting *CharacterSetting) (*Suc
 // allocate room
 func (a *Agent) AquireGameServer(c context.Context, e *Empty) (*ServerInfo, error) {
 	s := GetSesionFromContext(c)
+	if s == nil {
+		return &ServerInfo{}, status.Errorf(codes.NotFound, "Session Not Found!")
+	}
 	msg := s.GetMsgChan("ServerInfo")
+	log.Debug("Aquiring game server...")
 	if msg != nil {
 		serverInfo := <-msg.DataCh
 		return serverInfo.(*ServerInfo), nil
@@ -137,6 +143,9 @@ func (a *Agent) UpdateHome(*Empty, ClientToAgent_UpdateHomeServer) error {
 
 func (a *Agent) UpdateRoomList(e *Empty, stream ClientToAgent_UpdateRoomListServer) error {
 	s := GetSesionFromContext(stream.Context())
+	if s == nil {
+		return status.Errorf(codes.NotFound, "Session Not Found!")
+	}
 	msgChan := s.GetMsgChan("RoomList")
 	data := msgChan.DataCh
 	stop := msgChan.StopSignal
@@ -161,6 +170,9 @@ func (a *Agent) Pipe(ClientToAgent_PipeServer) error {
 }
 func (a *Agent) CreateRoom(c context.Context, roomSetting *RoomSetting) (*Success, error) {
 	s := GetSesionFromContext(c)
+	if s == nil {
+		return &Success{}, status.Errorf(codes.NotFound, "Session Not Found!")
+	}
 	ok := s.State.CreateRoom(roomSetting)
 	return &Success{
 		Ok: ok,
@@ -169,13 +181,23 @@ func (a *Agent) CreateRoom(c context.Context, roomSetting *RoomSetting) (*Succes
 
 func (a *Agent) JoinRoom(c context.Context, id *ID) (*Success, error) {
 	s := GetSesionFromContext(c)
+
+	if s == nil {
+		return &Success{
+			Ok: false,
+		}, status.Errorf(codes.NotFound, "Session Not Found!")
+	}
 	ok := s.State.EnterRoom(id.Value)
 	return &Success{
 		Ok: ok,
 	}, nil
 }
+
 func (a *Agent) UpdateRoomContent(e *Empty, stream ClientToAgent_UpdateRoomContentServer) error {
 	s := GetSesionFromContext(stream.Context())
+	if s == nil {
+		return status.Errorf(codes.NotFound, "Session Not Found!")
+	}
 	msgChan := s.GetMsgChan("RoomContent")
 	data := msgChan.DataCh
 	stop := msgChan.StopSignal
@@ -189,8 +211,14 @@ func (a *Agent) UpdateRoomContent(e *Empty, stream ClientToAgent_UpdateRoomConte
 	}
 	return nil
 }
+
 func (a *Agent) RoomReady(c context.Context, e *Empty) (*Success, error) {
 	s := GetSesionFromContext(c)
+	if s == nil {
+		return &Success{
+			Ok: false,
+		}, status.Errorf(codes.NotFound, "Session Not Found!")
+	}
 	if s.IsReady {
 		if s.State.CancelReady() {
 			return &Success{

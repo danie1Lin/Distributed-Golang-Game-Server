@@ -79,6 +79,7 @@ func (m *MongoDb) Save(collectionName string, data interface{}) bool {
 	m.Collections[collectionName].Insert(data)
 	return true
 }
+
 func (m *MongoDb) Find(collectionName string, query interface{}) *mgo.Iter {
 	if _, ok := m.Collections[collectionName]; !ok {
 		fmt.Println("No such Collection", collectionName)
@@ -92,9 +93,9 @@ func (m *MongoDb) Update(collectionName string, query interface{}, data interfac
 	if _, ok := m.Collections[collectionName]; !ok {
 		return false
 	}
-	changelog, err := m.Collections[collectionName].UpdateAll(query, data)
-	fmt.Println(changelog)
+	err := m.Collections[collectionName].Update(query, data)
 	if err != nil {
+		fmt.Println("db update error:", err)
 		return false
 	}
 	return true

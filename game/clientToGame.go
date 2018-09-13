@@ -12,10 +12,3 @@ type ClientToGameServer interface {
 	Pipe(ClientToGame_PipeServer) error
 }
 */
-
-type CTGServer struct {
-}
-
-func (ctg *CTGServer) PlayerInput(ClientToGame_PlayerInputServer) error
-func (ctg *CTGServer) UpdateGameFrame(*Empty, ClientToGame_UpdateGameFrameServer) error
-func (ctg *CTGServer) Pipe(ClientToGame_PipeServer) error

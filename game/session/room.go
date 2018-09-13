@@ -6,6 +6,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"sync"
+	"time"
 )
 
 type ChatMessage struct {
@@ -34,34 +35,20 @@ type roomManager struct {
 	RoomList *RoomList
 }
 
-func (rm *roomManager) UpdateRoomList() {
-	roomList := &RoomList{
-		Item: make([]*RoomReview, 0),
+func (rm *roomManager) CreateGame(gameCreation *GameCreation) {
+	switch gameCreation.RoomInfo.GameType {
+	default:
+		room := NewRoom(gameCreation.RoomInfo.Uuid)
+		for _, sessionInfo := range gameCreation.PlayerSessions {
+			//sessionInfo.Uuid
+			session := Manager.CreateSessionFromAgent(sessionInfo)
+			log.Debug("[CreateGame]", session)
+			session.InputPool = room.GetMsgChan("Input")
+			room.Client[session] = struct{}{}
+			session.Room = room
+		}
+		go room.Run()
 	}
-	for _, room := range rm.Rooms {
-		roomList.Item = append(roomList.Item, room.GetReview())
-	}
-	for c, _ := range rm.UserIdleRoomListChan {
-		c.DataCh <- roomList
-	}
-	log.Debug("Update room list", roomList)
-}
-
-func (rm *roomManager) AddIdleUserMsgChan(m *MsgChannel) {
-	if _, ok := rm.UserIdleRoomListChan[m]; ok {
-		return
-	}
-	rm.UserIdleRoomListChan[m] = struct{}{}
-}
-
-func (rm *roomManager) RemoveIdleUserMsgChan(m *MsgChannel) {
-	if _, ok := rm.UserIdleRoomListChan[m]; ok {
-		delete(rm.UserIdleRoomListChan, m)
-	}
-}
-
-func (rm *roomManager) Run() {
-
 }
 
 func (rm *roomManager) DeletRoom() {
@@ -74,167 +61,158 @@ func (rm *roomManager) LeaveRoom() {
 
 func (rm *roomManager) CreateRoom(master *Session, setting *RoomSetting) *Room {
 	id, _ := Uid.NewId(ROOM_ID)
-	room := NewRoom(master, id, setting)
+	room := NewRoom(id)
 	rm.Rooms[id] = room
-	rm.UpdateRoomList()
 	return room
 }
 
-func NewRoom(master *Session, roomId int64, setting *RoomSetting) *Room {
+func NewRoom(roomId int64) *Room {
 	room := &Room{
-		Master:       master,
-		Client:       make(map[*Session]struct{}),
-		Uuid:         roomId,
-		Name:         setting.Name,
-		GameType:     setting.GameType,
-		MaxPlyer:     setting.MaxPlayer,
-		PlayerInRoom: 0,
-		Review: &RoomReview{
-			Uuid: roomId,
-		},
+		Client:            make(map[*Session]struct{}),
+		Uuid:              roomId,
+		GameStart:         make(chan (struct{}), 1),
+		MsgChannelManager: NewMsgChannelManager(),
+		end:               make(chan struct{}),
 	}
-	room.UpdateReview()
-	RoomManager.UpdateRoomList()
-	room.UpdateRoomContent()
+	room.AddMsgChan("Input", 200)
 	return room
 }
 
 type Room struct {
-	Name         string
-	GameType     string
-	Master       *Session
-	Client       map[*Session]struct{}
-	Uuid         int64
-	IsFull       bool
-	MaxPlyer     int32
-	PlayerInRoom int32
-	Review       *RoomReview
+	Name      string
+	GameType  string
+	Master    *Session
+	Client    map[*Session]struct{}
+	Uuid      int64
+	GameFrame *GameFrame
+	*MsgChannelManager
 	sync.RWMutex
+	GameStart chan (struct{})
+	end       chan (struct{})
 }
 
-func (r *Room) GetReview() (Review *RoomReview) {
-	r.RLock()
-	Review = proto.Clone(r.Review).(*RoomReview)
-	r.RUnlock()
-	return
+func (r *Room) GenerateStartFrame() {
+	r.GameFrame.EntityStates = make(map[int64]*EntityState)
+	r.GameFrame.Interaction = make([]*Interaction, 0)
+	r.GameFrame.Characters = make(map[int64]*Character)
+	for s, _ := range r.Client {
+
+		c := s.Info.UserInfo.OwnCharacter[s.Info.UserInfo.UsedCharacter]
+		r.GameFrame.EntityStates[s.Info.UserInfo.UsedCharacter] = NewEntityState(s.Info.UserInfo.UsedCharacter, "Tank", c)
+		r.GameFrame.Characters[s.Info.UserInfo.UsedCharacter] = c
+		log.Debug(c, s.Info.UserInfo.UsedCharacter)
+	}
+	r.SyncGameFrame()
+	//r.GameFrame.Characters = make(map[int64]*Character)
 }
 
-func (r *Room) UpdateReview() {
-	r.Lock()
-	r.Review.Name = r.Name
-	r.Review.GameType = r.GameType
-	r.Review.InRoomPlayer = r.PlayerInRoom
-	r.Review.MaxPlayer = r.MaxPlyer
-	r.Unlock()
-	RoomManager.UpdateRoomList()
+func NewEntityState(id int64, prefabName string, c *Character) *EntityState {
+	es := &EntityState{
+		Health:     c.MaxHealth,
+		Uuid:       id,
+		PrefabName: prefabName,
+		Transform: &Transform{
+			Position: &Vector3{0, 0, 0},
+			Rotation: &Quaternion{0, 0, 0, 1},
+		},
+		Animation: &Animation{},
+		Speed:     &Vector3{},
+	}
+	return es
 }
 
-func (r *Room) EnterRoom(client *Session) bool {
-	if _, ok := r.Client[client]; ok {
-		return false
+func (r *Room) Run() {
+	//Syncpos
+	inputPool := r.GetMsgChan("Input")
+	for _, _ = range r.Client {
+		<-r.GameStart
 	}
-	if r.IsFull {
-		return false
-	}
-	r.Client[client] = struct{}{}
-	r.PlayerInRoom += 1
-	if r.PlayerInRoom == r.MaxPlyer {
-		r.IsFull = true
-	}
-	r.UpdateReview()
-	r.UpdateRoomContent()
-	return true
-}
-
-func (r *Room) KickOut(master *Session, client *Session) bool {
-	if master != r.Master {
-		return false
-	}
-	if _, ok := r.Client[client]; ok {
-		client.Room = nil
-		delete(r.Client, client)
-		r.PlayerInRoom -= 1
-		r.IsFull = false
-		r.UpdateReview()
-		r.UpdateRoomContent()
-		return true
-	}
-	return false
-}
-
-func (r *Room) DeleteRoom(master *Session) bool {
-	if master != r.Master {
-		return false
-	}
-	return true
-}
-
-func (r *Room) LeaveRoom(s *Session) bool {
-	if s == r.Master {
-		r.DeleteRoom(s)
-		return true
-	} else {
-		if _, ok := r.Client[s]; ok {
-			s.Room = nil
-			delete(r.Client, s)
-			r.PlayerInRoom -= 1
-			r.IsFull = false
-			r.UpdateReview()
-			r.UpdateRoomContent()
-			return true
+	r.GameFrame = &GameFrame{}
+	r.GameFrame.RunnigNo = 0
+	r.GameFrame.TimeStamp = GetTimeStamp()
+	r.GenerateStartFrame()
+	r.GameFrame.RunnigNo += 1
+	update := time.NewTicker(time.Millisecond * 100)
+END:
+	for {
+		select {
+		case <-update.C:
+			//log.Debug("GameFrame: ", r.GameFrame)
+			r.UpdateFrame()
+		case msg := <-inputPool.DataCh:
+			input := msg.(*Input)
+			r.HandleEntityState(input)
+			r.HandleNewEntity(input)
+			r.HandleInteraction(input)
+			r.HandleEntityDestory(input)
+		case <-r.end:
+			break END
 		}
 	}
-	return false
+
+	log.Debug("EndGameing")
 }
 
-func (r *Room) UpdateRoomContent() {
-	content := &RoomContent{
-		Uuid:    r.Uuid,
-		Players: make(map[string]*PlayerInfo),
-	}
-	pInfo := r.Master.GetPlayerInfo()
-	content.Players[pInfo.UserName] = pInfo
-	for s, _ := range r.Client {
-		pInfo = s.GetPlayerInfo()
-		content.Players[pInfo.UserName] = pInfo
-	}
-
-	ch := r.Master.GetMsgChan("RoomContent")
-	ch.DataCh <- content
-
-	for s, _ := range r.Client {
-		ch = s.GetMsgChan("RoomContent")
-		ch.DataCh <- content
-	}
+func (r *Room) UpdateFrame() {
+	r.SyncGameFrame()
+	r.GameFrame.RunnigNo += 1
+	r.GameFrame.TimeStamp = GetTimeStamp()
+	r.GameFrame.Interaction = make([]*Interaction, 0)
 }
 
-func (r *Room) CheckReady() bool {
-	r.UpdateRoomContent()
-	if !r.Master.IsReady {
-		return false
-	}
-	for s, _ := range r.Client {
-		if !s.IsReady {
-			return false
+func (r *Room) HandleEntityDestory(input *Input) {
+	if len(input.DestroyEntity) > 0 {
+		//r.UpdateFrame()
+		for _, id := range input.DestroyEntity {
+			//log.Debug("[Destroy Entity]", r.GameFrame.EntityStates)
+			delete(r.GameFrame.Characters, id)
+			delete(r.GameFrame.EntityStates, id)
 		}
 	}
-	//r.CreateRoomOnGameServer()
-	return true
-	//Start Game
 }
 
-func (r *Room) CreateRoomOnGameServer() {
-	gameCreation := &GameCreation{
-		PlayerSessions: make([]*SessionInfo, 0),
-		RoomInfo:       &RoomInfo,
+func (r *Room) HandleInteraction(input *Input) {
+	if r.GameFrame.TimeStamp > input.TimeStamp {
+		return
 	}
-	gameCreation.RoomInfo.GameType = r.GameType
-	r.Master.SetState(int32(r.Master.State.GetStateCode()) + 1)
-	GameCreation.PlayerSessions = append(GameCreation.PlayerSessions, r.Master)
-	r.Master.AddMsgChan("ServerInfo", 1)
+	for _, in := range input.Interaction {
+		r.GameFrame.Interaction = append(r.GameFrame.Interaction, in)
+	}
+}
+
+func (r *Room) HandleEntityState(input *Input) {
+	for _, in := range input.EntityStates {
+		r.GameFrame.EntityStates[in.Uuid] = in
+	}
+}
+
+func (r *Room) HandleNewEntity(input *Input) {
+	for id, in := range input.NewEntityCharacters {
+		r.GameFrame.Characters[id] = in
+	}
+}
+
+func (r *Room) SyncGameFrame() {
+	gf := proto.Clone(r.GameFrame).(*GameFrame)
 	for s, _ := range r.Client {
-		s.SetState(int32(s.State.GetStateCode()) + 1)
-		s.AddMsgChan("ServerInfo", 1)
-		GameCreation.PlayerSessions = append(GameCreation.PlayerSessions, s.)
+		msg := s.GetMsgChan("GameFrame")
+		msg.DataCh <- gf
 	}
+}
+
+func (r *Room) WaitPlayerReconnect(s *Session) {
+	//Do nothing
+}
+
+func (r *Room) PlayerLeave(s *Session) {
+	//TODO: Check player number
+	delete(r.Client, s)
+	//if there is no player
+	if len(r.Client) == 0 {
+		r.end <- struct{}{}
+	}
+}
+
+func GetTimeStamp() int64 {
+	return int64(time.Now().UnixNano() / 1000000)
 }
