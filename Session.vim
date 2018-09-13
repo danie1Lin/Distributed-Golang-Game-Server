@@ -8,6 +8,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
+badd +1 Dockerfile
 badd +1 main.go
 badd +159 game/session/room.go
 badd +1 game.log
@@ -36,7 +37,7 @@ badd +1 storage/storage.go
 badd +55 game/agentToGame.go
 badd +1 game/clientToGame.go
 badd +1 game/session/session.go
-badd +0 util/util.go
+badd +1 util/util.go
 argglobal
 silent! argdel *
 argadd entity/entity.go
@@ -56,12 +57,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 5 - ((4 * winheight(0) + 16) / 33)
+let s:l = 3 - ((2 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-5
-normal! 045|
+3
+normal! 0
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
