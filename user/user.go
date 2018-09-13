@@ -1,9 +1,9 @@
 package user
 
 import (
-	. "github.com/daniel840829/gameServer2/msg"
-	"github.com/daniel840829/gameServer2/storage"
-	. "github.com/daniel840829/gameServer2/uuid"
+	. "github.com/daniel840829/gameServer/msg"
+	"github.com/daniel840829/gameServer/storage"
+	. "github.com/daniel840829/gameServer/uuid"
 	"github.com/globalsign/mgo/bson"
 	"github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"

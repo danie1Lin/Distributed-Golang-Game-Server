@@ -1,8 +1,8 @@
 package game
 
 import (
-	"github.com/daniel840829/gameServer2/game/session"
-	. "github.com/daniel840829/gameServer2/msg"
+	"github.com/daniel840829/gameServer/game/session"
+	. "github.com/daniel840829/gameServer/msg"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"

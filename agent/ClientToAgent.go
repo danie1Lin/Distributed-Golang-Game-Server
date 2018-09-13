@@ -1,9 +1,9 @@
 package agent
 
 import (
-	"github.com/daniel840829/gameServer2/agent/session"
-	. "github.com/daniel840829/gameServer2/msg"
-	"github.com/daniel840829/gameServer2/user"
+	"github.com/daniel840829/gameServer/agent/session"
+	. "github.com/daniel840829/gameServer/msg"
+	"github.com/daniel840829/gameServer/user"
 	"strconv"
 	//. "github.com/daniel840829/gameServer/uuid"
 	//"github.com/globalsign/mgo"

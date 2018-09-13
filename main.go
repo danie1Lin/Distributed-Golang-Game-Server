@@ -3,10 +3,10 @@ package main
 import (
 	"net"
 
-	//"github.com/daniel840829/gameServer2/entity"
-	"github.com/daniel840829/gameServer2/agent"
-	"github.com/daniel840829/gameServer2/game"
-	"github.com/daniel840829/gameServer2/msg"
+	//"github.com/daniel840829/gameServer/entity"
+	"github.com/daniel840829/gameServer/agent"
+	"github.com/daniel840829/gameServer/game"
+	"github.com/daniel840829/gameServer/msg"
 	"google.golang.org/grpc"
 	//"google.golang.org/grpc/grpclog"
 	"flag"

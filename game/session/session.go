@@ -2,9 +2,9 @@ package session
 
 import (
 	//"github.com/daniel840829/gameServer2/entity"
-	. "github.com/daniel840829/gameServer2/msg"
-	"github.com/daniel840829/gameServer2/user"
-	//. "github.com/daniel840829/gameServer2/uuid"
+	. "github.com/daniel840829/gameServer/msg"
+	"github.com/daniel840829/gameServer/user"
+	//. "github.com/daniel840829/gameServer/uuid"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/metadata"
 	"strconv"
@@ -224,7 +224,7 @@ func (sb *SessionStateBase) EndConnection() {
 
 }
 
-fun: (sb *SessionStateBase) SetStateCode(code SessionInfo_SessionState) {
+func (sb *SessionStateBase) SetStateCode(code SessionInfo_SessionState) {
 	sb.StateCode = code
 }
 func (sb *SessionStateBase) GetStateCode() SessionInfo_SessionState {

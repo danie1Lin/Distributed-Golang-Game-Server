@@ -1,8 +1,8 @@
 package session
 
 import (
-	. "github.com/daniel840829/gameServer2/msg"
-	. "github.com/daniel840829/gameServer2/uuid"
+	. "github.com/daniel840829/gameServer/msg"
+	. "github.com/daniel840829/gameServer/uuid"
 	"github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
