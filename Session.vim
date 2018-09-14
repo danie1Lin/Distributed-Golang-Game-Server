@@ -8,8 +8,8 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +1 Dockerfile
 badd +1 main.go
+badd +1 Dockerfile
 badd +159 game/session/room.go
 badd +1 game.log
 badd +1 entity/entity.go

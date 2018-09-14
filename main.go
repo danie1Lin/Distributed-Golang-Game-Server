@@ -8,6 +8,7 @@ import (
 	"github.com/daniel840829/gameServer/game"
 	"github.com/daniel840829/gameServer/msg"
 	"google.golang.org/grpc"
+	"runtime/pprof"
 	//"google.golang.org/grpc/grpclog"
 	"flag"
 	"fmt"
@@ -28,6 +29,7 @@ var (
 	AgentPort        *string
 	AgentToGamePort  *string
 	ClientToGamePort *string
+	cpuprofile       *string
 )
 
 func main() {
@@ -37,8 +39,18 @@ func main() {
 	AgentPort = flag.String("agentPort", "50051", "ClientToAgent Port")
 	AgentToGamePort = flag.String("agentToGamePort", "3000", "AgentToGame Port")
 	ClientToGamePort = flag.String("clientToGamePort", "8080", "ClientToGame Port")
+	cpuprofile = flag.String("cpuprofile", "./cpu.prof", "write cpu profile to file,set blank to close profile function")
 	log.Debug("config :", "type :", serverType)
 	flag.Parse()
+
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
 	if *serverType == "agent" {
 		RunAgent()
 	} else if *serverType == "game" {
