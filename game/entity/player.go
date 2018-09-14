@@ -3,16 +3,9 @@ package entity
 import (
 	. "github.com/daniel840829/gameServer/msg"
 	"github.com/daniel840829/gameServer/physic"
-	//p "github.com/golang/protobuf/proto"
 	. "github.com/daniel840829/gameServer/uuid"
 	"github.com/gazed/vu/math/lin"
-	//"github.com/golang/protobuf/proto"
-	//"github.com/ianremmler/ode"
 	log "github.com/sirupsen/logrus"
-	//"os"
-	//"reflect"
-	//"sync"
-	//"time"
 	"math"
 )
 

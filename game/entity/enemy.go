@@ -6,17 +6,7 @@ import (
 	"github.com/daniel840829/ode"
 	"github.com/gazed/vu/math/lin"
 	log "github.com/sirupsen/logrus"
-	/*
-		"fmt"
-		//p "github.com/golang/protobuf/proto"
-		//. "github.com/daniel840829/gameServer/uuid"
-		"github.com/golang/protobuf/proto"
-		"github.com/satori/go.uuid"
-		"os"
-		"reflect"
-		"sync"
-		//"time"
-	*/)
+)
 
 type Enemy struct {
 	Player

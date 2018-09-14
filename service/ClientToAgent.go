@@ -1,27 +1,12 @@
 package service
 
 import (
-	. "github.com/daniel840829/gameServer2/msg"
-	"github.com/daniel840829/gameServer2/session"
-	//"github.com/daniel840829/gameServer2/user"
-	"strconv"
-	//. "github.com/daniel840829/gameServer/uuid"
-	//"github.com/globalsign/mgo"
-	//"fmt"
-	//"github.com/daniel840829/gameServer/storage"
-	//p "github.com/golang/protobuf/proto"
-	//"github.com/golang/protobuf/ptypes"
-	//any "github.com/golang/protobuf/ptypes/any"
-	//log "github.com/sirupsen/logrus"
-
+	. "github.com/daniel840829/gameServer/msg"
+	"github.com/daniel840829/gameServer/session"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/metadata"
-	/*
-		"io"
-		"reflect"
-		"sync"
-		"time"
-	*/)
+	"strconv"
+)
 
 /*
 type ClientToAgentServer interface {
@@ -53,7 +38,6 @@ func NewAgentRpc() (agent *Agent) {
 
 type Agent struct {
 	Uuid int64
-
 }
 
 func (a *Agent) Init() {
