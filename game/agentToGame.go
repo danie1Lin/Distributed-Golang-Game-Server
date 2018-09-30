@@ -31,8 +31,16 @@ func (g *CTGServer) TimeCalibrate(c context.Context, e *Empty) (*TimeStamp, erro
 }
 
 func (g *ATGServer) AquireGameRoom(c context.Context, gc *GameCreation) (*PemKey, error) {
-	session.RoomManager.CreateGame(gc)
-	return &PemKey{SSL: "HI"}, nil
+	err := session.RoomManager.CreateGame(gc)
+	return &PemKey{SSL: "HI"}, err
+}
+
+func (g *ATGServer) DeletGameRoom(c context.Context, info *RoomInfo) (*Success, error) {
+	err := session.RoomManager.DeleteRoom(info)
+	if err != nil {
+		return &Success{}, err
+	}
+	return &Success{Ok: true}, nil
 }
 
 func (g *CTGServer) PlayerInput(stream ClientToGame_PlayerInputServer) error {

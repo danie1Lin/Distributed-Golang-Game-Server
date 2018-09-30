@@ -208,6 +208,8 @@ namespace Msg {
 
     static readonly grpc::Marshaller<global::Msg.GameCreation> __Marshaller_GameCreation = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.GameCreation.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.PemKey> __Marshaller_PemKey = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.PemKey.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.RoomInfo> __Marshaller_RoomInfo = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.RoomInfo.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.Success> __Marshaller_Success = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Success.Parser.ParseFrom);
 
     static readonly grpc::Method<global::Msg.GameCreation, global::Msg.PemKey> __Method_AquireGameRoom = new grpc::Method<global::Msg.GameCreation, global::Msg.PemKey>(
         grpc::MethodType.Unary,
@@ -215,6 +217,13 @@ namespace Msg {
         "AquireGameRoom",
         __Marshaller_GameCreation,
         __Marshaller_PemKey);
+
+    static readonly grpc::Method<global::Msg.RoomInfo, global::Msg.Success> __Method_DeletGameRoom = new grpc::Method<global::Msg.RoomInfo, global::Msg.Success>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "DeletGameRoom",
+        __Marshaller_RoomInfo,
+        __Marshaller_Success);
 
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
@@ -232,6 +241,11 @@ namespace Msg {
       /// <param name="context">The context of the server-side call handler being invoked.</param>
       /// <returns>The response to send back to the client (wrapped by a task).</returns>
       public virtual global::System.Threading.Tasks.Task<global::Msg.PemKey> AquireGameRoom(global::Msg.GameCreation request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      public virtual global::System.Threading.Tasks.Task<global::Msg.Success> DeletGameRoom(global::Msg.RoomInfo request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -305,6 +319,22 @@ namespace Msg {
       {
         return CallInvoker.AsyncUnaryCall(__Method_AquireGameRoom, null, options, request);
       }
+      public virtual global::Msg.Success DeletGameRoom(global::Msg.RoomInfo request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return DeletGameRoom(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual global::Msg.Success DeletGameRoom(global::Msg.RoomInfo request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_DeletGameRoom, null, options, request);
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.Success> DeletGameRoomAsync(global::Msg.RoomInfo request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return DeletGameRoomAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.Success> DeletGameRoomAsync(global::Msg.RoomInfo request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_DeletGameRoom, null, options, request);
+      }
       /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
       protected override AgentToGameClient NewInstance(ClientBaseConfiguration configuration)
       {
@@ -317,7 +347,8 @@ namespace Msg {
     public static grpc::ServerServiceDefinition BindService(AgentToGameBase serviceImpl)
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
-          .AddMethod(__Method_AquireGameRoom, serviceImpl.AquireGameRoom).Build();
+          .AddMethod(__Method_AquireGameRoom, serviceImpl.AquireGameRoom)
+          .AddMethod(__Method_DeletGameRoom, serviceImpl.DeletGameRoom).Build();
     }
 
   }
@@ -328,6 +359,7 @@ namespace Msg {
     static readonly grpc::Marshaller<global::Msg.Empty> __Marshaller_Empty = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.Empty.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.SessionKey> __Marshaller_SessionKey = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.SessionKey.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.ServerInfo> __Marshaller_ServerInfo = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.ServerInfo.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::Msg.SessionCache> __Marshaller_SessionCache = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.SessionCache.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.LoginInput> __Marshaller_LoginInput = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.LoginInput.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.UserInfo> __Marshaller_UserInfo = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.UserInfo.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::Msg.RegistInput> __Marshaller_RegistInput = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Msg.RegistInput.Parser.ParseFrom);
@@ -357,6 +389,13 @@ namespace Msg {
         "AquireOtherAgent",
         __Marshaller_Empty,
         __Marshaller_ServerInfo);
+
+    static readonly grpc::Method<global::Msg.Empty, global::Msg.SessionCache> __Method_GetSessionCache = new grpc::Method<global::Msg.Empty, global::Msg.SessionCache>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "GetSessionCache",
+        __Marshaller_Empty,
+        __Marshaller_SessionCache);
 
     static readonly grpc::Method<global::Msg.LoginInput, global::Msg.UserInfo> __Method_Login = new grpc::Method<global::Msg.LoginInput, global::Msg.UserInfo>(
         grpc::MethodType.Unary,
@@ -464,6 +503,11 @@ namespace Msg {
       }
 
       public virtual global::System.Threading.Tasks.Task<global::Msg.ServerInfo> AquireOtherAgent(global::Msg.Empty request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      public virtual global::System.Threading.Tasks.Task<global::Msg.SessionCache> GetSessionCache(global::Msg.Empty request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -621,6 +665,22 @@ namespace Msg {
       public virtual grpc::AsyncUnaryCall<global::Msg.ServerInfo> AquireOtherAgentAsync(global::Msg.Empty request, grpc::CallOptions options)
       {
         return CallInvoker.AsyncUnaryCall(__Method_AquireOtherAgent, null, options, request);
+      }
+      public virtual global::Msg.SessionCache GetSessionCache(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return GetSessionCache(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual global::Msg.SessionCache GetSessionCache(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_GetSessionCache, null, options, request);
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.SessionCache> GetSessionCacheAsync(global::Msg.Empty request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return GetSessionCacheAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      public virtual grpc::AsyncUnaryCall<global::Msg.SessionCache> GetSessionCacheAsync(global::Msg.Empty request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_GetSessionCache, null, options, request);
       }
       /// <summary>
       ///Login
@@ -914,6 +974,7 @@ namespace Msg {
       return grpc::ServerServiceDefinition.CreateBuilder()
           .AddMethod(__Method_AquireSessionKey, serviceImpl.AquireSessionKey)
           .AddMethod(__Method_AquireOtherAgent, serviceImpl.AquireOtherAgent)
+          .AddMethod(__Method_GetSessionCache, serviceImpl.GetSessionCache)
           .AddMethod(__Method_Login, serviceImpl.Login)
           .AddMethod(__Method_CreateAccount, serviceImpl.CreateAccount)
           .AddMethod(__Method_SetAccount, serviceImpl.SetAccount)

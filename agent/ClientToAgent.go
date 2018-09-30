@@ -19,11 +19,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"time"
 	/*
 		"io"
 		"reflect"
 		"sync"
-		"time"
 	*/)
 
 /*
@@ -82,6 +82,18 @@ func (a *Agent) AquireOtherAgent(c context.Context, e *Empty) (*ServerInfo, erro
 	return nil, nil
 }
 
+func (a *Agent) GetSessionCache(c context.Context, e *Empty) (*SessionCache, error) {
+	s := GetSesionFromContext(c)
+
+	if s == nil {
+		log.Warn("GetSessionCache Fail")
+		return &SessionCache{}, status.Errorf(codes.NotFound, "Session Not Found!")
+	}
+
+	cache := s.GetSessionCache()
+	return cache, nil
+}
+
 // Login
 
 func (a *Agent) Login(c context.Context, in *LoginInput) (*UserInfo, error) {
@@ -124,11 +136,12 @@ func (a *Agent) SetCharacter(c context.Context, setting *CharacterSetting) (*Suc
 // allocate room
 func (a *Agent) AquireGameServer(c context.Context, e *Empty) (*ServerInfo, error) {
 	s := GetSesionFromContext(c)
+	log.Debug("Aquiring game server...")
+	time.Sleep(5 * time.Second)
 	if s == nil {
 		return &ServerInfo{}, status.Errorf(codes.NotFound, "Session Not Found!")
 	}
 	msg := s.GetMsgChan("ServerInfo")
-	log.Debug("Aquiring game server...")
 	if msg != nil {
 		serverInfo := <-msg.DataCh
 		return serverInfo.(*ServerInfo), nil
@@ -219,20 +232,21 @@ func (a *Agent) RoomReady(c context.Context, e *Empty) (*Success, error) {
 			Ok: false,
 		}, status.Errorf(codes.NotFound, "Session Not Found!")
 	}
+
 	if s.IsReady {
 		if s.State.CancelReady() {
 			return &Success{
-				Ok: true,
+				Ok: s.IsReady,
 			}, nil
 		}
 	} else {
 		if s.State.ReadyRoom() {
 			return &Success{
-				Ok: true,
+				Ok: s.IsReady,
 			}, nil
 		}
 	}
-	return &Success{}, nil
+	return &Success{}, status.Errorf(codes.Internal, "Somethig Wrong")
 }
 
 func GetSesionFromContext(c context.Context) *session.Session {

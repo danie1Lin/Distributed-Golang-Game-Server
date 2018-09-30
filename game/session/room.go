@@ -1,6 +1,7 @@
 package session
 
 import (
+	"errors"
 	. "github.com/daniel840829/gameServer/msg"
 	. "github.com/daniel840829/gameServer/uuid"
 	"github.com/golang/protobuf/proto"
@@ -35,9 +36,12 @@ type roomManager struct {
 	RoomList *RoomList
 }
 
-func (rm *roomManager) CreateGame(gameCreation *GameCreation) {
+func (rm *roomManager) CreateGame(gameCreation *GameCreation) error {
 	switch gameCreation.RoomInfo.GameType {
 	default:
+		if _, ok := rm.Rooms[gameCreation.RoomInfo.Uuid]; ok {
+			return errors.New("Room already exist")
+		}
 		room := NewRoom(gameCreation.RoomInfo.Uuid)
 		for _, sessionInfo := range gameCreation.PlayerSessions {
 			//sessionInfo.Uuid
@@ -46,13 +50,24 @@ func (rm *roomManager) CreateGame(gameCreation *GameCreation) {
 			session.InputPool = room.GetMsgChan("Input")
 			room.Client[session] = struct{}{}
 			session.Room = room
+
 		}
+		rm.Rooms[gameCreation.RoomInfo.Uuid] = room
 		go room.Run()
+		return nil
 	}
 }
 
-func (rm *roomManager) DeletRoom() {
-
+func (rm *roomManager) DeleteRoom(info *RoomInfo) error {
+	room, ok := rm.Rooms[info.Uuid]
+	if !ok {
+		log.Debug(rm.Rooms)
+		return errors.New("no this room")
+	}
+	room.end <- struct{}{}
+	delete(rm.Rooms, info.Uuid)
+	log.Debug("Game Rooms After delete", rm.Rooms)
+	return nil
 }
 
 func (rm *roomManager) LeaveRoom() {
@@ -72,7 +87,7 @@ func NewRoom(roomId int64) *Room {
 		Uuid:              roomId,
 		GameStart:         make(chan (struct{}), 1),
 		MsgChannelManager: NewMsgChannelManager(),
-		end:               make(chan struct{}),
+		end:               make(chan struct{}, 10),
 	}
 	room.AddMsgChan("Input", 200)
 	return room
@@ -132,7 +147,7 @@ func (r *Room) Run() {
 	r.GameFrame.TimeStamp = GetTimeStamp()
 	r.GenerateStartFrame()
 	r.GameFrame.RunnigNo += 1
-	update := time.NewTicker(time.Millisecond * 100)
+	update := time.NewTicker(time.Millisecond * 30)
 END:
 	for {
 		select {
@@ -150,7 +165,11 @@ END:
 		}
 	}
 
-	log.Debug("EndGameing")
+	log.Debug("End Gameing")
+	for s, _ := range r.Client {
+		s.Room = nil
+	}
+	r.Master.Room = nil
 }
 
 func (r *Room) UpdateFrame() {
@@ -172,9 +191,11 @@ func (r *Room) HandleEntityDestory(input *Input) {
 }
 
 func (r *Room) HandleInteraction(input *Input) {
-	if r.GameFrame.TimeStamp > input.TimeStamp {
-		return
-	}
+	/*
+		if r.GameFrame.TimeStamp > input.TimeStamp {
+			return
+		}
+	*/
 	for _, in := range input.Interaction {
 		r.GameFrame.Interaction = append(r.GameFrame.Interaction, in)
 	}

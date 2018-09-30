@@ -49,7 +49,6 @@ func NewGameServer(addr string) (gameServer *GameServer) {
 		Rooms: make(map[*Room]struct{}, 0),
 	}
 	gameServer.Client = NewAgentToGameClient(conn)
-
 	log.Debug("client", gameServer.Client)
 	return
 }
@@ -60,6 +59,12 @@ type roomManager struct {
 	GameServers          map[*GameServer]struct{}
 	sync.RWMutex
 	RoomList *RoomList
+}
+
+func (rm *roomManager) DeleteRoom(room *Room) {
+	room.DeleteRoom()
+	delete(rm.Rooms, room.Uuid)
+	rm.UpdateRoomList()
 }
 
 func (rm *roomManager) ConnectGameServer(addr string) {
@@ -107,10 +112,6 @@ func (rm *roomManager) Run() {
 
 }
 
-func (rm *roomManager) DeletRoom() {
-
-}
-
 func (rm *roomManager) LeaveRoom() {
 
 }
@@ -131,7 +132,7 @@ func NewRoom(master *Session, roomId int64, setting *RoomSetting) *Room {
 		Name:         setting.Name,
 		GameType:     setting.GameType,
 		MaxPlyer:     setting.MaxPlayer,
-		PlayerInRoom: 0,
+		PlayerInRoom: 1,
 		Review: &RoomReview{
 			Uuid: roomId,
 		},
@@ -143,16 +144,17 @@ func NewRoom(master *Session, roomId int64, setting *RoomSetting) *Room {
 }
 
 type Room struct {
-	Name         string
-	GameType     string
-	Master       *Session
-	Client       map[*Session]struct{}
-	Uuid         int64
-	IsFull       bool
-	MaxPlyer     int32
-	PlayerInRoom int32
-	Review       *RoomReview
-	GameServer   *GameServer
+	Name                string
+	GameType            string
+	Master              *Session
+	Client              map[*Session]struct{}
+	Uuid                int64
+	IsFull              bool
+	IsCreatOnGameServer bool
+	MaxPlyer            int32
+	PlayerInRoom        int32
+	Review              *RoomReview
+	GameServer          *GameServer
 	sync.RWMutex
 }
 
@@ -206,17 +208,32 @@ func (r *Room) KickOut(master *Session, client *Session) bool {
 	return false
 }
 
-func (r *Room) DeleteRoom(master *Session) bool {
-	if master != r.Master {
-		return false
+func (r *Room) DeleteRoom() bool {
+	if r.IsCreatOnGameServer {
+
+		_, err := r.GameServer.Client.DeletGameRoom(context.Background(), &RoomInfo{Uuid: r.Uuid})
+		if err != nil {
+			log.Warn(err)
+		}
+	}
+	if r.Master != nil {
+		r.Master.Room = nil
+	}
+	for s, _ := range r.Client {
+		s.Room = nil
 	}
 	return true
 }
 
 func (r *Room) LeaveRoom(s *Session) bool {
 	if s == r.Master {
-		r.DeleteRoom(s)
-		return true
+		s.Room = nil
+		r.Master = nil
+		r.PlayerInRoom -= 1
+		r.IsFull = false
+		r.UpdateReview()
+		r.UpdateRoomContent()
+
 	} else {
 		if _, ok := r.Client[s]; ok {
 			s.Room = nil
@@ -225,10 +242,15 @@ func (r *Room) LeaveRoom(s *Session) bool {
 			r.IsFull = false
 			r.UpdateReview()
 			r.UpdateRoomContent()
-			return true
+
+		} else {
+			return false
 		}
 	}
-	return false
+	if len(r.Client) == 0 && r.Master == nil {
+		RoomManager.DeleteRoom(r)
+	}
+	return true
 }
 
 func (r *Room) UpdateRoomContent() {
@@ -236,18 +258,21 @@ func (r *Room) UpdateRoomContent() {
 		Uuid:    r.Uuid,
 		Players: make(map[string]*PlayerInfo),
 	}
-	pInfo := r.Master.GetPlayerInfo()
-	content.Players[pInfo.UserName] = pInfo
+	if r.Master != nil {
+		pInfo := r.Master.GetPlayerInfo()
+		content.Players[pInfo.UserName] = pInfo
+	}
 	for s, _ := range r.Client {
-		pInfo = s.GetPlayerInfo()
+		pInfo := s.GetPlayerInfo()
 		content.Players[pInfo.UserName] = pInfo
 	}
 
-	ch := r.Master.GetMsgChan("RoomContent")
-	ch.DataCh <- content
-
+	if r.Master != nil {
+		ch := r.Master.GetMsgChan("RoomContent")
+		ch.DataCh <- content
+	}
 	for s, _ := range r.Client {
-		ch = s.GetMsgChan("RoomContent")
+		ch := s.GetMsgChan("RoomContent")
 		ch.DataCh <- content
 	}
 }
@@ -268,32 +293,38 @@ func (r *Room) CheckReady() bool {
 }
 
 func (r *Room) CreateRoomOnGameServer() {
-	gameCreation := &GameCreation{
-		PlayerSessions: make([]*SessionInfo, 0),
-		RoomInfo:       &RoomInfo{},
-	}
-	gameCreation.RoomInfo.GameType = r.GameType
-	r.Master.SetState(int32(SessionInfo_ConnectingGame))
-	gameCreation.PlayerSessions = append(gameCreation.PlayerSessions, r.Master.GetSessionInfo())
-	for s, _ := range r.Client {
-		s.SetState(int32(SessionInfo_ConnectingGame))
-		gameCreation.PlayerSessions = append(gameCreation.PlayerSessions, s.GetSessionInfo())
-	}
-	gs := RoomManager.GetGameServer()
-	gs.Rooms[r] = struct{}{}
-	key, err := gs.Client.AquireGameRoom(context.Background(), gameCreation)
-	if err != nil {
-		log.Warn("GameServer has some issue", err)
-	}
-	c := r.Master.GetMsgChan("ServerInfo")
-	serverInfo := &ServerInfo{
-		Addr:      gs.Addr,
-		Port:      gs.Port,
-		PublicKey: key.SSL,
-	}
-	c.DataCh <- serverInfo
-	for s, _ := range r.Client {
-		c = s.GetMsgChan("ServerInfo")
+	if !r.IsCreatOnGameServer {
+		gameCreation := &GameCreation{
+			PlayerSessions: make([]*SessionInfo, 0),
+			RoomInfo:       &RoomInfo{Uuid: r.Uuid},
+		}
+		gameCreation.RoomInfo.GameType = r.GameType
+		r.Master.SetState(int32(SessionInfo_ConnectingGame))
+		gameCreation.PlayerSessions = append(gameCreation.PlayerSessions, r.Master.GetSessionInfo())
+		for s, _ := range r.Client {
+			s.SetState(int32(SessionInfo_ConnectingGame))
+			gameCreation.PlayerSessions = append(gameCreation.PlayerSessions, s.GetSessionInfo())
+		}
+		gs := RoomManager.GetGameServer()
+		gs.Rooms[r] = struct{}{}
+		key, err := gs.Client.AquireGameRoom(context.Background(), gameCreation)
+		if err != nil {
+			log.Warn("GameServer has some issue", err)
+		}
+		c := r.Master.GetMsgChan("ServerInfo")
+		serverInfo := &ServerInfo{
+			Addr:      gs.Addr,
+			Port:      gs.Port,
+			PublicKey: key.SSL,
+		}
 		c.DataCh <- serverInfo
+		r.Master.ServerInfo = serverInfo
+		for s, _ := range r.Client {
+			s.ServerInfo = serverInfo
+			c = s.GetMsgChan("ServerInfo")
+			c.DataCh <- serverInfo
+		}
+		r.GameServer = gs
+		r.IsCreatOnGameServer = true
 	}
 }

@@ -62,8 +62,15 @@ func (m *MsgChannelManager) CloseMsgChan(name string) {
 }
 
 type sessionManager struct {
-	Sessions map[int64]*Session
+	Sessions           map[int64]*Session
+	UserNameMapSession map[string]int64
 	sync.RWMutex
+}
+
+func (sm *sessionManager) CleanSession(id int64) {
+	if s, ok := sm.Sessions[id]; ok {
+		s.Room.LeaveRoom(s)
+	}
 }
 
 func (sm *sessionManager) MakeSession() int64 {
@@ -97,6 +104,11 @@ func (sm *sessionManager) GetSession(md metadata.MD) *Session {
 			s.RUnlock()
 			return nil
 		}
+	} else {
+		uname := md.Get("uname")
+		if len(uname) != 0 {
+			return nil
+		}
 	}
 	s.RUnlock()
 	return s
@@ -128,6 +140,7 @@ type Session struct {
 	PlayerInfo *PlayerInfo
 	TeamNo     int32
 	IsReady    bool
+	ServerInfo *ServerInfo
 }
 
 func (s *Session) GetPlayerInfo() *PlayerInfo {
@@ -155,11 +168,21 @@ func (s *Session) SetState(state_index int32) {
 }
 
 func (s *Session) GetSessionInfo() *SessionInfo {
-	info := s.User.GetInfo()
+	info := &UserInfo{}
+	if s.User != nil {
+		info = s.User.GetInfo()
+	}
 	return &SessionInfo{
 		Uuid:     s.Info.Uuid,
 		UserInfo: info,
 		State:    s.State.GetStateCode(),
+	}
+}
+
+func (s *Session) GetSessionCache() *SessionCache {
+	return &SessionCache{
+		GameServerInfo: s.ServerInfo,
+		SessionInfo:    s.GetSessionInfo(),
 	}
 }
 
@@ -285,6 +308,7 @@ func (ss *GuestSessionState) Regist(uname string, pswd string, info ...string) b
 
 func (ss *GuestSessionState) Login(uname string, pswd string) *user.User {
 	//TODO
+
 	in := &LoginInput{UserName: uname, Pswd: pswd}
 	userInfo, err := user.Manager.Login(in)
 	if err != nil {
@@ -297,9 +321,13 @@ func (ss *GuestSessionState) Login(uname string, pswd string) *user.User {
 	ss.Session.User = user
 	ss.Session.SetState(int32(ss.StateCode) + 1)
 	log.Info("user state:", ss.Session.State)
-	ss.Session.AddMsgChan("RoomList", 2)
+	ss.Session.AddMsgChan("RoomList", 10)
 	RoomManager.AddIdleUserMsgChan(ss.Session.GetMsgChan("RoomList"))
 	RoomManager.UpdateRoomList()
+	if id, ok := Manager.UserNameMapSession[uname]; ok {
+		Manager.CleanSession(id)
+	}
+	Manager.UserNameMapSession[uname] = ss.Session.Info.Uuid
 	return user
 }
 
@@ -310,7 +338,7 @@ type UserIdleSessionState struct {
 func (ss *UserIdleSessionState) CreateRoom(roomSetting *RoomSetting) bool {
 	//TODO
 	ss.Session.Info.Capacity = SessionInfo_RoomMaster
-	ss.Session.AddMsgChan("RoomContent", 2)
+	ss.Session.AddMsgChan("RoomContent", 10)
 	room := RoomManager.CreateRoom(ss.Session, roomSetting)
 	ss.Session.Room = room
 	ss.Session.SetState(int32(ss.StateCode) + 1)
@@ -413,7 +441,8 @@ var SessionStateFactory *sessionStateFactory
 
 func init() {
 	Manager = &sessionManager{
-		Sessions: make(map[int64]*Session),
+		Sessions:           make(map[int64]*Session),
+		UserNameMapSession: make(map[string]int64),
 	}
 	SessionStateFactory = &sessionStateFactory{}
 }
