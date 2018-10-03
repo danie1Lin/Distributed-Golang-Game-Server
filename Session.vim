@@ -3,7 +3,7 @@ if &cp | set nocp | endif
 let s:cpo_save=&cpo
 set cpo&vim
 imap <S-Tab> <Plug>snipMateBack
-inoremap <silent> <SNR>87_yrrecord =YRRecord3()
+inoremap <silent> <SNR>88_yrrecord =YRRecord3()
 inoremap <silent> <Plug>snipMateShow =snipMate#ShowAvailableSnips()
 inoremap <silent> <Plug>snipMateBack =snipMate#BackwardsSnippet()
 inoremap <silent> <Plug>snipMateTrigger =snipMate#TriggerSnippet(1)
@@ -76,8 +76,6 @@ xnoremap <silent> P :YRPaste 'P', 'v'
 nnoremap <silent> P :YRPaste 'P'
 xmap S <Plug>VSurround
 vmap [% [%m'gv``
-nmap [C 9999[c
-nmap [c <Plug>(signify-prev-hunk)
 nmap [_ <Plug>(IndentWisePreviousAbsoluteIndent)
 xmap [_ <Plug>(IndentWisePreviousAbsoluteIndent)
 omap [_ <Plug>(IndentWisePreviousAbsoluteIndent)
@@ -129,8 +127,6 @@ nmap \sp <Plug>(signify-prev-hunk)
 nmap \sn <Plug>(signify-next-hunk)
 nmap \e :Errors
 vmap ]% ]%m'gv``
-nmap ]C 9999]c
-nmap ]c <Plug>(signify-next-hunk)
 nmap ]_ <Plug>(IndentWiseNextAbsoluteIndent)
 xmap ]_ <Plug>(IndentWiseNextAbsoluteIndent)
 omap ]_ <Plug>(IndentWiseNextAbsoluteIndent)
@@ -169,6 +165,7 @@ nmap ySs <Plug>YSsurround
 nmap yss <Plug>Yssurround
 nmap yS <Plug>YSurround
 nmap ys <Plug>Ysurround
+nnoremap <silent> <Plug>(go-iferr) :call go#iferr#Generate()
 nnoremap <silent> <Plug>(go-alternate-split) :call go#alternate#Switch(0, "split")
 nnoremap <silent> <Plug>(go-alternate-vertical) :call go#alternate#Switch(0, "vsplit")
 nnoremap <silent> <Plug>(go-alternate-edit) :call go#alternate#Switch(0, "edit")
@@ -190,7 +187,8 @@ nnoremap <silent> <Plug>(go-def) :call go#def#Jump('')
 nnoremap <silent> <Plug>(go-rename) :call go#rename#Rename(!g:go_jump_to_error)
 nnoremap <silent> <Plug>(go-sameids-toggle) :call go#guru#ToggleSameIds()
 nnoremap <silent> <Plug>(go-whicherrs) :call go#guru#Whicherrs(-1)
-nnoremap <silent> <Plug>(go-sameids) :call go#guru#SameIds()
+nnoremap <silent> <Plug>(go-pointsto) :call go#guru#PointsTo(-1)
+nnoremap <silent> <Plug>(go-sameids) :call go#guru#SameIds(1)
 nnoremap <silent> <Plug>(go-referrers) :call go#guru#Referrers(-1)
 nnoremap <silent> <Plug>(go-channelpeers) :call go#guru#ChannelPeers(-1)
 xnoremap <silent> <Plug>(go-freevars) :call go#guru#Freevars(0)
@@ -201,7 +199,7 @@ nnoremap <silent> <Plug>(go-callees) :call go#guru#Callees(-1)
 nnoremap <silent> <Plug>(go-implements) :call go#guru#Implements(-1)
 nnoremap <silent> <Plug>(go-imports) :call go#fmt#Format(1)
 nnoremap <silent> <Plug>(go-import) :call go#import#SwitchImport(1, '', expand('<cword>'), '')
-nnoremap <silent> <Plug>(go-info) :call go#tool#Info(0)
+nnoremap <silent> <Plug>(go-info) :call go#tool#Info(1)
 nnoremap <silent> <Plug>(go-deps) :call go#tool#Deps()
 nnoremap <silent> <Plug>(go-files) :call go#tool#Files()
 nnoremap <silent> <Plug>(go-coverage-browser) :call go#coverage#Browser(!g:go_jump_to_error)
@@ -217,8 +215,8 @@ nnoremap <silent> <Plug>(go-build) :call go#cmd#Build(!g:go_jump_to_error)
 nnoremap <silent> <Plug>(go-run) :call go#cmd#Run(!g:go_jump_to_error)
 smap <S-Tab> <Plug>snipMateBack
 vnoremap <silent> <Plug>NetrwBrowseXVis :call netrw#BrowseXVis()
-nnoremap <silent> <Plug>NetrwBrowseX :call netrw#BrowseX(expand((exists("g:netrw_gx")? g:netrw_gx : '<cfile>')),netrw#CheckIfRemote())
-nnoremap <silent> <SNR>87_yrrecord :call YRRecord3()
+nnoremap <silent> <Plug>NetrwBrowseX :call netrw#BrowseX(netrw#GX(),netrw#CheckIfRemote(netrw#GX()))
+nnoremap <silent> <SNR>88_yrrecord :call YRRecord3()
 nnoremap <silent> <Plug>Colorizer :ColorToggle
 nnoremap <silent> <Plug>(choosewin) :call choosewin#start(range(1, winnr('$')))
 xnoremap <silent> <Plug>(signify-motion-outer-visual) :call sy#util#hunk_text_object(1)
@@ -321,24 +319,23 @@ unlet s:cpo_save
 set autoread
 set autowriteall
 set background=dark
-set backspace=indent,eol,start
+set backspace=2
 set backup
 set backupdir=~/.vim/dirs/backups
 set completeopt=menu
 set directory=~/.vim/dirs/tmp
 set expandtab
 set fileencodings=ucs-bom,utf-8,default,latin1
-set helplang=en
+set helplang=tw
 set hlsearch
 set incsearch
 set laststatus=2
-set ruler
-set runtimepath=~/.vim,~/.vim/plugged/vim-es6/,~/.vim/plugged/vim-go/,~/.vim/plugged/vim-workspace/,~/.vim/plugged/molokai/,~/.vim/plugged/ctrlp.vim/,~/.vim/plugged/dir-configs-override.vim/,~/.vim/plugged/nerdtree/,~/.vim/plugged/nerdcommenter/,~/.vim/plugged/tagbar/,~/.vim/plugged/vim-ctrlp-cmdpalette/,~/.vim/plugged/emmet-vim/,~/.vim/plugged/git-vim/,~/.vim/plugged/tabman.vim/,~/.vim/plugged/vim-airline/,~/.vim/plugged/vim-airline-themes/,~/.vim/plugged/fisa-vim-colorscheme/,~/.vim/plugged/conque-term/,~/.vim/plugged/FixedTaskList.vim/,~/.vim/plugged/vim-surround/,~/.vim/plugged/vim-autoclose/,~/.vim/plugged/vim-indent-object/,~/.vim/plugged/vim-indentwise/,~/.vim/plugged/jedi-vim/,~/.vim/plugged/neocomplcache.vim/,~/.vim/plugged/vim-addon-mw-utils/,~/.vim/plugged/tlib_vim/,~/.vim/plugged/vim-snippets/,~/.vim/plugged/vim-snipmate/,~/.vim/plugged/vim-signify/,~/.vim/plugged/vim-isort/,~/.vim/plugged/dragvisuals.vim/,~/.vim/plugged/vim-choosewin/,~/.vim/plugged/syntastic/,~/.vim/plugged/colorizer/,~/.vim/plugged/ack.vim/,~/.vim/plugged/IndexedSearch/,~/.vim/plugged/matchit.zip/,~/.vim/plugged/Wombat/,~/.vim/plugged/YankRing.vim/,/var/lib/vim/addons,/usr/share/vim/vimfiles,/usr/share/vim/vim74,/usr/share/vim/vimfiles/after,/var/lib/vim/addons/after,~/.vim/plugged/vim-ctrlp-cmdpalette/after,~/.vim/plugged/jedi-vim/after,~/.vim/plugged/vim-snipmate/after,~/.vim/after
+set modelines=0
+set runtimepath=~/.vim,~/.vim/plugged/vim-es6/,~/.vim/plugged/vim-go/,~/.vim/plugged/vim-workspace/,~/.vim/plugged/molokai/,~/.vim/plugged/ctrlp.vim/,~/.vim/plugged/dir-configs-override.vim/,~/.vim/plugged/nerdtree/,~/.vim/plugged/nerdcommenter/,~/.vim/plugged/tagbar/,~/.vim/plugged/vim-ctrlp-cmdpalette/,~/.vim/plugged/emmet-vim/,~/.vim/plugged/git-vim/,~/.vim/plugged/tabman.vim/,~/.vim/plugged/vim-airline/,~/.vim/plugged/vim-airline-themes/,~/.vim/plugged/fisa-vim-colorscheme/,~/.vim/plugged/conque-term/,~/.vim/plugged/FixedTaskList.vim/,~/.vim/plugged/vim-surround/,~/.vim/plugged/vim-autoclose/,~/.vim/plugged/vim-indent-object/,~/.vim/plugged/vim-indentwise/,~/.vim/plugged/jedi-vim/,~/.vim/plugged/neocomplcache.vim/,~/.vim/plugged/vim-addon-mw-utils/,~/.vim/plugged/tlib_vim/,~/.vim/plugged/vim-snippets/,~/.vim/plugged/vim-snipmate/,~/.vim/plugged/vim-signify/,~/.vim/plugged/vim-isort/,~/.vim/plugged/dragvisuals.vim/,~/.vim/plugged/vim-choosewin/,~/.vim/plugged/syntastic/,~/.vim/plugged/colorizer/,~/.vim/plugged/ack.vim/,~
 set scrolloff=3
 set shiftwidth=4
 set shortmess=aoO
 set softtabstop=4
-set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
 set noswapfile
 set swapsync=
 set tabstop=4
@@ -346,6 +343,7 @@ set undodir=.undodir
 set undofile
 set updatetime=800
 set wildmode=list:longest
+set window=0
 set winwidth=1
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
@@ -355,11 +353,13 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
+badd +1 storage/storage.go
+badd +1 restart
 badd +1 main.go
 badd +1 cluster-manager/manager.go
 badd +1 Gopkg.toml
 badd +1 Dockerfile
-badd +69 game/session/room.go
+badd +91 game/session/room.go
 badd +1 game.log
 badd +1 entity/entity.go
 badd +1 entity/attack.go
@@ -378,25 +378,24 @@ badd +4 service/AgentToGame.go
 badd +1 entity/room.go
 badd +1 agent/AgentToGame.go
 badd +81 agent/ClientToAgent.go
-badd +72 agent/session/session.go
-badd +72 agent/session/room.go
+badd +341 agent/session/session.go
+badd +107 agent/session/room.go
 badd +4 game/entity/room.go
 badd +1 agentServer/agent/AgentToGame.go
-badd +1 storage/storage.go
-badd +38 game/agentToGame.go
+badd +1 game/agentToGame.go
 badd +1 game/clientToGame.go
 badd +1 game/session/session.go
 badd +1 util/util.go
 argglobal
 silent! argdel *
-argadd entity/entity.go
+$argadd entity/entity.go
 set stal=2
 edit agent/ClientToAgent.go
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
 wincmd t
-set winheight=1 winwidth=1
+set winminheight=1 winheight=1 winminwidth=1 winwidth=1
 argglobal
 nnoremap <buffer> <silent>  :call go#def#StackPop(v:count1)
 nnoremap <buffer> <silent> ] :call go#def#Jump("split")
@@ -418,19 +417,21 @@ xnoremap <buffer> <silent> \a` `>a``<i`
 xnoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('v', 'next')
 onoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('o', 'next')
 nnoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('n', 'next')
+xnoremap <buffer> <silent> ac :call go#textobj#Comment('a')
+onoremap <buffer> <silent> ac :call go#textobj#Comment('a')
 xnoremap <buffer> <silent> af :call go#textobj#Function('a')
 onoremap <buffer> <silent> af :call go#textobj#Function('a')
 let s:cpo_save=&cpo
 set cpo&vim
 nnoremap <buffer> <silent> g<LeftMouse> <LeftMouse>:GoDef
 nnoremap <buffer> <silent> gd :GoDef
+xnoremap <buffer> <silent> ic :call go#textobj#Comment('i')
+onoremap <buffer> <silent> ic :call go#textobj#Comment('i')
 xnoremap <buffer> <silent> if :call go#textobj#Function('i')
 onoremap <buffer> <silent> if :call go#textobj#Function('i')
 nnoremap <buffer> <silent> <C-LeftMouse> <LeftMouse>:GoDef
 let &cpo=s:cpo_save
 unlet s:cpo_save
-setlocal keymap=
-setlocal noarabic
 setlocal autoindent
 setlocal backupcopy=
 setlocal nobinary
@@ -447,8 +448,6 @@ setlocal colorcolumn=
 setlocal comments=s1:/*,mb:*,ex:*/,://
 setlocal commentstring=//\ %s
 setlocal complete=.,w,b,u,t,i
-setlocal concealcursor=
-setlocal conceallevel=0
 setlocal completefunc=
 setlocal nocopyindent
 setlocal cryptmethod=
@@ -478,9 +477,10 @@ setlocal foldtext=foldtext()
 setlocal formatexpr=
 setlocal formatoptions=cq
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal formatprg=
 setlocal grepprg=
 setlocal iminsert=0
-setlocal imsearch=0
+setlocal imsearch=-1
 setlocal include=
 setlocal includeexpr=
 setlocal indentexpr=GoIndent(v:lnum)
@@ -492,6 +492,7 @@ setlocal nolinebreak
 setlocal nolisp
 setlocal lispwords=
 setlocal nolist
+setlocal makeencoding=
 setlocal makeprg=go\ build
 setlocal matchpairs=(:),{:},[:]
 setlocal modeline
@@ -507,163 +508,10 @@ setlocal nopreviewwindow
 setlocal quoteescape=\\
 setlocal noreadonly
 setlocal norelativenumber
-setlocal norightleft
-setlocal rightleftcmd=search
 setlocal noscrollbind
 setlocal shiftwidth=4
 setlocal noshortname
-setlocal nosmartindent
-setlocal softtabstop=4
-setlocal nospell
-setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
-setlocal spellfile=
-setlocal spelllang=en
-setlocal statusline=%!airline#statusline(1)
-setlocal suffixesadd=
-setlocal swapfile
-setlocal synmaxcol=3000
-if &syntax != 'go'
-setlocal syntax=go
-endif
-setlocal tabstop=4
-setlocal tagcase=
-setlocal tags=
-setlocal textwidth=0
-setlocal thesaurus=
-setlocal undofile
-setlocal undolevels=-123456
-setlocal nowinfixheight
-setlocal nowinfixwidth
-setlocal wrap
-setlocal wrapmargin=0
-silent! normal! zE
-let s:l = 225 - ((26 * winheight(0) + 18) / 37)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-225
-normal! 011|
-tabedit agent/session/session.go
-set splitbelow splitright
-set nosplitbelow
-set nosplitright
-wincmd t
-set winheight=1 winwidth=1
-argglobal
-nnoremap <buffer> <silent>  :call go#def#StackPop(v:count1)
-nnoremap <buffer> <silent> ] :call go#def#Jump("split")
-nnoremap <buffer> <silent>  :call go#def#Jump("split")
-nnoremap <buffer> <silent>  :GoDef
-nnoremap <buffer> <silent> K :GoDoc
-xnoremap <buffer> <silent> [[ :call go#textobj#FunctionJump('v', 'prev')
-onoremap <buffer> <silent> [[ :call go#textobj#FunctionJump('o', 'prev')
-nnoremap <buffer> <silent> [[ :call go#textobj#FunctionJump('n', 'prev')
-xnoremap <buffer> <silent> \a} `>a}`<i{
-xnoremap <buffer> <silent> \a{ `>a}`<i{
-xnoremap <buffer> <silent> \a) `>a)`<i(
-xnoremap <buffer> <silent> \a( `>a)`<i(
-xnoremap <buffer> <silent> \a' `>a'`<i'
-xnoremap <buffer> <silent> \a] `>a]`<i[
-xnoremap <buffer> <silent> \a[ `>a]`<i[
-xnoremap <buffer> <silent> \a" `>a"`<i"
-xnoremap <buffer> <silent> \a` `>a``<i`
-xnoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('v', 'next')
-onoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('o', 'next')
-nnoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('n', 'next')
-xnoremap <buffer> <silent> af :call go#textobj#Function('a')
-onoremap <buffer> <silent> af :call go#textobj#Function('a')
-let s:cpo_save=&cpo
-set cpo&vim
-nnoremap <buffer> <silent> g<LeftMouse> <LeftMouse>:GoDef
-nnoremap <buffer> <silent> gd :GoDef
-xnoremap <buffer> <silent> if :call go#textobj#Function('i')
-onoremap <buffer> <silent> if :call go#textobj#Function('i')
-nnoremap <buffer> <silent> <C-LeftMouse> <LeftMouse>:GoDef
-let &cpo=s:cpo_save
-unlet s:cpo_save
-setlocal keymap=
-setlocal noarabic
-setlocal autoindent
-setlocal backupcopy=
-setlocal nobinary
-setlocal nobreakindent
-setlocal breakindentopt=
-setlocal bufhidden=
-setlocal buflisted
-setlocal buftype=
-setlocal nocindent
-setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
-setlocal cinoptions=
-setlocal cinwords=if,else,while,do,for,switch
-setlocal colorcolumn=
-setlocal comments=s1:/*,mb:*,ex:*/,://
-setlocal commentstring=//\ %s
-setlocal complete=.,w,b,u,t,i
-setlocal concealcursor=
-setlocal conceallevel=0
-setlocal completefunc=
-setlocal nocopyindent
-setlocal cryptmethod=
-setlocal nocursorbind
-setlocal nocursorcolumn
-setlocal nocursorline
-setlocal define=
-setlocal dictionary=
-setlocal nodiff
-setlocal equalprg=
-setlocal errorformat=%-G#\ %.%#,%-G%.%#panic:\ %m,%Ecan't\ load\ package:\ %m,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#
-setlocal noexpandtab
-if &filetype != 'go'
-setlocal filetype=go
-endif
-setlocal fixendofline
-setlocal foldcolumn=0
-setlocal foldenable
-setlocal foldexpr=0
-setlocal foldignore=#
-setlocal foldlevel=0
-setlocal foldmarker={{{,}}}
-setlocal foldmethod=manual
-setlocal foldminlines=1
-setlocal foldnestmax=20
-setlocal foldtext=foldtext()
-setlocal formatexpr=
-setlocal formatoptions=cq
-setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
-setlocal grepprg=
-setlocal iminsert=0
-setlocal imsearch=0
-setlocal include=
-setlocal includeexpr=
-setlocal indentexpr=GoIndent(v:lnum)
-setlocal indentkeys=0{,0},:,0#,!^F,o,O,e,<:>,0=},0=)
-setlocal noinfercase
-setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=
-setlocal nolinebreak
-setlocal nolisp
-setlocal lispwords=
-setlocal nolist
-setlocal makeprg=go\ build
-setlocal matchpairs=(:),{:},[:]
-setlocal modeline
-setlocal modifiable
-setlocal nrformats=bin,octal,hex
-set number
-setlocal number
-setlocal numberwidth=4
-setlocal omnifunc=go#complete#Complete
-setlocal path=
-setlocal nopreserveindent
-setlocal nopreviewwindow
-setlocal quoteescape=\\
-setlocal noreadonly
-setlocal norelativenumber
-setlocal norightleft
-setlocal rightleftcmd=search
-setlocal noscrollbind
-setlocal shiftwidth=4
-setlocal noshortname
+setlocal signcolumn=auto
 setlocal nosmartindent
 setlocal softtabstop=4
 setlocal nospell
@@ -689,19 +537,20 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 341 - ((25 * winheight(0) + 18) / 37)
+let s:l = 226 - ((27 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-341
-normal! 05|
-tabedit main.go
+226
+normal! 0
+tabedit storage/storage.go
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
 wincmd t
-set winheight=1 winwidth=1
+set winminheight=1 winheight=1 winminwidth=1 winwidth=1
 argglobal
+vnoremap <buffer> 	 :py isort_visual()
 nnoremap <buffer> <silent>  :call go#def#StackPop(v:count1)
 nnoremap <buffer> <silent> ] :call go#def#Jump("split")
 nnoremap <buffer> <silent>  :call go#def#Jump("split")
@@ -722,19 +571,21 @@ xnoremap <buffer> <silent> \a` `>a``<i`
 xnoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('v', 'next')
 onoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('o', 'next')
 nnoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('n', 'next')
+xnoremap <buffer> <silent> ac :call go#textobj#Comment('a')
+onoremap <buffer> <silent> ac :call go#textobj#Comment('a')
 xnoremap <buffer> <silent> af :call go#textobj#Function('a')
 onoremap <buffer> <silent> af :call go#textobj#Function('a')
 let s:cpo_save=&cpo
 set cpo&vim
 nnoremap <buffer> <silent> g<LeftMouse> <LeftMouse>:GoDef
 nnoremap <buffer> <silent> gd :GoDef
+xnoremap <buffer> <silent> ic :call go#textobj#Comment('i')
+onoremap <buffer> <silent> ic :call go#textobj#Comment('i')
 xnoremap <buffer> <silent> if :call go#textobj#Function('i')
 onoremap <buffer> <silent> if :call go#textobj#Function('i')
 nnoremap <buffer> <silent> <C-LeftMouse> <LeftMouse>:GoDef
 let &cpo=s:cpo_save
 unlet s:cpo_save
-setlocal keymap=
-setlocal noarabic
 setlocal autoindent
 setlocal backupcopy=
 setlocal nobinary
@@ -751,8 +602,6 @@ setlocal colorcolumn=
 setlocal comments=s1:/*,mb:*,ex:*/,://
 setlocal commentstring=//\ %s
 setlocal complete=.,w,b,u,t,i
-setlocal concealcursor=
-setlocal conceallevel=0
 setlocal completefunc=
 setlocal nocopyindent
 setlocal cryptmethod=
@@ -782,9 +631,10 @@ setlocal foldtext=foldtext()
 setlocal formatexpr=
 setlocal formatoptions=cq
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal formatprg=
 setlocal grepprg=
 setlocal iminsert=0
-setlocal imsearch=0
+setlocal imsearch=-1
 setlocal include=
 setlocal includeexpr=
 setlocal indentexpr=GoIndent(v:lnum)
@@ -796,6 +646,7 @@ setlocal nolinebreak
 setlocal nolisp
 setlocal lispwords=
 setlocal nolist
+setlocal makeencoding=
 setlocal makeprg=go\ build
 setlocal matchpairs=(:),{:},[:]
 setlocal modeline
@@ -811,11 +662,10 @@ setlocal nopreviewwindow
 setlocal quoteescape=\\
 setlocal noreadonly
 setlocal norelativenumber
-setlocal norightleft
-setlocal rightleftcmd=search
 setlocal noscrollbind
 setlocal shiftwidth=4
 setlocal noshortname
+setlocal signcolumn=auto
 setlocal nosmartindent
 setlocal softtabstop=4
 setlocal nospell
@@ -841,475 +691,20 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 18) / 37)
+let s:l = 1 - ((0 * winheight(0) + 18) / 36)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1
 normal! 0
-tabedit agent/session/room.go
-set splitbelow splitright
-set nosplitbelow
-set nosplitright
-wincmd t
-set winheight=1 winwidth=1
-argglobal
-nnoremap <buffer> <silent>  :call go#def#StackPop(v:count1)
-nnoremap <buffer> <silent> ] :call go#def#Jump("split")
-nnoremap <buffer> <silent>  :call go#def#Jump("split")
-nnoremap <buffer> <silent>  :GoDef
-nnoremap <buffer> <silent> K :GoDoc
-xnoremap <buffer> <silent> [[ :call go#textobj#FunctionJump('v', 'prev')
-onoremap <buffer> <silent> [[ :call go#textobj#FunctionJump('o', 'prev')
-nnoremap <buffer> <silent> [[ :call go#textobj#FunctionJump('n', 'prev')
-xnoremap <buffer> <silent> \a} `>a}`<i{
-xnoremap <buffer> <silent> \a{ `>a}`<i{
-xnoremap <buffer> <silent> \a) `>a)`<i(
-xnoremap <buffer> <silent> \a( `>a)`<i(
-xnoremap <buffer> <silent> \a' `>a'`<i'
-xnoremap <buffer> <silent> \a] `>a]`<i[
-xnoremap <buffer> <silent> \a[ `>a]`<i[
-xnoremap <buffer> <silent> \a" `>a"`<i"
-xnoremap <buffer> <silent> \a` `>a``<i`
-xnoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('v', 'next')
-onoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('o', 'next')
-nnoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('n', 'next')
-xnoremap <buffer> <silent> af :call go#textobj#Function('a')
-onoremap <buffer> <silent> af :call go#textobj#Function('a')
-let s:cpo_save=&cpo
-set cpo&vim
-nnoremap <buffer> <silent> g<LeftMouse> <LeftMouse>:GoDef
-nnoremap <buffer> <silent> gd :GoDef
-xnoremap <buffer> <silent> if :call go#textobj#Function('i')
-onoremap <buffer> <silent> if :call go#textobj#Function('i')
-nnoremap <buffer> <silent> <C-LeftMouse> <LeftMouse>:GoDef
-let &cpo=s:cpo_save
-unlet s:cpo_save
-setlocal keymap=
-setlocal noarabic
-setlocal autoindent
-setlocal backupcopy=
-setlocal nobinary
-setlocal nobreakindent
-setlocal breakindentopt=
-setlocal bufhidden=
-setlocal buflisted
-setlocal buftype=
-setlocal nocindent
-setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
-setlocal cinoptions=
-setlocal cinwords=if,else,while,do,for,switch
-setlocal colorcolumn=
-setlocal comments=s1:/*,mb:*,ex:*/,://
-setlocal commentstring=//\ %s
-setlocal complete=.,w,b,u,t,i
-setlocal concealcursor=
-setlocal conceallevel=0
-setlocal completefunc=
-setlocal nocopyindent
-setlocal cryptmethod=
-setlocal nocursorbind
-setlocal nocursorcolumn
-setlocal nocursorline
-setlocal define=
-setlocal dictionary=
-setlocal nodiff
-setlocal equalprg=
-setlocal errorformat=%-G#\ %.%#,%-G%.%#panic:\ %m,%Ecan't\ load\ package:\ %m,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#
-setlocal noexpandtab
-if &filetype != 'go'
-setlocal filetype=go
-endif
-setlocal fixendofline
-setlocal foldcolumn=0
-setlocal foldenable
-setlocal foldexpr=0
-setlocal foldignore=#
-setlocal foldlevel=0
-setlocal foldmarker={{{,}}}
-setlocal foldmethod=manual
-setlocal foldminlines=1
-setlocal foldnestmax=20
-setlocal foldtext=foldtext()
-setlocal formatexpr=
-setlocal formatoptions=cq
-setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
-setlocal grepprg=
-setlocal iminsert=0
-setlocal imsearch=0
-setlocal include=
-setlocal includeexpr=
-setlocal indentexpr=GoIndent(v:lnum)
-setlocal indentkeys=0{,0},:,0#,!^F,o,O,e,<:>,0=},0=)
-setlocal noinfercase
-setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=
-setlocal nolinebreak
-setlocal nolisp
-setlocal lispwords=
-setlocal nolist
-setlocal makeprg=go\ build
-setlocal matchpairs=(:),{:},[:]
-setlocal modeline
-setlocal modifiable
-setlocal nrformats=bin,octal,hex
-set number
-setlocal number
-setlocal numberwidth=4
-setlocal omnifunc=go#complete#Complete
-setlocal path=
-setlocal nopreserveindent
-setlocal nopreviewwindow
-setlocal quoteescape=\\
-setlocal noreadonly
-setlocal norelativenumber
-setlocal norightleft
-setlocal rightleftcmd=search
-setlocal noscrollbind
-setlocal shiftwidth=4
-setlocal noshortname
-setlocal nosmartindent
-setlocal softtabstop=4
-setlocal nospell
-setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
-setlocal spellfile=
-setlocal spelllang=en
-setlocal statusline=%!airline#statusline(1)
-setlocal suffixesadd=
-setlocal swapfile
-setlocal synmaxcol=3000
-if &syntax != 'go'
-setlocal syntax=go
-endif
-setlocal tabstop=4
-setlocal tagcase=
-setlocal tags=
-setlocal textwidth=0
-setlocal thesaurus=
-setlocal undofile
-setlocal undolevels=-123456
-setlocal nowinfixheight
-setlocal nowinfixwidth
-setlocal wrap
-setlocal wrapmargin=0
-silent! normal! zE
-let s:l = 107 - ((20 * winheight(0) + 18) / 37)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-107
-normal! 033|
-tabedit game/session/room.go
-set splitbelow splitright
-set nosplitbelow
-set nosplitright
-wincmd t
-set winheight=1 winwidth=1
-argglobal
-nnoremap <buffer> <silent>  :call go#def#StackPop(v:count1)
-nnoremap <buffer> <silent> ] :call go#def#Jump("split")
-nnoremap <buffer> <silent>  :call go#def#Jump("split")
-nnoremap <buffer> <silent>  :GoDef
-nnoremap <buffer> <silent> K :GoDoc
-xnoremap <buffer> <silent> [[ :call go#textobj#FunctionJump('v', 'prev')
-onoremap <buffer> <silent> [[ :call go#textobj#FunctionJump('o', 'prev')
-nnoremap <buffer> <silent> [[ :call go#textobj#FunctionJump('n', 'prev')
-xnoremap <buffer> <silent> \a} `>a}`<i{
-xnoremap <buffer> <silent> \a{ `>a}`<i{
-xnoremap <buffer> <silent> \a) `>a)`<i(
-xnoremap <buffer> <silent> \a( `>a)`<i(
-xnoremap <buffer> <silent> \a' `>a'`<i'
-xnoremap <buffer> <silent> \a] `>a]`<i[
-xnoremap <buffer> <silent> \a[ `>a]`<i[
-xnoremap <buffer> <silent> \a" `>a"`<i"
-xnoremap <buffer> <silent> \a` `>a``<i`
-xnoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('v', 'next')
-onoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('o', 'next')
-nnoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('n', 'next')
-xnoremap <buffer> <silent> af :call go#textobj#Function('a')
-onoremap <buffer> <silent> af :call go#textobj#Function('a')
-let s:cpo_save=&cpo
-set cpo&vim
-nnoremap <buffer> <silent> g<LeftMouse> <LeftMouse>:GoDef
-nnoremap <buffer> <silent> gd :GoDef
-xnoremap <buffer> <silent> if :call go#textobj#Function('i')
-onoremap <buffer> <silent> if :call go#textobj#Function('i')
-nnoremap <buffer> <silent> <C-LeftMouse> <LeftMouse>:GoDef
-let &cpo=s:cpo_save
-unlet s:cpo_save
-setlocal keymap=
-setlocal noarabic
-setlocal autoindent
-setlocal backupcopy=
-setlocal nobinary
-setlocal nobreakindent
-setlocal breakindentopt=
-setlocal bufhidden=
-setlocal buflisted
-setlocal buftype=
-setlocal nocindent
-setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
-setlocal cinoptions=
-setlocal cinwords=if,else,while,do,for,switch
-setlocal colorcolumn=
-setlocal comments=s1:/*,mb:*,ex:*/,://
-setlocal commentstring=//\ %s
-setlocal complete=.,w,b,u,t,i
-setlocal concealcursor=
-setlocal conceallevel=0
-setlocal completefunc=
-setlocal nocopyindent
-setlocal cryptmethod=
-setlocal nocursorbind
-setlocal nocursorcolumn
-setlocal nocursorline
-setlocal define=
-setlocal dictionary=
-setlocal nodiff
-setlocal equalprg=
-setlocal errorformat=%-G#\ %.%#,%-G%.%#panic:\ %m,%Ecan't\ load\ package:\ %m,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#
-setlocal noexpandtab
-if &filetype != 'go'
-setlocal filetype=go
-endif
-setlocal fixendofline
-setlocal foldcolumn=0
-setlocal foldenable
-setlocal foldexpr=0
-setlocal foldignore=#
-setlocal foldlevel=0
-setlocal foldmarker={{{,}}}
-setlocal foldmethod=manual
-setlocal foldminlines=1
-setlocal foldnestmax=20
-setlocal foldtext=foldtext()
-setlocal formatexpr=
-setlocal formatoptions=cq
-setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
-setlocal grepprg=
-setlocal iminsert=0
-setlocal imsearch=0
-setlocal include=
-setlocal includeexpr=
-setlocal indentexpr=GoIndent(v:lnum)
-setlocal indentkeys=0{,0},:,0#,!^F,o,O,e,<:>,0=},0=)
-setlocal noinfercase
-setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=
-setlocal nolinebreak
-setlocal nolisp
-setlocal lispwords=
-setlocal nolist
-setlocal makeprg=go\ build
-setlocal matchpairs=(:),{:},[:]
-setlocal modeline
-setlocal modifiable
-setlocal nrformats=bin,octal,hex
-set number
-setlocal number
-setlocal numberwidth=4
-setlocal omnifunc=go#complete#Complete
-setlocal path=
-setlocal nopreserveindent
-setlocal nopreviewwindow
-setlocal quoteescape=\\
-setlocal noreadonly
-setlocal norelativenumber
-setlocal norightleft
-setlocal rightleftcmd=search
-setlocal noscrollbind
-setlocal shiftwidth=4
-setlocal noshortname
-setlocal nosmartindent
-setlocal softtabstop=4
-setlocal nospell
-setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
-setlocal spellfile=
-setlocal spelllang=en
-setlocal statusline=%!airline#statusline(1)
-setlocal suffixesadd=
-setlocal swapfile
-setlocal synmaxcol=3000
-if &syntax != 'go'
-setlocal syntax=go
-endif
-setlocal tabstop=4
-setlocal tagcase=
-setlocal tags=
-setlocal textwidth=0
-setlocal thesaurus=
-setlocal undofile
-setlocal undolevels=-123456
-setlocal nowinfixheight
-setlocal nowinfixwidth
-setlocal wrap
-setlocal wrapmargin=0
-silent! normal! zE
-let s:l = 91 - ((33 * winheight(0) + 18) / 37)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-91
-normal! 05|
-tabedit game/agentToGame.go
-set splitbelow splitright
-set nosplitbelow
-set nosplitright
-wincmd t
-set winheight=1 winwidth=1
-argglobal
-nnoremap <buffer> <silent>  :call go#def#StackPop(v:count1)
-nnoremap <buffer> <silent> ] :call go#def#Jump("split")
-nnoremap <buffer> <silent>  :call go#def#Jump("split")
-nnoremap <buffer> <silent>  :GoDef
-nnoremap <buffer> <silent> K :GoDoc
-xnoremap <buffer> <silent> [[ :call go#textobj#FunctionJump('v', 'prev')
-onoremap <buffer> <silent> [[ :call go#textobj#FunctionJump('o', 'prev')
-nnoremap <buffer> <silent> [[ :call go#textobj#FunctionJump('n', 'prev')
-xnoremap <buffer> <silent> \a} `>a}`<i{
-xnoremap <buffer> <silent> \a{ `>a}`<i{
-xnoremap <buffer> <silent> \a) `>a)`<i(
-xnoremap <buffer> <silent> \a( `>a)`<i(
-xnoremap <buffer> <silent> \a' `>a'`<i'
-xnoremap <buffer> <silent> \a] `>a]`<i[
-xnoremap <buffer> <silent> \a[ `>a]`<i[
-xnoremap <buffer> <silent> \a" `>a"`<i"
-xnoremap <buffer> <silent> \a` `>a``<i`
-xnoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('v', 'next')
-onoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('o', 'next')
-nnoremap <buffer> <silent> ]] :call go#textobj#FunctionJump('n', 'next')
-xnoremap <buffer> <silent> af :call go#textobj#Function('a')
-onoremap <buffer> <silent> af :call go#textobj#Function('a')
-let s:cpo_save=&cpo
-set cpo&vim
-nnoremap <buffer> <silent> g<LeftMouse> <LeftMouse>:GoDef
-nnoremap <buffer> <silent> gd :GoDef
-xnoremap <buffer> <silent> if :call go#textobj#Function('i')
-onoremap <buffer> <silent> if :call go#textobj#Function('i')
-nnoremap <buffer> <silent> <C-LeftMouse> <LeftMouse>:GoDef
-let &cpo=s:cpo_save
-unlet s:cpo_save
-setlocal keymap=
-setlocal noarabic
-setlocal autoindent
-setlocal backupcopy=
-setlocal nobinary
-setlocal nobreakindent
-setlocal breakindentopt=
-setlocal bufhidden=
-setlocal buflisted
-setlocal buftype=
-setlocal nocindent
-setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
-setlocal cinoptions=
-setlocal cinwords=if,else,while,do,for,switch
-setlocal colorcolumn=
-setlocal comments=s1:/*,mb:*,ex:*/,://
-setlocal commentstring=//\ %s
-setlocal complete=.,w,b,u,t,i
-setlocal concealcursor=
-setlocal conceallevel=0
-setlocal completefunc=
-setlocal nocopyindent
-setlocal cryptmethod=
-setlocal nocursorbind
-setlocal nocursorcolumn
-setlocal nocursorline
-setlocal define=
-setlocal dictionary=
-setlocal nodiff
-setlocal equalprg=
-setlocal errorformat=%-G#\ %.%#,%-G%.%#panic:\ %m,%Ecan't\ load\ package:\ %m,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#
-setlocal noexpandtab
-if &filetype != 'go'
-setlocal filetype=go
-endif
-setlocal fixendofline
-setlocal foldcolumn=0
-setlocal foldenable
-setlocal foldexpr=0
-setlocal foldignore=#
-setlocal foldlevel=0
-setlocal foldmarker={{{,}}}
-setlocal foldmethod=manual
-setlocal foldminlines=1
-setlocal foldnestmax=20
-setlocal foldtext=foldtext()
-setlocal formatexpr=
-setlocal formatoptions=cq
-setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
-setlocal grepprg=
-setlocal iminsert=0
-setlocal imsearch=0
-setlocal include=
-setlocal includeexpr=
-setlocal indentexpr=GoIndent(v:lnum)
-setlocal indentkeys=0{,0},:,0#,!^F,o,O,e,<:>,0=},0=)
-setlocal noinfercase
-setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=
-setlocal nolinebreak
-setlocal nolisp
-setlocal lispwords=
-setlocal nolist
-setlocal makeprg=go\ build
-setlocal matchpairs=(:),{:},[:]
-setlocal modeline
-setlocal modifiable
-setlocal nrformats=bin,octal,hex
-set number
-setlocal number
-setlocal numberwidth=4
-setlocal omnifunc=go#complete#Complete
-setlocal path=
-setlocal nopreserveindent
-setlocal nopreviewwindow
-setlocal quoteescape=\\
-setlocal noreadonly
-setlocal norelativenumber
-setlocal norightleft
-setlocal rightleftcmd=search
-setlocal noscrollbind
-setlocal shiftwidth=4
-setlocal noshortname
-setlocal nosmartindent
-setlocal softtabstop=4
-setlocal nospell
-setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
-setlocal spellfile=
-setlocal spelllang=en
-setlocal statusline=%!airline#statusline(1)
-setlocal suffixesadd=
-setlocal swapfile
-setlocal synmaxcol=3000
-if &syntax != 'go'
-setlocal syntax=go
-endif
-setlocal tabstop=4
-setlocal tagcase=
-setlocal tags=
-setlocal textwidth=0
-setlocal thesaurus=
-setlocal undofile
-setlocal undolevels=-123456
-setlocal nowinfixheight
-setlocal nowinfixwidth
-setlocal wrap
-setlocal wrapmargin=0
-silent! normal! zE
-let s:l = 43 - ((24 * winheight(0) + 18) / 37)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-43
-normal! 08|
-tabnext 3
+tabnext 2
 set stal=1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif
 unlet! s:wipebuf
 set winheight=1 winwidth=1 shortmess=aoO
+set winminheight=1 winminwidth=1
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if file_readable(s:sx)
   exe "source " . fnameescape(s:sx)

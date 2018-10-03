@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	_MGO_ADDR              = "127.0.0.1:27017"
+	_MGO_ADDR              = "35.237.171.46:27017"
 	MGO_DB_NAME            = "gameServer"
 	UserInfo_COLLECTION    = "UserInfo"
 	RegistInput_COLLECTION = "RegistInput"
