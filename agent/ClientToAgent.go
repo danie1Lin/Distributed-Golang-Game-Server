@@ -1,10 +1,12 @@
 package agent
 
 import (
+	"strconv"
+
 	"github.com/daniel840829/gameServer/agent/session"
 	. "github.com/daniel840829/gameServer/msg"
 	"github.com/daniel840829/gameServer/user"
-	"strconv"
+
 	//. "github.com/daniel840829/gameServer/uuid"
 	//"github.com/globalsign/mgo"
 	//"fmt"
@@ -14,12 +16,13 @@ import (
 	//any "github.com/golang/protobuf/ptypes/any"
 	//log "github.com/sirupsen/logrus"
 
+	"time"
+
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"time"
 	/*
 		"io"
 		"reflect"
@@ -68,10 +71,8 @@ type Agent struct {
 	GameServer AgentToGameClient
 }
 
-func (a *Agent) Init(gameServerAddr ...string) {
-	for _, addr := range gameServerAddr {
-		session.RoomManager.ConnectGameServer(addr)
-	}
+func (a *Agent) Init() {
+	session.ClusterManager.KubeClientSet()
 }
 
 func (a *Agent) AquireSessionKey(c context.Context, e *Empty) (*SessionKey, error) {

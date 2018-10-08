@@ -1,13 +1,14 @@
 package session
 
 import (
+	"sync"
+
 	. "github.com/daniel840829/gameServer/msg"
 	. "github.com/daniel840829/gameServer/uuid"
 	"github.com/golang/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"sync"
 )
 
 type ChatMessage struct {
@@ -31,22 +32,26 @@ var RoomManager *roomManager = &roomManager{
 }
 
 type GameServer struct {
-	Addr   string
-	Port   string
-	Client AgentToGameClient
-	Rooms  map[*Room]struct{}
+	ExtIp      string
+	AgentPort  string
+	ClientPort string
+	Client     AgentToGameClient
+	Rooms      map[*Room]struct{}
+	id         string
 }
 
-func NewGameServer(addr string) (gameServer *GameServer) {
-	conn, err := grpc.Dial(":"+addr, grpc.WithInsecure())
+func newGameServer(ExtIp, clientToGamePort, agentToGamePort, id string) (gameServer *GameServer) {
+	conn, err := grpc.Dial(ExtIp+":"+agentToGamePort, grpc.WithInsecure())
 	if err != nil {
 		log.Warn("Agent can't connect to GameServer", err)
 		return
 	}
 	gameServer = &GameServer{
-		Addr:  "35.201.150.218",
-		Port:  ":" + addr,
-		Rooms: make(map[*Room]struct{}, 0),
+		id:         id,
+		ExtIp:      ExtIp,
+		ClientPort: ":" + clientToGamePort,
+		AgentPort:  ":" + agentToGamePort,
+		Rooms:      make(map[*Room]struct{}, 0),
 	}
 	gameServer.Client = NewAgentToGameClient(conn)
 	log.Debug("client", gameServer.Client)
@@ -67,8 +72,8 @@ func (rm *roomManager) DeleteRoom(room *Room) {
 	rm.UpdateRoomList()
 }
 
-func (rm *roomManager) ConnectGameServer(addr string) {
-	rm.GameServers[NewGameServer(addr)] = struct{}{}
+func (rm *roomManager) ConnectGameServer(ExtIp, clientToGamePort, agentToGamePort, id string) {
+	rm.GameServers[newGameServer(ExtIp, clientToGamePort, agentToGamePort, id)] = struct{}{}
 	log.Debug("Connect Game Server")
 }
 
@@ -313,8 +318,8 @@ func (r *Room) CreateRoomOnGameServer() {
 		}
 		c := r.Master.GetMsgChan("ServerInfo")
 		serverInfo := &ServerInfo{
-			Addr:      gs.Addr,
-			Port:      gs.Port,
+			Addr:      gs.ExtIp,
+			Port:      gs.ClientPort,
 			PublicKey: key.SSL,
 		}
 		c.DataCh <- serverInfo

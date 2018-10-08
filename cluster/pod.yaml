@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gameplayserver-
+  labels:
+    app: gameserver
+    type: game
+    id: ''
+    agentToGamePort: ''
+    clientToGamePort: ''
+    clientToAgentPort: ''
+spec:
+  hostNetwork: true
+  containers:
+  - name: game-server
+    image: daniel840829/gameplayserver:v4
+    env:
+      - name: CLIENT_TO_GAME_PORT
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['clientToGamePort']
+      - name: AGENT_TO_GAME_PORT
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['agentToGamePort']
+      - name: SERVER_TYPE
+        valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['type']
+      - name: ID
+        valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['id']
+      - name: CLIENT_TO_AGENT_PORT
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['clientToAgentPort']

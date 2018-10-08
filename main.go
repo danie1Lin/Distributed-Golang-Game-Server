@@ -4,16 +4,19 @@ import (
 	"net"
 
 	//"github.com/daniel840829/gameServer/entity"
+	"runtime/pprof"
+
 	"github.com/daniel840829/gameServer/agent"
 	"github.com/daniel840829/gameServer/game"
 	"github.com/daniel840829/gameServer/msg"
 	"google.golang.org/grpc"
-	"runtime/pprof"
+
 	//"google.golang.org/grpc/grpclog"
 	"flag"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func init() {
@@ -34,7 +37,7 @@ var (
 
 func main() {
 
-	serverType = flag.String("type", "t", "choose server Type")
+	serverType = flag.String("type", "game", "choose server Type")
 	configFile = flag.String("config", "", "config file's path")
 	AgentPort = flag.String("agentPort", "50051", "ClientToAgent Port")
 	AgentToGamePort = flag.String("agentToGamePort", "3000", "AgentToGame Port")
@@ -42,6 +45,11 @@ func main() {
 	cpuprofile = flag.String("cpuprofile", "./cpu.prof", "write cpu profile to file,set blank to close profile function")
 	log.Debug("config :", "type :", serverType)
 	flag.Parse()
+	//SERVER_TYPE ID CLIENT_TO_AGENT_PORT CLIENT_TO_GAME_PORT AGENT_TO_GAME_PORT
+	ReadEnv(serverType, "SERVER_TYPE")
+	ReadEnv(AgentToGamePort, "AGENT_TO_GAME_PORT")
+	ReadEnv(ClientToGamePort, "CLIENT_TO_GAME_PORT")
+	ReadEnv(AgentPort, "CLIENT_TO_AGENT_PORT")
 
 	if *cpuprofile != "" {
 		f, err := os.Create(*cpuprofile)
@@ -54,11 +62,11 @@ func main() {
 	if *serverType == "agent" {
 		RunAgent()
 	} else if *serverType == "game" {
-		RunGame()
+		go RunGame()
 		RunAgentToGame()
 	} else {
-		RunGame()
-		RunAgentToGame()
+		go RunGame()
+		go RunAgentToGame()
 		RunAgent()
 	}
 
@@ -76,6 +84,15 @@ func main() {
 	*/
 }
 
+//ReadEnv if use kubernete Read para from env
+func ReadEnv(para *string, envName string) {
+	v := os.Getenv(envName)
+	if v != "" {
+		log.Info(envName, " change from ", *para, " to ", v)
+		*para = v
+	}
+}
+
 func RunAgent() {
 	listen, err := net.Listen("tcp", ":"+*AgentPort)
 	if err != nil {
@@ -85,7 +102,7 @@ func RunAgent() {
 	s := grpc.NewServer()
 	msg.RegisterClientToAgentServer(s, agentRpc)
 	fmt.Println("AgentServer Listen on " + *AgentPort)
-	agentRpc.Init(*AgentToGamePort)
+	agentRpc.Init()
 	s.Serve(listen)
 }
 
@@ -97,7 +114,7 @@ func RunGame() {
 	s := grpc.NewServer()
 	msg.RegisterClientToGameServer(s, &game.CTGServer{})
 	fmt.Println("GameServer Listen on " + *ClientToGamePort)
-	go s.Serve(listen)
+	s.Serve(listen)
 }
 
 func RunAgentToGame() {
@@ -108,5 +125,5 @@ func RunAgentToGame() {
 	s := grpc.NewServer()
 	msg.RegisterAgentToGameServer(s, &game.ATGServer{})
 	fmt.Println("AgentToGameServer Listen on " + *AgentToGamePort)
-	go s.Serve(listen)
+	s.Serve(listen)
 }

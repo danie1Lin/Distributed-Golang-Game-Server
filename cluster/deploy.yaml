@@ -1,0 +1,26 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: hello-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gameserver
+      type: game
+  template:
+    metadata:
+      labels:
+        app: gameserver
+        type: game
+        id: 0
+    spec:
+      hostNetwork: true
+      containers:
+      - name: gameplayserver
+        image: daniel840829/gameplayserver:v3
+        ports:
+        - name: client-port
+          containerPort: 50051
+        - name: agent-port
+          containerPort: 3000

@@ -1,5 +1,5 @@
 #源镜像
-FROM golang:latest
+FROM golang:latest as builder
 #作者
 MAINTAINER daniel840829 "s102033114@gapp.nthu.edu.tw"
 #设置工作目录
@@ -29,4 +29,4 @@ COPY --from=builder /gameServer .
 
 EXPOSE 3000 8080 50051
 
-CMD ["/gameServer"]
+CMD ["./gameServer"]
