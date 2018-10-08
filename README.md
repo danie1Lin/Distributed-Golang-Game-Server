@@ -1,70 +1,79 @@
-<h1>Tank Game Server</h1>
-  The client is made with unity. Here is the github.
-  https://github.com/daniel840829/Tank-Online
+## Golang Distributed Game Server
 
-<h2>How to Use : </h2>
-<h3>client endpoint:</h3>
-  download client code<a href="https://github.com/daniel840829/Tank-Online">Here</a>
-<h3>server endpoint</h3>
-  physic package is base on https://github.com/ianremmler/ode Open Dynamic Engine<br>
-  use some struct to wrap ianremmler's ode golang library<br>
-  Please read his repository to build ODE's share library<br>
-  But I made some change in order to let the collide callback to deal with geom is space
-  please install https://github.com/daniel840829/ode
+## Motivation
+At first, I just want to learn Golang.I started to think about which is the best way?
+Because the concurrency mechanisms of Golang is very powerful, I choose online game to verify if I can use Golang to make a efficient game server.For me, this is the first time I make this such hard project. I have to learn Unity, Golang, C# At a time. I am glad that I still have full passion to this project and I have never given up.
 
-<h2>The file structure:</h2>
+## Build status
+Build status of continus integration i.e. travis, appveyor etc. Ex. - 
+[![Build Status](https://travis-ci.org/akashnimare/foco.svg?branch=master)](https://travis-ci.org/akashnimare/foco)
+[![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/akashnimare/foco?branch=master&svg=true)](https://ci.appveyor.com/project/akashnimare/foco/branch/master)
+
+## Tech/framework used
+- golang
+- gRPC
+- Kubernetes
+- protobuf
+## Features
+- CrossPlatform - Message packet use protobuf which is light, fast, crossplatform. 
+- Autoscaling - controller is written with go-client ,you can wirte the strategy to autoscale dedicated game server by your own.
+- Lightweight - The image of dedicated game server is less than 40MB.
+## Ａrchitecture
+- Agent server : 
+  - match players to join other player's room or create own room
+  - control the amount of gameplay server and load balancing. when the amountof a gameplay server's connections exceed maxium connections it should have, agent will create a new pod run gameplay server.
+- Gameplay Server :
+  - After players are matched successfully ,these players will get the gameplay server's ip and token,and player can start to play.
+
+## Installation
+- Server
+  - Install kubernete
+  - Create cluster
+  - go run main.go --type=agent
+- Client
+  you can run in Unity Editor by open the Prestart.scene as first scene.
+  or you can just download from <a href="https://github.com/daniel840829/Tank-Online/tree/GameStateSystem/Build">build</a>
+  Whole project download from <a href="https://github.com/daniel840829/Tank-Online">here</a>
+## How to use?
+If you want to make your own game by modifying this project, I am pleasured.
+You can throught these step to make it work.
+### New Function?
+
+### Modify The msg/message.proto
+Change the GameFrame message in proto buff
+### Creat Your Game Logic
+
+
+## The file structure:
 <ol>
-  
-  <li>
-  entity
+  <li>agent
     <ol>
-      <li>GameManager</li>
-      <li>Entity</li>
-      <li>Room</li>
+      <li>session
+        <ol>
+          <li>room</li>
+          <li>session</li>
+          <li>kubernete</li>
+        </ol>
+      </li>
     </ol>
   </li>
-    
-  <li>hmap</li>
-  
+  <li>game
+    <ol>
+      <li>session
+        <ol>
+          <li>room</li>
+          <li>session</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
   <li>msg
   <br>  - use protobuf to define package and rpc interface
   </li>
-  
-  <li>physic<br>
-  this package is base on https://github.com/ianremmler/ode Open Dynamic Engine<br>
-  use some struct to wrap ianremmler's ode golang library<br>
-  Please read his repository to build ODE's share library<br>
-    <ul>
-      <li>World</li>
-      <li>Obj</li>
-      <li>ObjData</li>
-     </ul>
-  </li>
-  <li>rpctest</li>
-  
-  <li>service
-  <br>implemente gRPC's Service defined in msg package to communicate with client
-  <br>I divide the message into five parts
-    <ul>
-      <li>Error</li>
-      <li>Sync Postion</li>
-      <li>CallMathod</li>
-      <li>Regist</li>
-      <li>Login</li>
-     </ul>
-  use Game Manager to select three parts of these
-    <ul>
-      <li>Error</li>
-      <li>Sync Postion</li>
-      <li>CallMathod</li>
-    </ul>
-   </li>
-   
    <li>
     uuid
     <br>generate different IDs of objects that can be call with reflection 
    </li>
-
   <li>user
     <ul>
       <li>UserManager</li>
@@ -74,16 +83,16 @@
     storage
     <br>Use mogdb to storage user infomation
   </li>
-      
-  <li>timeCalibrate</li>
-      
-  <li>
-    util
-    <br>some tools
-  </br>
-  
-  <li>
-    data
-    <br>use to load some model data e.g. character or map
-  </li>
 </ol>
+
+## Contribute
+
+
+## Credits
+
+
+
+## License
+A short snippet describing the license (MIT, Apache etc)
+
+MIT © [daniel840829]()
