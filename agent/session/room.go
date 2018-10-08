@@ -2,6 +2,7 @@ package session
 
 import (
 	"sync"
+	"time"
 
 	. "github.com/daniel840829/gameServer/msg"
 	. "github.com/daniel840829/gameServer/uuid"
@@ -78,12 +79,17 @@ func (rm *roomManager) ConnectGameServer(ExtIp, clientToGamePort, agentToGamePor
 }
 
 func (rm *roomManager) GetGameServer() (game *GameServer) {
+
 	for gs, _ := range rm.GameServers {
-		if game == nil {
-			game = gs
-		} else if len(gs.Rooms) < len(game.Rooms) {
-			game = gs
+		if len(gs.Rooms) >= MAX_ROOM_IN_POD {
+			continue
 		}
+		game = gs
+		break
+	}
+	if game == nil {
+		ClusterManager.CreatePod()
+		game = rm.GetGameServer()
 	}
 	return
 }
@@ -312,10 +318,20 @@ func (r *Room) CreateRoomOnGameServer() {
 		}
 		gs := RoomManager.GetGameServer()
 		gs.Rooms[r] = struct{}{}
-		key, err := gs.Client.AquireGameRoom(context.Background(), gameCreation)
-		if err != nil {
-			log.Warn("GameServer has some issue", err)
+		pem := make(chan *PemKey)
+		var getKey func(sig chan *PemKey)
+		getKey = func(sig chan *PemKey) {
+			key, err := gs.Client.AquireGameRoom(context.Background(), gameCreation)
+			if err != nil {
+				log.Warn("GameServer has some issue: ", err)
+				time.Sleep(2 * time.Second)
+				go getKey(sig)
+				return
+			}
+			sig <- key
 		}
+		go getKey(pem)
+		key := <-pem
 		c := r.Master.GetMsgChan("ServerInfo")
 		serverInfo := &ServerInfo{
 			Addr:      gs.ExtIp,

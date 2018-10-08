@@ -23,20 +23,26 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-const NAME_SPACE = "default"
-const SERVER_AMOUNT = 2
-const MAX_PORT = 31000
-const MIN_PORT = 30000
+const NAME_SPACE string = "default"
+const SERVER_AMOUNT int = 1
+const MAX_SERVER_AMOUT int = 20
+const MAX_PORT int = 31000
+const MIN_PORT int = 30000
+
+//MAX_ROOM_IN_POD maxium rooms in pod
+const MAX_ROOM_IN_POD = 1
 
 var interrupt chan os.Signal
+var PodMod *v1.Pod
 
 //ClusterManager clustermanager's instance
 var ClusterManager *clusterManager
 
 //ClusterManager manage kubernete's cluster and gameplayServer
 type clusterManager struct {
-	client *kubernetes.Clientset
-	pods   map[string]*v1.Pod
+	client    *kubernetes.Clientset
+	pods      map[string]*v1.Pod
+	PodAmount int
 }
 
 //KubeClientSet create clientset
@@ -49,7 +55,7 @@ func (c *clusterManager) KubeClientSet() {
 	}
 	clientset, err := kubernetes.NewForConfig(config)
 	c.client = clientset
-	log.Debug(config, clientset)
+	//log.Debug(config, clientset)
 
 	//clientset.CoreV1().Services("NAME_SPACE")
 	ex, err := os.Executable()
@@ -70,7 +76,8 @@ func (c *clusterManager) KubeClientSet() {
 	if err = yamlde.Decode(podInfo); err != nil {
 		log.Debug("yaml parse fail", err)
 	}
-	log.Debug("pod info :", podInfo)
+	//log.Debug("pod info :", podInfo)
+	PodMod = podInfo.DeepCopy()
 	// id: ''
 	// agentToGamePort: ''
 	// clientToGamePort: ''
@@ -79,46 +86,57 @@ func (c *clusterManager) KubeClientSet() {
 		panic("Usable port is not enough.")
 	}
 	for i := 0; i < SERVER_AMOUNT; i++ {
-		podInfo.Name = "gameplayserver-" + strconv.Itoa(i)
-		podInfo.Labels["type"] = "game"
-		podInfo.Labels["id"] = strconv.Itoa(i)
-		podInfo.Labels["agentToGamePort"] = strconv.Itoa(MIN_PORT + i*2)
-		podInfo.Labels["clientToGamePort"] = strconv.Itoa(MIN_PORT + i*2 + 1)
-		_, err = clientset.CoreV1().Pods(NAME_SPACE).Create(podInfo.DeepCopy())
-		if err != nil {
-			log.Warn(err)
-			if errors.IsAlreadyExists(err) {
-				policy := metav1.DeletePropagationForeground
-				deleteTime := int64(0)
-				clientset.CoreV1().Pods(NAME_SPACE).Delete(podInfo.Name, &metav1.DeleteOptions{GracePeriodSeconds: &deleteTime, PropagationPolicy: &policy})
+		c.CreatePod()
+	}
+}
 
-				_, err := clientset.CoreV1().Pods(NAME_SPACE).Create(podInfo.DeepCopy())
-				if err != nil {
-					log.Fatal("Create Fail", err)
-				}
+//CreatePod scale gameplay server
+func (c *clusterManager) CreatePod() {
+	if c.PodAmount == MAX_SERVER_AMOUT {
+		return
+	}
+	i := c.PodAmount
+	podInfo := PodMod.DeepCopy()
+	podInfo.Name = "gameplayserver-" + strconv.Itoa(i)
+	podInfo.Labels["type"] = "game"
+	podInfo.Labels["id"] = strconv.Itoa(i)
+	podInfo.Labels["agentToGamePort"] = strconv.Itoa(MIN_PORT + i*2)
+	podInfo.Labels["clientToGamePort"] = strconv.Itoa(MIN_PORT + i*2 + 1)
+	_, err := c.client.CoreV1().Pods(NAME_SPACE).Create(podInfo.DeepCopy())
+	if err != nil {
+		log.Warn(err)
+		if errors.IsAlreadyExists(err) {
+			policy := metav1.DeletePropagationForeground
+			deleteTime := int64(0)
+			c.client.CoreV1().Pods(NAME_SPACE).Delete(podInfo.Name, &metav1.DeleteOptions{GracePeriodSeconds: &deleteTime, PropagationPolicy: &policy})
+
+			_, err := c.client.CoreV1().Pods(NAME_SPACE).Create(podInfo.DeepCopy())
+			if err != nil {
+				log.Fatal("Create Fail", err)
 			}
 		}
-		c.pods[podInfo.Labels["id"]], err = clientset.CoreV1().Pods(NAME_SPACE).Get(podInfo.Name, metav1.GetOptions{})
-		if err != nil {
-			log.Warn(err)
-		}
-
-		nodeName := c.pods[podInfo.Labels["id"]].Spec.NodeName
-		node, err := c.client.CoreV1().Nodes().Get(nodeName, metav1.GetOptions{})
-		if err != nil {
-			log.Fatal(err)
-		}
-		extIp := ""
-		for _, add := range node.Status.Addresses {
-			if add.Type == v1.NodeExternalIP {
-				extIp = add.Address
-				break
-			}
-		}
-
-		RoomManager.ConnectGameServer(extIp, podInfo.Labels["clientToGamePort"], podInfo.Labels["agentToGamePort"], podInfo.Labels["id"])
+	}
+	c.pods[podInfo.Labels["id"]], err = c.client.CoreV1().Pods(NAME_SPACE).Get(podInfo.Name, metav1.GetOptions{})
+	if err != nil {
+		log.Warn(err)
 	}
 
+	nodeName := c.pods[podInfo.Labels["id"]].Spec.NodeName
+	node, err := c.client.CoreV1().Nodes().Get(nodeName, metav1.GetOptions{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	extIP := ""
+	for _, add := range node.Status.Addresses {
+		if add.Type == v1.NodeExternalIP {
+			extIP = add.Address
+			break
+		}
+	}
+
+	RoomManager.ConnectGameServer(extIP, podInfo.Labels["clientToGamePort"], podInfo.Labels["agentToGamePort"], podInfo.Labels["id"])
+	log.Info("Gameplyer Server created: id: ", podInfo.Labels["id"], " IP: ", extIP, " Client Port: ", podInfo.Labels["clientToGamePort"], " Agent Port: ", podInfo.Labels["agentToGamePort"])
+	c.PodAmount++
 }
 
 func cleanUp() {
