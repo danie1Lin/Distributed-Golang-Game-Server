@@ -3,17 +3,25 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"os"
+
 	"github.com/globalsign/mgo"
 	//"github.com/globalsign/mgo/bson"
 	//"os"
 	//"regexp"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
-	_MGO_ADDR              = "35.237.171.46:27017"
 	MGO_DB_NAME            = "gameServer"
 	UserInfo_COLLECTION    = "UserInfo"
 	RegistInput_COLLECTION = "RegistInput"
+)
+
+var (
+	_MGO_ADDR string = ""
+	_MGO_USER string = ""
+	_MGO_PASS string = ""
 )
 
 var MgoDb *MongoDb = &MongoDb{}
@@ -49,14 +57,21 @@ func (e *MgoError) Error() string {
 	return e.Op + ":" + e.Err.Error()
 }
 
+func ReadMgoSettingFromEnv() {
+	_MGO_PASS = os.Getenv("MGO_PASS")
+	_MGO_USER = os.Getenv("MGO_USER")
+	_MGO_ADDR = os.Getenv("MGO_ADDR")
+}
+
 func (m *MongoDb) Init(dbName string, collectionNames ...string) {
+	ReadMgoSettingFromEnv()
 	err := error(nil)
 	defer func() {
 		if r := recover(); r != nil {
 			err := fmt.Errorf("%v", r)
 			fmt.Printf("%T \n\r", err)
-			a := &MgoError{"fuck", errors.New("MgoInit")}
-			fmt.Println(a.Error())
+			a := &MgoError{"mgo:", errors.New("MgoInit")}
+			log.Warn("", a.Error())
 			//panic("Please open mangodb server")
 		}
 	}()
@@ -65,6 +80,9 @@ func (m *MongoDb) Init(dbName string, collectionNames ...string) {
 	m.Session, err = mgo.Dial(_MGO_ADDR)
 	if err != nil {
 		fmt.Println("mongodb connecting error :", err)
+	}
+	if err := m.Session.DB(dbName).Login(_MGO_USER, _MGO_PASS); err != nil {
+		log.Fatal("Mgo connect error:", err, "/n Do you set env MGO_USER and MGO_PASS? or Do you create a User?")
 	}
 	for _, collectionName := range collectionNames {
 		m.Collections[collectionName] = m.Session.DB(dbName).C(collectionName)
@@ -82,7 +100,7 @@ func (m *MongoDb) Save(collectionName string, data interface{}) bool {
 
 func (m *MongoDb) Find(collectionName string, query interface{}) *mgo.Iter {
 	if _, ok := m.Collections[collectionName]; !ok {
-		fmt.Println("No such Collection", collectionName)
+		log.Warn("No such Collection", collectionName)
 		return nil
 	}
 	iter := m.Collections[collectionName].Find(query).Iter()
