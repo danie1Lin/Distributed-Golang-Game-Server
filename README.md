@@ -24,7 +24,7 @@ Because the concurrency mechanisms of Golang is very powerful, I choose online g
   - Create cluster
   - go run main.go --type=agent
 - Client
-  ![img](https://imgur.com/a/PdxYZie)
+  <blockquote class="imgur-embed-pub" lang="en" data-id="a/PdxYZie"><a href="//imgur.com/PdxYZie"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
   you can run in Unity Editor by open the Prestart.scene as first scene.
   or you can just download from <a href="https://github.com/daniel840829/Tank-Online/tree/GameStateSystem/Build">build</a>
   Whole project download from <a href="https://github.com/daniel840829/Tank-Online">here</a>
