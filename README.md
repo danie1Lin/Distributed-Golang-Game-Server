@@ -1,21 +1,18 @@
 ## Golang Distributed Game Server
-
+[![CircleCI](https://circleci.com/gh/daniel840829/gameServer/tree/kubernete-intergration.svg?style=svg)](https://circleci.com/gh/daniel840829/gameServer/tree/kubernete-intergration)
 ## Motivation
 At first, I just want to learn Golang.I started to think about which is the best way?
-Because the concurrency mechanisms of Golang is very powerful, I choose online game to verify if I can use Golang to make a efficient game server.For me, this is the first time I make this such hard project. I have to learn Unity, Golang, C# At a time. I am glad that I still have full passion to this project and I have never given up.
-
-[![CircleCI](https://circleci.com/gh/daniel840829/gameServer/tree/kubernete-intergration.svg?style=svg)](https://circleci.com/gh/daniel840829/gameServer/tree/kubernete-intergration)
-
+Because the concurrency mechanisms of Golang is very powerful, I choose online game to verify if I can use Golang to make a efficient game server.For me, this is the first time I make this such hard project. I have to learn Unity, Golang, C# At a time. I am glad that I still have full passion to this project and I never give up.
 ## Tech/framework used
 - golang
 - gRPC
 - Kubernetes
-- protobuf
+- Protobuf
 ## Features
 - CrossPlatform - Message packet use protobuf which is light, fast, crossplatform. 
 - Autoscaling - controller is written with go-client ,you can wirte the strategy to autoscale dedicated game server by your own.
 - Lightweight - The image of dedicated game server is less than 40MB.
-## Ａrchitecture
+## Architecture
 - Agent server : 
   - match players to join other player's room or create own room
   - control the amount of gameplay server and load balancing. when the amountof a gameplay server's connections exceed maxium connections it should have, agent will create a new pod run gameplay server.
@@ -34,13 +31,13 @@ Because the concurrency mechanisms of Golang is very powerful, I choose online g
 ## How to use?
 If you want to make your own game by modifying this project, I am pleasured.
 You can throught these step to make it work.
-### New Function?
-
 ### Modify The msg/message.proto
-Change the GameFrame message in proto buff
-### Creat Your Game Logic
-
-
+1. Change the GameFrame message in proto buff.
+2. Run './update.sh' in 'msg/'
+3. unzip message.zip under 'Asset/gameServer/proto' in the Unity Project.
+### Create Your Game Logic
+1. add your handler to <a href="https://github.com/daniel840829/gameServer/blob/a218213609e8857f84ffa5516c412922ef9cd4c1/game/session/room.go#L157">"gameServer/game/session/room.go": func (r *Room) Run()</a>
+2. modify the <a href="https://github.com/daniel840829/Tank-Online/blob/87be8962024241dff4d8f3de1809fe4ef60f0848/Assets/Scripts/Entity/EntityManager.cs#L188">UpdateFrame</a> fuction to handle packets design by yourself. then,Data Flow to Entity to render the change of entity's properties.
 ## The file structure:
 <ol>
   <li>agent
@@ -90,6 +87,4 @@ Change the GameFrame message in proto buff
 
 
 ## License
-A short snippet describing the license (MIT, Apache etc)
-
 MIT © [daniel840829]()
