@@ -18,13 +18,13 @@ Because the concurrency mechanisms of Golang is very powerful, I choose online g
   - control the amount of gameplay server and load balancing. when the amountof a gameplay server's connections exceed maxium connections it should have, agent will create a new pod run gameplay server.
 - Gameplay Server :
   - After players are matched successfully ,these players will get the gameplay server's ip and token,and player can start to play.
-
 ## Installation
 - Server
   - Install kubernete
   - Create cluster
   - go run main.go --type=agent
 - Client
+  ![img](https://imgur.com/a/PdxYZie)
   you can run in Unity Editor by open the Prestart.scene as first scene.
   or you can just download from <a href="https://github.com/daniel840829/Tank-Online/tree/GameStateSystem/Build">build</a>
   Whole project download from <a href="https://github.com/daniel840829/Tank-Online">here</a>
