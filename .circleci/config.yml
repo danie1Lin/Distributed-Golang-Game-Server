@@ -7,11 +7,11 @@ jobs:
     steps:
       - checkout
       - run: 
-        name: dep install
-        command: go get github.com/golang/dep/cmd/dep && dep ensure -v
+          name: dep install
+          command: go get github.com/golang/dep/cmd/dep && dep ensure -v
       - run: 
-        name: build 
-        command: go build main.go
+          name: build 
+          command: go build main.go
       - setup_remote_docker:
           docker_layer_caching: true
       - run: 
