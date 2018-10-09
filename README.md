@@ -4,10 +4,7 @@
 At first, I just want to learn Golang.I started to think about which is the best way?
 Because the concurrency mechanisms of Golang is very powerful, I choose online game to verify if I can use Golang to make a efficient game server.For me, this is the first time I make this such hard project. I have to learn Unity, Golang, C# At a time. I am glad that I still have full passion to this project and I have never given up.
 
-## Build status
-Build status of continus integration i.e. travis, appveyor etc. Ex. - 
-[![Build Status](https://travis-ci.org/akashnimare/foco.svg?branch=master)](https://travis-ci.org/akashnimare/foco)
-[![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/akashnimare/foco?branch=master&svg=true)](https://ci.appveyor.com/project/akashnimare/foco/branch/master)
+[![CircleCI](https://circleci.com/gh/daniel840829/gameServer/tree/kubernete-intergration.svg?style=svg)](https://circleci.com/gh/daniel840829/gameServer/tree/kubernete-intergration)
 
 ## Tech/framework used
 - golang
