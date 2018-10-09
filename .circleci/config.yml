@@ -24,3 +24,28 @@ jobs:
       # specify any bash command here prefixed with `run: `
       - run: go get -v -t -d ./...
       - run: go test -v ./...
+
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.9
+    working_directory: /go/src/github.com/daniel840829/gameServer
+    steps:
+      - checkout
+      - run: 
+        name: dep install
+        command: go get github.com/golang/dep/cmd/dep && dep ensure -v
+      - run: 
+        name: build 
+        command: go build main.go
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: 
+          name: Build and Push Image daniel840829/gameplayserver
+          command: |
+            TAG=circleci$CIRCLE_BUILD_NUM
+            docker build -t  daniel840829/gameplayserver:$TAG .
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push daniel840829/gameplayserver:$TAG
+
