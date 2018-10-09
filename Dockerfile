@@ -7,10 +7,7 @@ COPY . $GOPATH/src/github.com/daniel840829/gameServer
 WORKDIR $GOPATH/src/github.com/daniel840829/gameServer
 #将服务器的go工程代码加入到docker容器中
 
-RUN set -x && \
-    #go get github.com/2tvenom/go-test-teamcity && \  
-    go get github.com/golang/dep/cmd/dep && \
-    dep ensure -v
+RUN set -x && go get github.com/golang/dep/cmd/dep && dep ensure -v
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  -o /gameServer
 

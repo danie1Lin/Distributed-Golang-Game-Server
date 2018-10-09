@@ -19,6 +19,6 @@ jobs:
           command: |
             TAG=circleci$CIRCLE_BUILD_NUM
             docker build -t  daniel840829/gameplayserver:$TAG .
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker login -u $DOCKER_USER -p $DOCKER_PASS --password-stdin
             docker push daniel840829/gameplayserver:$TAG
 
