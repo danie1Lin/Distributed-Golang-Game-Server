@@ -24,10 +24,10 @@ Because the concurrency mechanisms of Golang is very powerful, I choose online g
   - Create cluster
   - go run main.go --type=agent
 - Client
-  ![](https://media.giphy.com/media/ftdlle6pOE6Y8w5bho/giphy.gif)
   you can run in Unity Editor by open the Prestart.scene as first scene.
   or you can just download from <a href="https://github.com/daniel840829/Tank-Online/tree/GameStateSystem/Build">build</a>
   Whole project download from <a href="https://github.com/daniel840829/Tank-Online">here</a>
+  ![](https://media.giphy.com/media/ftdlle6pOE6Y8w5bho/giphy.gif)
 ## How to use?
 If you want to make your own game by modifying this project, I am pleasured.
 You can throught these step to make it work.
