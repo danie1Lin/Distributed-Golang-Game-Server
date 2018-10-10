@@ -1,5 +1,5 @@
-## Golang Distributed Game Server
-[![CircleCI](https://circleci.com/gh/daniel840829/gameServer/tree/kubernete-intergration.svg?style=svg)](https://circleci.com/gh/daniel840829/gameServer/tree/kubernete-intergration)
+# Golang Distributed Game Server
+### Build State [![CircleCI](https://circleci.com/gh/daniel840829/gameServer/tree/kubernete-intergration.svg?style=svg)](https://circleci.com/gh/daniel840829/gameServer/tree/kubernete-intergration)
 ## Motivation
 At first, I just want to learn Golang.I started to think about which is the best way?
 Because the concurrency mechanisms of Golang is very powerful, I choose online game to verify if I can use Golang to make a efficient game server.For me, this is the first time I make this such hard project. I have to learn Unity, Golang, C# At a time. I am glad that I still have full passion to this project and I never give up.
@@ -41,7 +41,7 @@ If you want to make your own game by modifying this project, I am pleasured.
 You can throught these step to make it work.
 ### Modify The msg/message.proto
 1. Change the GameFrame message in proto buff.
-2. Run './update.sh' in 'msg/'
+2. Run './update.sh' in 'msg/' 
 3. unzip message.zip under 'Asset/gameServer/proto' in the Unity Project.
 ### Create Your Game Logic
 1. add your handler to <a href="https://github.com/daniel840829/gameServer/blob/a218213609e8857f84ffa5516c412922ef9cd4c1/game/session/room.go#L157">"gameServer/game/session/room.go": func (r *Room) Run()</a>
