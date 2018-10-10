@@ -20,11 +20,17 @@ Because the concurrency mechanisms of Golang is very powerful, I choose online g
   - After players are matched successfully ,these players will get the gameplay server's ip and token,and player can start to play.
   ![](https://github.com/daniel840829/gameServer/blob/kubernete-intergration/Golang%20game%20server%20architecture.png?raw=true)
 ## Installation
-- Server
-  - Install kubernete
-  - Create cluster
-  - go run main.go --type=agent
-- Client
+- Server :
+Two Way to run server:
+  - Run distributed server using Kubernete cluster
+    1. Use Kops to install kubernete on AWS
+    2. Create cluster
+    3. Install Mongodb && and edit setupEnv.sh with your setting and bash setupEnv.sh
+    4. go run main.go --type=agent on your local machine (Must on Where you install Kops)
+  - Run Standalone Server on local machine
+    1. Install Mongodb && and edit setupEnv.sh( DONT_USE_KUBE = true )with your setting and bash setupEnv.sh
+    2. go run main.go --type=standalone on your local machine
+- Client :
   - You can run in Unity Editor by open the Prestart.scene as first scene.
   - If you want to test with mutliplayer you can try build Andorid apk because it is likely to be builded successfully.
   ![](https://media.giphy.com/media/ftdlle6pOE6Y8w5bho/giphy.gif)
