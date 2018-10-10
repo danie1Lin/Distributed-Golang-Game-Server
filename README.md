@@ -18,7 +18,7 @@ Because the concurrency mechanisms of Golang is very powerful, I choose online g
   - control the amount of gameplay server and load balancing. when the amountof a gameplay server's connections exceed maxium connections it should have, agent will create a new pod run gameplay server.
 - Gameplay Server :
   - After players are matched successfully ,these players will get the gameplay server's ip and token,and player can start to play.
-  ![](https://github.com/daniel840829/gameServer/blob/kubernete-intergration/Golang%20game%20server%20architecture.png?raw=true)
+  ![](https://github.com/daniel840829/gameServer/blob/kubernete-intergration/Golang%20Game%20ServerArchitecture.png?raw=true)
 ## Installation
 - Server :
 Two Way to run server:
