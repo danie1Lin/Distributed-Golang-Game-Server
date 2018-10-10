@@ -153,6 +153,9 @@ func cleanUp() {
 }
 
 func init() {
+	if os.Getenv("DONT_USE_KUBE") == "true" {
+		return
+	}
 	ClusterManager = &clusterManager{
 		pods: make(map[string]*v1.Pod),
 	}

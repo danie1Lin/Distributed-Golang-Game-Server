@@ -102,7 +102,7 @@ func RunAgent() {
 	s := grpc.NewServer()
 	msg.RegisterClientToAgentServer(s, agentRpc)
 	fmt.Println("AgentServer Listen on " + *AgentPort)
-	agentRpc.Init()
+	agentRpc.Init("127.0.0.1", *AgentToGamePort, *ClientToGamePort)
 	s.Serve(listen)
 }
 

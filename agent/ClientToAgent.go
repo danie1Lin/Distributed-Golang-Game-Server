@@ -18,6 +18,8 @@ import (
 
 	"time"
 
+	"os"
+
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
@@ -71,8 +73,12 @@ type Agent struct {
 	GameServer AgentToGameClient
 }
 
-func (a *Agent) Init() {
-	session.ClusterManager.KubeClientSet()
+func (a *Agent) Init(ip, agentToGamePort, clientToGamePort string) {
+	if os.Getenv("DONT_USE_KUBE") == "true" {
+		session.RoomManager.ConnectGameServer(ip, clientToGamePort, agentToGamePort, "0")
+	} else {
+		session.ClusterManager.KubeClientSet()
+	}
 }
 
 func (a *Agent) AquireSessionKey(c context.Context, e *Empty) (*SessionKey, error) {
