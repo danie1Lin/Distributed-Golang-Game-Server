@@ -25,10 +25,12 @@ Two Way to run server:
   - Run distributed server using Kubernete cluster
     1. Use Kops to install kubernete on AWS
     2. Create cluster
-    3. Install Mongodb && and edit setupEnv.sh with your setting and bash setupEnv.sh
+    3. Install Mongodb 
+    4. edit setupEnv.sh with your setting and bash setupEnv.sh
     4. go run main.go --type=agent on your local machine (Must on Where you install Kops)
   - Run Standalone Server on local machine
-    1. Install Mongodb && and edit setupEnv.sh( DONT_USE_KUBE = true )with your setting and bash setupEnv.sh
+    1. Install Mongodb 
+    3. edit setupEnv.sh( DONT_USE_KUBE = true )with your setting and bash setupEnv.sh
     2. go run main.go --type=standalone on your local machine
 - Client :
   - You can run in Unity Editor by open the Prestart.scene as first scene.
@@ -45,50 +47,18 @@ You can throught these step to make it work.
 1. add your handler to <a href="https://github.com/daniel840829/gameServer/blob/a218213609e8857f84ffa5516c412922ef9cd4c1/game/session/room.go#L157">"gameServer/game/session/room.go": func (r *Room) Run()</a>
 2. modify the <a href="https://github.com/daniel840829/Tank-Online/blob/87be8962024241dff4d8f3de1809fe4ef60f0848/Assets/Scripts/Entity/EntityManager.cs#L188">UpdateFrame</a> fuction to handle packets design by yourself. then,Data Flow to Entity to render the change of entity's properties.
 ## The file structure:
-<ol>
-  <li>agent
-    <ol>
-      <li>session
-        <ol>
-          <li>room</li>
-          <li>session</li>
-          <li>kubernete</li>
-        </ol>
-      </li>
-    </ol>
-  </li>
-  <li>game
-    <ol>
-      <li>session
-        <ol>
-          <li>room</li>
-          <li>session</li>
-        </ol>
-      </li>
-    </ol>
-  </li>
-  <li>msg
-  <br>  - use protobuf to define package and rpc interface
-  </li>
-   <li>
-    uuid
-    <br>generate different IDs of objects that can be call with reflection 
-   </li>
-  <li>user
-    <ul>
-      <li>UserManager</li>
-      <li>User<li>
-  TODO: There should be a session manager to cache user infomation and state
-  <li>
-    storage
-    <br>Use mogdb to storage user infomation
-  </li>
-</ol>
-
-## Contribute
-## Credits
-## License
-
-
-
-MIT © [daniel840829]()
+- agent
+  - session
+    - room.go
+    - session.go
+    - kubernetes.go
+- game
+  - room.go
+  - session.go
+  - kubernetes.go
+- msg Use Protobuf to define package and RPC service interface
+- uuid generate different IDs of objects that can be call with reflection 
+- user
+  - UserManager
+  - User
+- storage Use mongoDB to storage user infomation
