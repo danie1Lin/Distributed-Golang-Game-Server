@@ -13,12 +13,16 @@ Because the concurrency mechanisms of Golang is very powerful, I choose online g
 - Autoscaling - controller is written with go-client ,you can wirte the strategy to autoscale dedicated game server by your own.
 - Lightweight - The image of dedicated game server is less than 40MB.
 ## Architecture
-- Agent server : 
+### Agent server : 
   - match players to join other player's room or create own room
   - control the amount of gameplay server and load balancing. when the amountof a gameplay server's connections exceed maxium connections it should have, agent will create a new pod run gameplay server.
-- Gameplay Server :
+### Gameplay Server :
   - After players are matched successfully ,these players will get the gameplay server's ip and token,and player can start to play.
   ![](https://github.com/daniel840829/gameServer/blob/kubernete-intergration/Golang%20Game%20ServerArchitecture.png?raw=true)
+### Packet Validating 
+In the branch master, I use ODE to simulate the physics on server.It is the most safe way to keep game fair.However, I found the memory server use is too much for me, Because I don't have money to maintance the server. So I started to design a way to let client validate packet and simulate physics separatly to reduce the heavy load on the server. I just complete the entities can attack each others so far. I will start to design aftewards:
+  - The validation part preventing form players cheating 
+  - The interface connecting a physics simulator
 ## Installation
 - Server :
 Two Way to run server:
