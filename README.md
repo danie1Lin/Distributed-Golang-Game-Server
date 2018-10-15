@@ -31,11 +31,11 @@ Two Way to run server:
     2. Create cluster
     3. Install Mongodb 
     4. edit setupEnv.sh with your setting and bash setupEnv.sh
-    4. go run main.go --type=agent on your local machine (Must on Where you install Kops)
+    4. ```go run main.go --type=agent``` on your local machine (Must on Where you install Kops)
   - Run Standalone Server on local machine
     1. Install Mongodb 
     3. edit setupEnv.sh( DONT_USE_KUBE = true )with your setting and bash setupEnv.sh
-    2. go run main.go --type=standalone on your local machine
+    2. ```go run main.go --type=standalone``` on your local machine
 - Client :
   - You can run in Unity Editor by open the Prestart.scene as first scene.
   - If you want to test with mutliplayer you can try build Andorid apk because it is likely to be builded successfully.
