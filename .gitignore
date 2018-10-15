@@ -1,0 +1,4 @@
+vendor/*
+*.log
+*.vim
+.undodir/＊
