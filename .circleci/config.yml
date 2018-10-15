@@ -17,8 +17,7 @@ jobs:
       - run: 
           name: Build and Push Image daniel840829/gameplayserver
           command: |
-            TAG=circleci$CIRCLE_BUILD_NUM
+            TAG=circleci-latest
             docker build -t  daniel840829/gameplayserver:$TAG .
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push daniel840829/gameplayserver:$TAG
-

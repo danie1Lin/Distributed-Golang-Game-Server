@@ -11,9 +11,10 @@ metadata:
     clientToAgentPort: ''
 spec:
   hostNetwork: true
+  imagePullPolicy: Always
   containers:
   - name: game-server
-    image: daniel840829/gameplayserver:v4
+    image: daniel840829/gameplayserver:circleci-latest
     env:
       - name: CLIENT_TO_GAME_PORT
         valueFrom:
