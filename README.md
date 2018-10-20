@@ -1,5 +1,6 @@
 # Golang Distributed Game Server
 ### Build State [![CircleCI](https://circleci.com/gh/daniel840829/gameServer/tree/master.svg?style=svg)](https://circleci.com/gh/daniel840829/gameServer/tree/master)
+
 ## Motivation
 At first, I just want to learn Golang.I started to think about which is the best way?
 Because the concurrency mechanisms of Golang is very powerful, I choose online game to verify if I can use Golang to make a efficient game server.For me, this is the first time I make this such hard project. I have to learn Unity, Golang, C# At a time. I am glad that I still have full passion to this project and I never give up.
@@ -66,3 +67,5 @@ You can throught these step to make it work.
   - UserManager
   - User
 - storage Use mongoDB to storage user infomation
+## Support me
+ <a href="https://www.buymeacoffee.com/yEKnuC6" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
