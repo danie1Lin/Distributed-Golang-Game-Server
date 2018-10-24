@@ -38,6 +38,7 @@ Two Way to run server:
     3. edit setupEnv.sh( DONT_USE_KUBE = true )with your setting and bash setupEnv.sh
     2. ```go run main.go --type=standalone``` on your local machine
 - Client :
+  - [Download this project](https://github.com/daniel840829/Tank-Online) 
   - You can run in Unity Editor by open the Prestart.scene as first scene.
   - If you want to test with mutliplayer you can try build Andorid apk because it is likely to be builded successfully.
   ![](https://media.giphy.com/media/ftdlle6pOE6Y8w5bho/giphy.gif)
