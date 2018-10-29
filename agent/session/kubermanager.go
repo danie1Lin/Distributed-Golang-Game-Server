@@ -20,6 +20,7 @@ import (
 
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -51,7 +52,11 @@ func (c *clusterManager) KubeClientSet() {
 	config, err := clientcmd.BuildConfigFromFlags("", filepath.Join(os.Getenv("HOME"), ".kube", "config"))
 
 	if err != nil {
-		log.Fatal(err)
+		log.Warn(err)
+		config, err = rest.InClusterConfig()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	clientset, err := kubernetes.NewForConfig(config)
 	c.client = clientset
