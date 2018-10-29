@@ -1,5 +1,6 @@
 # Golang Distributed Game Server
-### Build State [![CircleCI](https://circleci.com/gh/daniel840829/gameServer/tree/kubernete-intergration.svg?style=svg)](https://circleci.com/gh/daniel840829/gameServer/tree/kubernete-intergration)
+### Build State [![CircleCI](https://circleci.com/gh/daniel840829/gameServer/tree/master.svg?style=svg)](https://circleci.com/gh/daniel840829/gameServer/tree/master)
+
 ## Motivation
 At first, I just want to learn Golang.I started to think about which is the best way?
 Because the concurrency mechanisms of Golang is very powerful, I choose online game to verify if I can use Golang to make a efficient game server.For me, this is the first time I make this such hard project. I have to learn Unity, Golang, C# At a time. I am glad that I still have full passion to this project and I never give up.
@@ -37,6 +38,7 @@ Two Way to run server:
     3. edit setupEnv.sh( DONT_USE_KUBE = true )with your setting and bash setupEnv.sh
     2. ```go run main.go --type=standalone``` on your local machine
 - Client :
+  - [Download this project](https://github.com/daniel840829/Tank-Online) 
   - You can run in Unity Editor by open the Prestart.scene as first scene.
   - If you want to test with mutliplayer you can try build Andorid apk because it is likely to be builded successfully.
   ![](https://media.giphy.com/media/ftdlle6pOE6Y8w5bho/giphy.gif)
@@ -66,3 +68,5 @@ You can throught these step to make it work.
   - UserManager
   - User
 - storage Use mongoDB to storage user infomation
+## Support me
+ <a href="https://www.buymeacoffee.com/yEKnuC6" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
