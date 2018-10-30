@@ -36,4 +36,9 @@ spec:
         valueFrom:
           fieldRef:
             fieldPath: metadata.labels['clientToAgentPort']
+      - name: 
+        valueFrom:
+        secretKeyRef:
+          name: demo-secret-from-yaml
+          key: password
   

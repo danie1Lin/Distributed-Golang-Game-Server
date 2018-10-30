@@ -9,5 +9,6 @@ EXPOSE 3000 8080 50051
 
 FROM scratch
 COPY --from=builder /gameServer .
+COPY ./cluster .
 EXPOSE 3000 8080 50051
 CMD ["./gameServer"]
