@@ -36,9 +36,18 @@ spec:
         valueFrom:
           fieldRef:
             fieldPath: metadata.labels['clientToAgentPort']
-      - name: 
+      - name: MGO_PASS
         valueFrom:
-        secretKeyRef:
-          name: demo-secret-from-yaml
-          key: password
-  
+          secretKeyRef:
+            name: agent-secret
+            key: mgoPass
+      - name: MGO_USER
+        valueFrom:
+          secretKeyRef:
+            name: agent-secret
+            key: mgoUser
+      - name: MGO_ADDR
+        valueFrom:
+          secretKeyRef:
+            name: agent-secret
+            key: mgoAddr

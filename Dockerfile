@@ -7,7 +7,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  -o /gameServer
 CMD ["/gameServer"]
 EXPOSE 3000 8080 50051
 
-FROM scratch
+FROM alpine
 COPY --from=builder /gameServer .
 COPY ./cluster .
 EXPOSE 3000 8080 50051
