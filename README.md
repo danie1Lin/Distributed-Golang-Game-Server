@@ -1,6 +1,7 @@
 # Golang Distributed Game Server
 [![Go Report Card](https://goreportcard.com/badge/github.com/daniel840829/Distributed-Golang-Game-Server)](https://goreportcard.com/report/github.com/daniel840829/Distributed-Golang-Game-Server)
 [![CircleCI](https://circleci.com/gh/daniel840829/Distributed-Golang-Game-Server.svg?style=svg)](https://circleci.com/gh/daniel840829/Distributed-Golang-Game-Server)
+[![Gitter](https://badges.gitter.im/daniel840829/Distributed-Golang-Game-Server.svg)](https://gitter.im/daniel840829/Distributed-Golang-Game-Server?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 ## Motivation
 At first, I just want to learn Golang.I started to think about which is the best way?
 Because the concurrency mechanisms of Golang is very powerful, I choose online game to verify if I can use Golang to make a efficient game server.For me, this is the first time I make this such hard project. I have to learn Unity, Golang, C# At a time. I am glad that I still have full passion to this project and I never give up.
