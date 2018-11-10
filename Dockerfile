@@ -13,3 +13,5 @@ COPY ./cluster ./cluster
 EXPOSE 3000 8080 50051
 # ENTRYPOINT [ "/bin/bash" ]
 CMD ["./gameServer"]
+
+

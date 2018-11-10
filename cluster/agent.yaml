@@ -11,6 +11,7 @@ metadata:
     clientToAgentPort: '50051'
 spec:
   hostNetwork: true
+  restartPolicy: Never
   containers:
   - name: game-server
     image: daniel840829/gameplayserver:circleci-latest
