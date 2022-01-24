@@ -20,7 +20,7 @@ Because the concurrency mechanisms of Golang is very powerful, I choose online g
   - control the amount of gameplay server and load balancing. when the amountof a gameplay server's connections exceed maxium connections it should have, agent will create a new pod run gameplay server.
 ### Gameplay Server :
   - After players are matched successfully ,these players will get the gameplay server's ip and token,and player can start to play.
-  ![](https://github.com/daniel840829/gameServer/blob/kubernete-intergration/Golang%20Game%20ServerArchitecture.png?raw=true)
+  ![](https://github.com/danie1Lin/Distributed-Golang-Game-Server/blob/kubernete-intergration/Golang%20Game%20ServerArchitecture.png?raw=true)
 ### Packet Validating 
 In the branch master, I use ODE to simulate the physics on server.It is the most safe way to keep game fair.However, I found the memory server use is too much for me, Because I don't have money to maintance the server. So I started to design a way to let client validate packet and simulate physics separatly to reduce the heavy load on the server. I just complete the entities can attack each others so far. I will start to design aftewards:
   - The validation part preventing form players cheating 
@@ -42,7 +42,8 @@ Two Way to run server:
   - [Download this project](https://github.com/daniel840829/Tank-Online) 
   - You can run in Unity Editor by open the Prestart.scene as first scene.
   - If you want to test with mutliplayer you can try build Andorid apk because it is likely to be builded successfully.
-  ![](https://media.giphy.com/media/ftdlle6pOE6Y8w5bho/giphy.gif)
+  
+  [![DEMO](https://github.com/danie1Lin/Distributed-Golang-Game-Server/blob/master/demo.gif)](https://i9.ytimg.com/vi/7Q9g6AqXasg/mq3.jpg?sqp=CNDbu48G&rs=AOn4CLCPb7ym5w1-5ROf5mXXvUkzOI-0Vg "Demo")
 ## How to use?
 If you want to make your own game by modifying this project, I am pleasured.
 You can throught these step to make it work.
